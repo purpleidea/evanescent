@@ -1,0 +1,197 @@
+--- dt.py-orig	2008-09-30 10:01:12.000000000 -0400
++++ dt.py	2009-04-14 23:43:21.000000000 -0400
+@@ -21,6 +21,7 @@
+ 
+ import datetime
+ COLON = ':'
++SEMI_COLON = ';'
+ COMMA = ','
+ LBRACKET = '['
+ RBRACKET = ']'
+@@ -167,5 +168,129 @@
+ 
+ 	def is_date(self, date_str):
+ 
+-		raise NotImplementedError
++		"""
++		returns true if current date matches a date string.
++		cat the following to build one:
++		- open or close bracket, for inclusion or exclusion (respectively) of boundary value
++		- date value>>> year[,month[,day]] (days are optional)
++		- semi-colon
++		- time value as above
++		- open or close bracket, for exclusion or inclusion (respectively) of boundary value
++
++		* example:	[2008,12,20; 2009,01,05[
++		* example:	]2010,04,17 ;2010,06,03]
++		* example:	2009,05,01;2010,09,01
++		"""
++
++		# add/sub the time_shift
++		now = datetime.datetime.today()	# now
++		if type(self.datetime) == type(now):
++			now = self.datetime
++		delta = datetime.timedelta(seconds=abs(self.time_shift))
++		if self.time_shift < 0:
++			now = now - delta
++		else:
++			now = now + delta
++
++
++		# time range: [#:#:# , #:#:#]
++		if date_str.count(SEMI_COLON) == 1:
++			# assume no brackets are present until found...
++			lhs_bracket = False
++			rhs_bracket = False
++			# default include/exclude behaviour for brackets when not specified is:
++			lhs_include = True
++			rhs_include = True
++
++			if date_str[0] == LBRACKET:
++				lhs_bracket = True
++				lhs_include = True
++			if date_str[0] == RBRACKET:
++				lhs_bracket = True
++				lhs_include = False
++
++			if lhs_bracket:	# chop off left bracket
++				date_str = date_str[1:]
++
++
++			if date_str[-1] == LBRACKET:
++				rhs_bracket = True
++				rhs_include = False
++			if date_str[-1] == RBRACKET:
++				rhs_bracket = True
++				rhs_include = True
++
++			if rhs_bracket:	# chop off right bracket
++				date_str = date_str[:-1]
++
++			if self.force_brackets and (not(lhs_bracket) or not(rhs_bracket)):
++				raise SyntaxError, 'missing left and right square brackets'
+ 
++			# now split it up
++			split = date_str.split(SEMI_COLON)
++
++			# *** do left
++			lhs = split[0].strip().split(COMMA)
++
++			# defaults
++			day = 0
++
++			# need between 2 and 3 chunks of time values to parse; eg: (x:y:z) or (x:y)
++			if len(lhs) < 2 or len(lhs) > 3: raise SyntaxError, "bad lhs date syntax: `%s'" % split[0].strip()
++
++			# in case parsing int fails
++			try:
++				year = int(lhs[0])
++				month = int(lhs[1])
++				if len(lhs) > 2: day = int(lhs[2])
++			except ValueError:
++				raise SyntaxError, "bad lhs date value: `%s'" % split[0].strip()
++
++			lhs_datetime = datetime.datetime(year=year, month=month, day=day, hour=now.hour, minute=now.minute, second=now.second)
++
++
++			if lhs_include:
++				if (now < lhs_datetime):
++					return False
++			else:
++				if not(lhs_datetime < now):
++					return False
++
++			# *** do right
++			rhs = split[1].strip().split(COMMA)
++
++			# defaults
++			day = 0
++
++			# need between 2 and 3 chunks of time values to parse; eg: (x:y:z) or (x:y)
++			if len(rhs) < 2 or len(rhs) > 3: raise SyntaxError, "bad rhs date syntax: `%s'" % split[1].strip()
++
++			# in case parsing int fails
++			try:
++				year = int(rhs[0])
++				month = int(rhs[1])
++				if len(rhs) > 2: day = int(rhs[2])
++			except ValueError:
++				raise SyntaxError, "bad rhs date value: `%s'" % split[1].strip()
++
++			rhs_datetime = datetime.datetime(year=year, month=month, day=day, hour=now.hour, minute=now.minute, second=now.second)
++
++			if rhs_include:
++				if not(rhs_datetime < now):
++					return False
++			else:
++				if not(now < rhs_datetime):
++					return False
++
++			# if it didn't fail yet, then it's good!
++			return True
++
++
++
++		elif date_str.count(SEMI_COLON) == 0:
++			# TODO: add single time parsing (maybe allow 2009:??:??  and 2008:*    ?)
++			raise NotImplementedError
++
++
++		else:
++			raise SyntaxError, "bad date syntax: `%s'" % date_str
+--- exclusions.py-orig	2009-01-21 16:30:32.000000000 -0500
++++ exclusions.py	2009-04-14 23:46:23.000000000 -0400
+@@ -21,9 +21,9 @@
+ # TODO: rework this exclusions file to use the yamlhelp wrapper functions i've made...
+ import yaml				# yaml for config file parsing
+ import fnmatch				# for simple shell-style pattern matching
+-import socket				# for gethostname() and getfqdn()
++import socket				# for gethostname(), getbyhostname() and getfqdn()
+ import os				# for getlogin(), geteuid() and getegid()
+-import dt				# i wrote this one-- for time/date range parsing
++import dt                               # i wrote this one-- for time/date range parsing
+ if os.name in ['posix']: import pwd	# for unix passwd file lookup
+ else: import getpass			# to find the username
+ 
+@@ -31,6 +31,8 @@
+ HOST = 'host'
+ FQDN = 'fqdn'
+ TIME = 'time'
++DATE = 'date'
++IPV4 = 'ipv4'
+ 
+ # these use the `users' parameter for is_excluded()
+ USER = 'user'
+@@ -38,8 +40,6 @@
+ EGID = 'egid'
+ 
+ # TODO: (not yet implemented)
+-DATE = 'date'
+-IPV4 = 'ipv4'
+ IPV6 = 'ipv6'
+ MACA = 'maca'	# mac address
+ 
+@@ -195,9 +195,21 @@
+ 							else: row = True
+ 
+ 						elif j == DATE:
+-							# TODO...
+-							pass
++							temp = dt.dt(time_shift=self.time_shift)
++							if not(temp.is_date(i[j])):
++                                row = False
++                                break
++                            else: row = True
+ 
++                        # ipv4
++						if j == IPV4:
++							# uses: socket.gethostname() and gethostbyname()
++							if not(fnmatch.fnmatchcase(self.c(socket.gethostbyname(socket.gethostname())), self.c(i[j]))):
++							#if socket.gethostbyname(socket.gethostname()) != i['ipv4']: # simple matching
++								row = False
++								break
++							else: row = True
++                                                
+ 						elif j == NOTE:
+ 							# the exclusions function should ignore any comments.
+ 							pass

@@ -1,0 +1,6 @@
+Siva Shanmugam Thangavelu 260314495
+Yasmine Kabbaj, 260310098
+
+A more simpler and user friendly interface needs to be provided for non-technical users
+Threading could be used more extensively to optimize the scripts' performance on multi-core processors
+Probably a help file needs to be included with the code so users know immediately where to go and what to do

@@ -1,0 +1,85 @@
+General Discussion/comments on changes made for Task 1
+
+1) Changes to dt.py
+
+	1. Finished the time implementation which allows for entering only one value 
+
+		(ie) 
+			a. 7
+			b. 2:23
+			c. 5:23:56
+
+	assumes a two hour range/window so basically takes that changes above to 
+
+			a. 7,9
+			b. 2:23, 4:23
+			c. 5:23:56, 7:23:56
+
+	this was done as a two hour window seemed appropriate. Reused logic implemented by earlier part of the code
+
+	2. Implemented date
+
+	Dates can only be inputed using this syntax [#/#/####,#/#/####]
+	
+	makes use of logic from first part of code (since where actually still comparing strings of integers using
+	tokenizer/split)
+
+	3. My understanding of what happens in the code (THe Algorithm if you will)
+
+		Basically, given the range to be checked as 1 string using specific syntax
+		
+
+		make sure correct syntax used for string
+		
+		check boundaries
+
+		remove brackets/boundaries
+
+		split string in TWO (left half = lhs), (right half = rhs)
+
+		further split the halfs between the three "subcategories" (hours, minutes, seconds OR day, month, year)
+
+		for TIME
+			use defaults for anything missing ie) only hours OR only hours:minutes OR all
+
+		for DAY
+			TECHNICALLY does not need defaults as it assumes that user MUST input 2 FULL DATES
+
+				why? Because otherwise it DOESN'T MAKE SENSE
+
+		Then, it checks the lower bound (lhs)
+
+		Then, it checks the upper bound (rhs)
+
+		If after all that it doesn't return false, then RETURN TRUE
+
+
+2) Change to exclusions.py
+
+	1. finish the elif j == Date block
+
+	2. create an elif j == IPV4 block
+		gets the ip address (which searching on the internet tells me is IPV4 (first google search result)
+		checks it
+		either return true or false and BREAK
+
+
+******************************
+**			     *
+	PERSONAL NOTE	     *
+**			     *
+******************************
+Due to time constraints did not have enough time to implement the Windows installer + could not find any documentation
+on how to accomplish task from little info provided in assignment.
+
+I was however able to find out how to use py2exe to create a .exe version of a python code/program
+
+I am however, personally interested on how that would actually be done. If it's not too much to ask to send at my
+e-mail sample code/ STEP BY STEP INSTRUCTIONS ON HOW TO DO THIS FOR A SIMPLE PROGRAM 
+
+Sort of a How to make an installer for windows for DUMMIES (I wasted a lot of time trying to make this work,
+was extremely frustrated untill I finally gave up and caved into handing in the much simpler task (my back-up))
+
+If done much appreciated
+
+writer: Mohamad Kouli 260206622, e-mail: mohamad.kouli@gmail.com  

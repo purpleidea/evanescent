@@ -1,0 +1,103 @@
+# Evanescent machine idle detection and shutdown tool.
+# Copyright (C) 2008  James Shubin, McGill University
+# Written for McGill University by James Shubin <purpleidea@gmail.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# FIXME: i should probably make this into a better example file
+
+#########
+# NOTES #
+#########
+# it would _not_ be wise to allow all admin users to be excluded from shutdown
+# because if an absent minded admin leaves his/her root session open, then that
+# session would actually get logged out given enough inactive time, hopefully
+# before a malicious user comes along and does something bad.
+
+##########
+# CONFIG #
+##########
+- conf:
+    startmeup: True                                             # should evanescent run on this machine?
+    debugmode: False                                            # debug mode
+    wordymode: True                                             # talk a lot (implied if debugmode is on)
+    idlelimit: 3600                                             # 1 hour before you're idle
+    countdown: 300                                              # five minute countdown before shutdown
+    sleeptime: 600                                              # poll/check computer every 10 minutes
+    fastsleep: 60                                               # how often do we poll after the user has been warned
+    initsleep: 900                                              # initial sleep before idle on first startup of machine
+    tdcommand: 'shutdown.exe -s -t 00 -c "bye!"'                # take-down command to run
+    theconfig: 'c:\WINDOWS\evanescent.conf.yaml'                # the config file
+    logserver: 'logmaster:514'                                  # syslog server
+    mylogpath: 'c:\WINDOWS\system32\config\evanescent.log'      # path for local log file
+    myerrpath: 'c:\WINDOWS\system32\config\evanescent.FAIL'     # path for FAIL log file
+    logformat: '%(asctime)s %(levelname)-8s %(name)-17s %(message)s'
+    iconimage: 'evanescent.png'                                 # filename for `systray' icon
+    readsleep: 5                                                # minimum sleep time between messages
+    shareddir: 'c:\WINDOWS\system32\evanescent\'                # directory for shared evanescent/eva data
+    staletime: 60                                              # time limit before widle or msg data considered stale
+
+##############
+# EXCLUSIONS #
+##############
+- host: dazzle
+  note: never shutdown james machine
+
+- host: profs
+  note: never shutdown vm machine
+
+- host: ubuntu
+  note: never shutdown vm machine
+
+- host: toto
+  note: never shutdown prof workstation (tim)
+
+- host: mune
+  note: never shutdown prof workstation (avis)
+
+- host: scanner
+  note: never shutdown scanner machine for people to get to know.
+
+- host: voodoo
+  note: kailesh test machine
+
+- host: cgm-*
+  note: CGM lab
+
+- host: lab6-12
+  note: >
+        user: sgelin3 asked to keep this one up...
+        perhaps we can leave this in, or find him a
+        different machine to ssh in to?
+
+- user: james
+  note: don't ever us out (even though this is bad)
+
+- user: andrewb
+
+#- note: regular labs
+#  host: lab?-*
+#  time: '[9:00:00, 17:00:00]'
+
+- note: elevator area
+  host: open-*
+  time: '[9:00:00, 17:00:00]'
+
+- note: consultant area
+  host: socs-*
+  time: '[9:00:00, 17:00:00]'
+
+- host: consultant
+  time: '[9:00:00, 19:00:00]'
+  note: consultant machine

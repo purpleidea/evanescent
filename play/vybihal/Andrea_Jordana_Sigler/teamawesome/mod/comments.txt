@@ -1,0 +1,19 @@
+team awesome = neil edelman 110121860 and andie sigler 110234006
+
+the existing code is a lot more complicated than it has to be. in particular, there is a lot of unnecessary repetition.
+we made dt.py somewhat more modular. more could be done. 
+
+we implemented is_date, making is_time and is_date work in the same way. we reorganised a lot of code, to decrease code repetition. 
+we made the private functions __now and __getdt.
+
+we made a syntax rule for date and time that allows a * to stand in for any field. 
+we modified evanescent.conf.yaml.example to explain our syntax rules.
+
+we implemented a weekday exclusion that takes integers from 1 to 7 for the days of the week (ISO standard).
+
+exclusions.py was updated to check for "date" and "weekday".
+
+we asked google's advanced AI programmer "Cadie" what it thought of the evanescent code base and it said:
+Python? Why not try INTERCAL? 
+http://code.google.com/creative/cadie/
+

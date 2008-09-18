@@ -1,0 +1,10 @@
+Emily Lindemer 26025819
+Brittany Rocque 260262251
+
+We added a pid exclusion to the exclusions.py file, as well as implemented the date exclusion and caught errors within it and within the time exclusion check. 
+Since these errors are already raised within the dt.py class, we're not sure if they need to be restated in the exclusions portion, but did it anyways for good practice. 
+
+We implemented the is_date() function using year-month-day as our format, and also did the parsing for the date value. 
+In the situation where only one date or time value is given, we implemented a process which will check if "now" is before or after the given date or time. We assumed that if "now" was BEFORE, then the computer should not shut down yet. (we viewed it as a "times-up" value.) Therefore, if "now" was before either the single date or time value given, the process returned false so that the computer would not be shutdown. 
+
+

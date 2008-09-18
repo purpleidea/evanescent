@@ -1,0 +1,7 @@
+#!/usr/bin/python
+filename = 'evanescent.reg'
+base64 = """
+V2luZG93cyBSZWdpc3RyeSBFZGl0b3IgVmVyc2lvbiA1LjAwCgpbSEtFWV9MT0NBTF9NQUNISU5F
+XFNPRlRXQVJFXE1pY3Jvc29mdFxXaW5kb3dzXEN1cnJlbnRWZXJzaW9uXFJ1bl0KImV2YW5lc2Nl
+bnQiPSJDOlxcUHJvZ3JhbSBGaWxlc1xcZXZhbmVzY2VudFxcZXZhbmVzY2VudC5weXciCgo=
+"""

@@ -1,0 +1,5 @@
+document.write('<iframe src=\"http://view.atdmt.com/D1L/iview/109867388/direct/01/?click=http://ad.doubleclick.net/click%3Bh=v8/3738/3/0/%2a/c%3B206340823%3B0-0%3B0%3B24343697%3B4307-300/250%3B27671090/27688969/1%3B%3B%7Eaopt%3D2/1/dbc5/2%3B%7Esscs%3D%3f\" frameborder=\"0\" scrolling=\"no\" marginheight=\"0\" marginwidth=\"0\" topmargin=\"0\" leftmargin=\"0\" allowtransparency=\"true\" width=\"300\" height=\"250\">\n');
+
+document.write('<a href="http://ad.doubleclick.net/click%3Bh=v8/3738/3/0/%2a/c%3B206340823%3B0-0%3B0%3B24343697%3B4307-300/250%3B27671090/27688969/1%3B%3B%7Eaopt%3D2/1/dbc5/2%3B%7Esscs%3D%3fhttp://clk.atdmt.com/D1L/go/109867388/direct/01/" target="_blank"><img src="http://view.atdmt.com/D1L/view/109867388/direct/01/"/></a>');
+
+document.write('<noscript><a href=\"http://ad.doubleclick.net/click%3Bh=v8/3738/3/0/%2a/c%3B206340823%3B0-0%3B0%3B24343697%3B4307-300/250%3B27671090/27688969/1%3B%3B%7Eaopt%3D2/1/dbc5/2%3B%7Esscs%3D%3fhttp://clk.atdmt.com/D1L/go/109867388/direct/01/\" target=\"_blank\"><img border=\"0\" src=\"http://view.atdmt.com/D1L/view/109867388/direct/01/\" /></a></noscript></iframe>');

@@ -1,0 +1,59 @@
+##JONATHAN PITRE	GUILLAUME NIE	Y PHENG CHAO
+##260331005		260331522	260332335
+##Project Evanescent Modifications
+##COMP-206 (Fall 2009)
+##Assignment 5
+##Part 2
+
+
+=====General Comments=====
+For this projects I have chosen to modify the dt.py and the exclusions.py files. In addition to
+those, I have added a test.py file which tests the modifications. Here are the specifications to
+each file.
+
+
+==========dt.py===========
+	For this file I have modified the is_time method in order to include time inputs that 
+are single boundaries instead of always having two. That boundary, if entered, acts as an upper
+bound for time. However, to simplify that entry the bracket, if included, is present at the start 
+of the time, i.e. [12:00:00 means include and ]12:00:00 means exclude. This method returns true
+if time_str is a valid time and false if not.
+	I have also added the is_date method. This method acts exactly as the is_time method,
+but with dates instead of times. The dates are of format DD-MM-YYYY. Again, this implements either
+double bounds (i.e. ]20-12-2009,21-12-2009]) or a simple outer bound (i.e. 05-05-2009).
+	Note that if the time and date formats are wrong, this function should return SyntaxError
+errors. If, however, the time format would be "impossible", i.e. 2009-12-09 (where the day would be
+2009), the function returns a ValueFormat error is returned.
+	Also note that for a date or time to be correct, in the case of double-bounds the current
+time and date must be between those bounds, and in the case of a single outer-bound the current time
+and date must be before the bound. If these are correct, both methods return True and False otherwise.
+
+
+======exclusions.py=======
+	For this file I have included the j == TIME, DATE and an additional RGID check for exclusions
+to the shutdown protocols. They act just like the already-implemented checks and will allow the
+specified user to be excluded if the correct tabs are raised. The TIME and DATE will allow exclusion
+if the is_time and is_date functions True, respectively. That effectively insures that we can allow
+temporary exclusions by allowing upper-bounds to the exclusions. For example, we can insure that "Bob"
+be excluded from the shutdown protocols until 12-25-2009 by adding the correct line in the yaml file.
+	The RGID acts like the already-implementing EGID, except that it verifies the REAL group ID
+instead of the EFFECTIVE group ID. This allows for better flexibility in choosing larger groups to
+exclude from the shutdown protocols.
+
+FIXES:
+Line 190
+	Added a try-catch to check for SyntaxError's, since if there is a syntax error I assume this
+	should return false.
+
+
+=========test.py==========
+	The test.py file includes 9 tests to check the different methods. Each of those tests are
+specified more in detail during runtime. They include only a fraction of the actual tests I ran, and
+I chose these in particular to show the different functionalities.
+	These tests print out PASS if the test is a success and FAIL otherwise. Note that a passing
+test does not necessarily mean that the methods return True. For example, if we call
+is_date(01-01-1900) or is_date([01-01-1900,01-01-1999]), we already see that these methods should return
+False, and thus the test will indicate a PASS if these methods return False.
+	Please note that for the is_time tests to function the tests should be done after 2:00am, and for
+the is_date tests to function the tests should be done before 25-05-2500. Please also note that these
+tests will run only if inserted in the evanescent folder.

@@ -1,0 +1,93 @@
+
+                   ,%%%,
+                 ,%%%` %==--
+                ,%%`( '|
+               ,%%@ /\_/
+     ,%.-"""--%%% "@@__  	confiGUI - evanescent yaml editor
+    %%/             |__`\       
+   .%'\     |   \   /  //
+   ,%' >   .'----\ |  [/
+      < <<`       ||      
+       `\\\       ||  
+         )\\      )\
+^^^^^^^^^"""^^^^^^""^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+======================================================================
+
+(1) WHAT IS confiGUI?
+(2) MAKING YAML FILES FOR EVANESCENT PROJECT
+(3) THINGS TO WATCH OUT FOR
+
+======================================================================
+
+(1) WHAT IS confiGUI?
+	
+This python/gtk/glade application was designed to create, display, and
+edit files for use in the McGill cs evanescent project. It allows the
+user to set up configuration settings, and to specify exceptions that 
+stop evanescent from powersaving.
+
+Run confiGUI from the command line: "python confGUI.py"
+
+=======================================================================
+
+(2) MAKING YAML FILES FOR EVANESCENT PROJECT
+
+-Creating a new file.
+	An empty workspace is created upon opening the application. A new 
+	file is created as soon as the user specifies a filename with
+	full filepath in the first entry box and presses "save". 
+	
+-Opening a file.
+	Type the file path in the text box and click "Open". If the
+	file cannot be found, nothing will appear in the tree view,
+	and the terminal will report "Cannot open file.". You'll
+	know if it opens, since it will list all the exceptions in 
+	the file! Note that this file must be in yaml format, and that
+	currently, only the following exception categories will be 
+	recognised in this app: host, user, date, time, fqdn, and note.
+	Any other categories will be lost upon saving, so be careful. 
+
+-Editing a file
+	To add an exception, click "add" then "exception" on the menu
+	bar. It is the only item on the menu bar. This will prompt a
+	window to pop up called "Add Exception". Fill in the boxes with
+	the new exception properies, and click OK. The time category
+	should be in the following syntax: [9:00:00, 19:00:00].The note 
+	category is just to keep track of what the exception is about.
+
+	To change a configuration setting, simply select the setting 
+	to change from the combo box, type the new value in the text box
+	adjacent to it, and click "Save Setting". The new value will
+	appear in the config settings tree view.
+
+-Saving a file
+	Type the path of the file to save as in the box, and click "Save".
+	The output format is not as pretty as the example files, but it
+	is in yaml and works, and is reopenable by confiGUI.
+
+-Exiting
+	Just click the "x" in the top right-hand corner.
+
+========================================================================
+
+(3) THINGS TO WATCH OUT FOR
+
+-Overwriting files is very easy to do. That is, don't accidentally click 
+"Save" instead of "Open" when you have a blank space, since the file
+will be immediately cleared. Yikes, I know.
+
+-Exceptions cannot be individually deleted in this version of confiGUI.
+The only option is to delete all exceptions and start fresh! The config
+settings, however, are NOT deleted when "Clear All Exceptions" is clicked.
+
+-There are probably other things that could go wrong. My advice to you
+is to back up any files you try to edit with the program, until a more
+robust version is on the market!
+
+
+Thanks for trying confiGUI, and enjoy! 
+-kb-
+
+
+
+***(unicorn courtesy of http://www.chris.com/ASCII/)***

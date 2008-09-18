@@ -1,0 +1,14 @@
+installing evanescent:
+
+installing on linux is a flash.
+1) put the code wherever you'd like it to run from.
+2) copy a template .conf file to /etc/ and edit it appropriately.
+3) add the upstart file provided.
+
+installing on windows is a bit involved.
+1) you need to put the code in an appropriate folder.
+2) you need an evanescent.job file (scripts to install this are in progress)
+3) you need a registry entry. (scripts to install this are in progress)
+
+ask me for windows deployment help!
+i'm working on making the install automatic

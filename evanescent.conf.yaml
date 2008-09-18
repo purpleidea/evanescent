@@ -1,0 +1,18 @@
+# exception list
+
+- host: dude
+  user: james
+  date: 19-04-1984
+  time: [13:45:26, 15:45:06[
+
+- host: dazzle
+  user: james
+  fqdn: dazzle.CS.McGill.CA
+
+- user: dude
+  time: 093400
+  host: somehost
+
+- time: 085618
+  user: bob
+

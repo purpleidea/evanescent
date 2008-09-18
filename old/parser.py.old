@@ -1,0 +1,197 @@
+#!/usr/bin/python
+"""parser class to read custom config file"""
+
+
+COMMENT = '#'
+AND = '&&'
+COLON = ':'
+TYPE_LENGTH = 1		# length of type prefix identifier (eg: h for hostname, u for user, t for time)
+
+def exclusions(filename=None):
+
+	"""
+	* returns True if there should be an exclusion
+	to shutdown the machine for a particular static
+	reason as enumerated in the config file
+
+	* the config lists a conditions, which if true, exclude that
+	machine from shutting down. each line may contain a series of
+	these conditions which must ALL be true for that line to be true.
+	if ANY line is true, then the exclusion for that machine is met.
+
+	* conditions are AND-ed together with `&&' (on a line)
+	* each line is automatically OR-ed with each other line
+	* conditions to match can include:
+		- h:<hostname>
+		- t:<time>,<time>
+		- u:<user>
+		- i:<ip>
+	* ip & hostname support the `*' wildcard character
+	"""
+	shutdown = True	# shutdown machines by default
+
+
+	try:
+
+		f = open(filename, 'r')						# read only
+		lines = f.readlines()						# grab it all
+		i = 0
+		for line in lines:
+			i = i + 1
+			# ensure at least one char, that's not a comment & not a nl
+			line = line.strip()					# strip all whitespace
+			if (len(line) > 0) and (line[0:len(COMMENT)] != COMMENT) and (line[0:1] != '\n'):
+
+				split = line.split(AND)			# split can split in a special way, see: http://docs.python.org/lib/string-methods.html
+				for token in split:
+				token = token.strip()
+				if (len(token) > TYPE_LENGTH+1) and (token[1] == COLON):	# need at least 1 for the colon, x for the length of type, and at least one more char to parse as a setting
+
+
+
+
+
+
+
+
+
+
+
+
+				split[0] = str(split[0]).upper()		# compare in upper case
+
+				if (split[0] == 'TIME') and (len(split) == 2):
+					result = parse.parse_clever(split[1])
+					if result != None: data['dt'] = result
+
+				elif (split[0] == 'ZOOM') and (len(split) == 2):
+					result = parse.parse_clever(split[1])
+					if result != None: data['mult'] = result
+
+				elif split[0] in ['OBJ', 'PLANET', 'PLANETOID', 'COMET', 'SAUCERSHIP', 'SHIP', 'STAR']:
+
+					if not(data.has_key('objects')): data['objects'] = []
+
+					obj = sss_object.sss_object()		# make a new object
+					p = {					# order of the properties
+						0:	'name',
+						1:	'position',
+						2:	'velocity',
+						3:	'mass',
+						4:	'density',
+						5:	'colour'
+					}
+
+					for w in range( len(split)-1 ):
+						words = split[w+1].split('=')
+						if len(words) == 2 and (words[0] in p.values()):
+							# words[0] is already the right key value.
+							pass
+
+						elif len(words) == 1:		# (wasn't specified in a keyname=value sort of way)
+							words.append(words[0])	# save the value we found
+							words[0] = p[w]		# this is the correct key value for words[0] based on it's ordering
+
+						else:
+							raise SyntaxError, 'line #%d doesn\'t match a recognized identifier pattern' % i
+
+
+						# now parse
+						if words[0] == 'name':
+							obj.set_name(str(words[1]))
+
+						elif words[0] == 'position':
+							result = parse.parse_tuple(words[1])
+							if result != None:
+								(one, two) = result
+								one = parse.parse_clever(one)
+								two = parse.parse_clever(two)
+								if one != None and two != None:
+									# NOTE: note the reversed y coord for pygame
+									obj.set_position((one, -two))
+								else:
+									raise SyntaxError, 'error parsing position values on line #%d' % i
+							else:
+								raise SyntaxError, 'error parsing position tuple on line #%d' % i
+
+						elif words[0] == 'velocity':
+							result = parse.parse_tuple(words[1])
+							if result != None:
+								(one, two) = result
+								one = parse.parse_clever(one)	# magnitude
+								two = parse.parse_angle(two)	# direction
+								if one != None and two != None:
+
+									V = vec.vector(one, two)
+									(x, y) = V.delta()
+									# fix the y coordinate and put it back in
+									# FIXME: pygame hack! x is reversed here with respect to input angle
+									obj.set_velocity(vec.vector(V.get_magnitude(), vec.xy_to_direction((-x, y))))
+									#obj.set_velocity(vec.vector(one, two))
+
+								else:
+									raise SyntaxError, 'error parsing vector values on line #%d' % i
+							else:
+								raise SyntaxError, 'error parsing vector tuple on line #%d' % i
+
+
+						elif words[0] == 'colour':
+							result = parse.parse_colour(words[1])	# is it a normal colour ?
+							if result != None:
+								obj.set_colour(result)
+							else:
+								result = parse.parse_clever(words[1])
+								if result != None:		# maybe it's in the clever database
+									obj.set_colour(result)
+								else:
+									raise SyntaxError, 'error parsing colour value on line #%d' % i
+
+						elif words[0] == 'mass':
+							result = parse.parse_clever(words[1])
+							if result != None:
+								obj.set_mass(result)
+							else:
+								raise SyntaxError, 'error parsing mass value on line #%d' % i
+
+						elif words[0] == 'density':
+							result = parse.parse_clever(words[1])
+							if result != None:
+								obj.set_density(result)
+							else:
+								raise SyntaxError, 'error parsing density value on line #%d' % i
+
+						else:
+							raise SyntaxError, 'line #%d specifies a property that we don\'t know how to parse' % i
+
+
+					if split[0] in ['STAR', 'MASSLESS']:
+						obj.set_mass(0.0)
+
+					if split[0] in ['SAUCERSHIP', 'SHIP']:
+						obj.set_thrust_function(saucership.saucership_control)	# only one type of control so far
+
+					data['objects'].append(obj)					# save the new object for later
+
+
+
+				else:
+					raise SyntaxError, 'line #%d doesn\'t have a recognized keyword-format pattern' % i
+
+			#else:										# skip blank lines or comments
+			#	pass
+
+	except SyntaxError, value:
+
+		last_error = value
+		print value
+
+	except:
+		import traceback
+	        traceback.print_exc(file=sys.stdout)
+
+	finally:
+		try: f.close()
+		except: pass
+
+	return not(shutdown)
+

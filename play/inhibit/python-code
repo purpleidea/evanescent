@@ -1,0 +1,18 @@
+How do I make my application stop the computer auto-suspending?
+
+If your application is doing a long operation, you might want to disable the ability to suspend for a little while. You should use this method if you really don't want the user to be able to suspend, or for the computer to save power by hibernating or suspending during: * Copying files in Nautilus * Doing a long kernel compile or Matlab simulation * During a SELinux relabel * Many others...
+
+Then you can use the Inhibit() and UnInhibit() DBUS methods built into the newest versions of gnome-power-manager. Here is a simple demonstration in python:
+
+import dbus
+import time
+
+bus = dbus.Bus(dbus.Bus.TYPE_SESSION)
+devobj = bus.get_object('org.gnome.PowerManager', '/org/gnome/PowerManager')
+dev = dbus.Interface(devobj, "org.gnome.PowerManager")
+cookie = dev.Inhibit('Nautilus', 'Copying files')
+time.sleep(100)
+dev.UnInhibit(cookie)
+
+There is an example which shows developers how to add Inhibit and UnInhibit DBUS methods into existing programs.
+

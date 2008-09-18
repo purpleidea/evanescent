@@ -1,0 +1,173 @@
+#!/usr/bin/python
+"""
+* this script should be run on each machine at boot
+* this script hasn't been designed to avoid killing things like:
+	- long running user processes (eg: $ sleep 13h && echo 'hi mom')
+	- detached screen sessions (no line will be seen connected)
+	- long compute scripts should be run on linux.cs.mcgill.ca ($ ./my_big_c.py)
+"""
+
+import math			# for math.ceil()
+import signal			# for signal stuff
+import logging			# for syslog stuff
+import daemon			# i wrote this one
+import exclusions		# i wrote this one
+import idle			# i wrote this one
+import miscs			# i wrote this one
+
+IDLELIMIT = 60*60			# 1 hour before you're idle
+COUNTDOWN = 5*60			# five minute countdown before shutdown
+SLEEPTIME = 10*60			# check every 10 minutes
+FASTSLEEP = 1*60			# how often do we poll after the user has been warned
+THECONFIG = 'idle.conf.yaml'		# the config file
+LOGSERVER = ('logmaster', 514)		# syslog server
+DAEMONPID = '/var/run/evanescent.pid'	# pid file for daemon
+MYLOGPATH = '/var/log/evanescent.log'	# path for local log file
+
+#signal.signal(signal.SIGALRM, signal.SIG_IGN)	# ignore
+
+#TODO: TIME_SHIFT on exclusions
+#TODO: kill idle users on a non-idle machine (OPTIONAL)
+
+if __name__ == "__main__":
+
+	import logging, logging.handlers
+
+	l = logging.getLogger('evanescent')
+	l.setLevel(logging.DEBUG)
+
+	# handler for local disk
+	RotatingFileHandler = logging.handlers.RotatingFileHandler(MYLOGPATH, maxBytes=1024*100, backupCount=9)
+	l.addHandler(RotatingFileHandler)
+
+	# handler for global logging server
+	SysLogHandler = logging.handlers.SysLogHandler(LOGSERVER)	# TODO: add a facility as a parameter here
+	l.addHandler(SysLogHandler)
+
+	l.info('evanescent starting up')
+
+	daemon_logger = logging.getLogger('evanescent.daemon')
+	other_logger = logging.getLogger('evanescent.other')
+
+	try:
+		d = daemon.daemon(pidfile=DAEMONPID, start_func=evanescent, logger=daemon_logger)
+		d.startstop()
+	except SystemExit, e:
+		other_logger.exception('SystemExit caught: %s' % str(e))
+		sys.exit(0)
+	except, e:
+		other_logger.critical('Exception: %s' % str(e))
+		sys.exit(1)
+
+
+
+
+def evanescent():
+	"""this is the main function for the evanescent daemon"""
+
+	# run this on first start to check for errors...
+	# this avoids us having to wait for a machine to be idle before is_excluded runs
+	e = exclusions.exclusions(THECONFIG)
+	if not(e.syntax_ok()):
+		raise SyntaxError, 'problem with syntax in config file'
+	e = None
+
+	warned = False
+	sleep = SLEEPTIME
+	# main loop (polling)
+	while True:
+
+		i = idle.idle()
+		# if entire machine is idle
+		if i.is_idle(threshold=IDLELIMIT):
+
+			e = exclusions.exclusions(THECONFIG)
+			try:
+				# if we shouldn't shutdown after all
+				if e.is_excluded():
+
+					if warned:
+						# shutdown was canceled, computer no longer idle
+						warned = False
+						sleep = SLEEPTIME
+						misc.do_broadcast('DO_WOOPS_SHUTDOWN_CANCELED_BY_ADMIN_WE_CHANGED_THE_CONFIG_FILE_OR_SOMETHING_MESSAGE()')
+
+					# fix the sleep value back to normal-ness
+					sleep = SLEEPTIME
+				else:
+					# now we're supposed to be warning/shutting down the machine...
+
+					# we've waited this long since users got warned
+					timedelta = datetime.datetime.today() - warned
+					delta = int(math.ceil(timedelta.seconds + (timedelta.days*24*60*60) + (timedelta.microseconds*(1/1000000))))
+					# if warning time is up!
+					if delta > COUNTDOWN:
+						misc.do_nologin('sorry, machine is shutting down')	# returns true of false if this worked
+						misc.do_broadcast('machine is going down now')		# broadcasts a write to all the cli/gtk clients to say goodbye
+						misc.do_shutdown()	# kills the system
+						sys.exit(0)
+
+					else:
+
+						# warned at this time, if not warned already
+						if not(warned) and (type(warned) == type(False)):
+							misc.do_broadcast('DO_WARN()')
+							warned = datetime.datetime.today()
+						else:
+							pass
+
+						# sleep less often and see if someone will tap a mouse
+						sleep = FASTSLEEP
+	
+
+			except SyntaxError, e:
+				#'FIXME: improve the config parser checker code'
+				raise SyntaxError, 'syntax error in config file: %s' % e
+				sys.exit(1)
+
+			e = None	# free memory
+
+		else:
+			# datetime objects should return true
+			if warned:
+				# shutdown was canceled, computer no longer idle
+				warned = False
+				sleep = SLEEPTIME
+				misc.do_broadcast('DO_SHUTDOWN_CANCELED_MESSAGE()')
+
+			else:
+				# if we want to get rid of idle users even though the entire machine isn't idle
+				# TODO:
+				#DO: if i.ls_idle(tick=False) ...
+				#STILL NEED TO CHECK EXCLUSIONS, AND HAVE SOME SORT OF POLICY ON IF THEY APPLY.
+				#MAYBE RUN A SECOND EXCLUSION LOG FILE LIKE: E2.yaml.conf including policies for idle users.
+
+
+
+				# sleep just long enough for someone to go idle
+				m = i.max_idle(tick=False)
+				diff = IDLELIMIT - m
+				if diff < SLEEPTIME:
+					sleep = diff + 1
+				else:
+					sleep = SLEEPTIME
+
+		i = None	# free memory
+
+		# catch a signal here and wake up prematurely if we were poked by something.
+		# README: two signals:
+		# 1) POKE to get code to loop and re-read config file (eg, from an admin)
+		# 2) SHHH (a signal from a user saying hey, i pressed cancel) -> our program can send this if they click a cancel button
+
+		TURN_ON_ALLOWING_INCOMING_SIGNALS()
+		# TODO: is this how this signal stuff works ?
+		try:
+			time.sleep(sleep)
+		except SomeSignal?:
+			pass
+		TURN_OFF_ALLOWING_INCOMING_SIGNALS()
+
+
+
+
+

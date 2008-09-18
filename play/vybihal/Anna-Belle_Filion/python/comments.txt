@@ -1,0 +1,3 @@
+added is_date()
+also, added a semester exclusion. for you might want shut down the computers differently during the different semesters. for example, you might want to idle all the computers no matter what time it is in the summer.
+this is espeically useful when one dose not want to set a date range.

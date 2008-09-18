@@ -1,0 +1,15 @@
+-Warning display countdown is not always enough, esp. if computer's screen has turned off, or if user is out of the room. Some kin dof sound warning would be good. Like a song. Or the logout sound 30 seconds before it shuts down, just to make them panic.
+
+-Some disarming feature that could be set that doesn't shut down the program. Maybe it could run its own long term process until the user interrupts, like some on-screen display that says auto-shutdown is disabled until the user clicks a button. 
+
+-To make it broadly user-friendly, there could be an app with slider where users could set it to different levels of shut-down incentive (from shutting down with brief inactivity to never shutting down), which would change to a new set of generic configuration settings. This way it could be used by people who have no idea what is going on inside the computer.
+
+-in exclusions.py, it loops through the keys in the file in a similar format...
+(el)if j == SOMETHING:
+	if not(fnmatch.fnmatchcase(self.c(SOMETHINGELSE), self.c(i[j]))):
+		row = False
+		break
+	else: row = True
+If a list of the SOMETHING and SOMETHINGELSE values was made, and maybe even stored in a yaml file that was imported at the beginning, the code could become more efficient byt just looping over that section with successive entries from the file. Then it might be more clear when someone wants to modify the exception categories it can detect.
+
+-The confiGUI app will help with the user-friendly bit. It gives a pretty clear view of what the config yaml file will do when implemented, and allows some change.

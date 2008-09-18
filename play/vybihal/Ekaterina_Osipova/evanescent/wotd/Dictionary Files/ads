@@ -1,0 +1,74 @@
+{ 
+ 
+var google_ads = new Array(); 
+var google_ad; 
+var google_radlinks = new Array(); 
+var google_radlink; 
+var google_info = new Object(); 
+google_ad = new Object(); 
+google_ad.n = 1; 
+google_ad.type = "text"; 
+google_ad.bidtype = "CPC"; 
+google_ad.targeting_type = "contextual"; 
+google_ad.url = "http://pagead2.googlesyndication.com/pagead/iclk?sa=l&amp;ai=BAp2stibJSLC0CI6MzAX9oNGTAqfekSWr3aDDBMCNtwGQsAoQARgBII-UoREoBTgAUKb41VBg_eiigfADoAGbt_b9A7IBGGRpY3Rpb25hcnkucmVmZXJlbmNlLmNvbcgBAdoBLWh0dHA6Ly9kaWN0aW9uYXJ5LnJlZmVyZW5jZS5jb20vd29yZG9mdGhlZGF5L4ACAagDAegDbOgDQugDtAX1AyAEAAD1AwQAAACIBAGQBAGYBAA&amp;num=1&amp;adurl=http://www.babylon.com/affiliates/landing/index.php%3Fempty%3D1%26id%3D10588%26lang%3Deng%26version%3Doxford3%26textlink%3Dgcn00147&amp;client=ca-aj-lexico-dict"; 
+google_ad.visible_url = "www.Babylon.com"; 
+google_ad.line1 = "1 Click Oxford Dictionary"; 
+google_ad.line2 = "The Full Oxford Dictionary on Your"; 
+google_ad.line3 = "Computer. Download Free Now!"; 
+google_ad.regionname = ""; 
+google_ads[0] = google_ad; 
+google_ad = new Object(); 
+google_ad.n = 2; 
+google_ad.type = "text"; 
+google_ad.bidtype = "CPC"; 
+google_ad.targeting_type = "contextual"; 
+google_ad.url = "http://pagead2.googlesyndication.com/pagead/iclk?sa=l&amp;ai=BmAK_tibJSLC0CI6MzAX9oNGTAtjM9Wzy1_WhB8CNtwHAuAIQAhgCII-UoREoBTgAUOnd6_j9_____wFg_eiigfADsgEYZGljdGlvbmFyeS5yZWZlcmVuY2UuY29tyAEB2gEtaHR0cDovL2RpY3Rpb25hcnkucmVmZXJlbmNlLmNvbS93b3Jkb2Z0aGVkYXkvyAL077oFqAMB6ANs6ANC6AO0BfUDIAQAAPUDBAAAAIgEAZAEAZgEAA&amp;num=2&amp;adurl=http://www.webcrawler.com/webcrawler300/ws/results/Web/mexican%2Bword%2Bof%2Bthe%2Bday/1/417/TopNavigation/Relevance/iq%3Dtrue/zoom%3Doff/_iceUrlFlag%3D7%3F_IceUrl%3Dtrue&amp;client=ca-aj-lexico-dict"; 
+google_ad.visible_url = "www.webcrawler.com"; 
+google_ad.line1 = "Mexican Word Of The Day"; 
+google_ad.line2 = "Search multiple engines for"; 
+google_ad.line3 = "mexican word of the day"; 
+google_ad.regionname = ""; 
+google_ads[1] = google_ad; 
+google_ad = new Object(); 
+google_ad.n = 3; 
+google_ad.type = "text"; 
+google_ad.bidtype = "CPC"; 
+google_ad.targeting_type = "contextual"; 
+google_ad.url = "http://pagead2.googlesyndication.com/pagead/iclk?sa=l&amp;ai=BESQVtibJSLC0CI6MzAX9oNGTAq3k-Xzxt4b5CMCNtwHQhgMQAxgDII-UoREoBTgAUNSLheUCYP3oooHwA6AB7dGg8wOyARhkaWN0aW9uYXJ5LnJlZmVyZW5jZS5jb23IAQHaAS1odHRwOi8vZGljdGlvbmFyeS5yZWZlcmVuY2UuY29tL3dvcmRvZnRoZWRheS-AAgGoAwHoA2zoA0LoA7QF9QMgBAAA9QMEAAAAiAQBkAQBmAQA&amp;num=3&amp;adurl=http://learnenglishsecrets.blogspot.com/2008/07/learn-how-to-learn-english.html&amp;client=ca-aj-lexico-dict"; 
+google_ad.visible_url = "learnenglishsecrets.blogspot.com"; 
+google_ad.line1 = "English Phrases"; 
+google_ad.line2 = "Speak Excellent English"; 
+google_ad.line3 = "8 Secrets to Your Success."; 
+google_ad.regionname = ""; 
+google_ads[2] = google_ad; 
+google_ad = new Object(); 
+google_ad.n = 4; 
+google_ad.type = "text"; 
+google_ad.bidtype = "CPC"; 
+google_ad.targeting_type = "contextual"; 
+google_ad.url = "http://pagead2.googlesyndication.com/pagead/iclk?sa=l&amp;ai=Bo9OotibJSLC0CI6MzAX9oNGTAoDBsk7iyun-CcCNtwHwogQQBBgEII-UoREoBTgAUJ6Qmv77_____wFg_eiigfADoAHkz8z4A7IBGGRpY3Rpb25hcnkucmVmZXJlbmNlLmNvbcgBAdoBLWh0dHA6Ly9kaWN0aW9uYXJ5LnJlZmVyZW5jZS5jb20vd29yZG9mdGhlZGF5L6gDAegDbOgDQugDtAX1AyAEAAD1AwQAAACIBAGQBAGYBAA&amp;num=4&amp;adurl=http://www.cutdownbellyfat.com/4idiots/dietForIdiotsGend2.aspx&amp;client=ca-aj-lexico-dict"; 
+google_ad.visible_url = "FatLoss4Idiots.com"; 
+google_ad.line1 = "1 rule of a flat stomach:"; 
+google_ad.line2 = "Cut down 9 lbs of stomach fat every"; 
+google_ad.line3 = "11 days by obeying this 1 tiny rule"; 
+google_ad.regionname = ""; 
+google_ads[3] = google_ad; 
+google_ad = new Object(); 
+google_ad.n = 5; 
+google_ad.type = "text"; 
+google_ad.bidtype = "CPC"; 
+google_ad.targeting_type = "contextual"; 
+google_ad.url = "http://pagead2.googlesyndication.com/pagead/iclk?sa=l&amp;ai=BFdL5tibJSLC0CI6MzAX9oNGTAru433DTw9mCDMCNtwGw2wYQBRgFII-UoREoBTgAUMixn-P6_____wFg_eiigfADoAGLxqf7A7IBGGRpY3Rpb25hcnkucmVmZXJlbmNlLmNvbcgBAdoBLWh0dHA6Ly9kaWN0aW9uYXJ5LnJlZmVyZW5jZS5jb20vd29yZG9mdGhlZGF5L6gDAegDbOgDQugDtAX1AyAEAAD1AwQAAACIBAGQBAGYBAA&amp;num=5&amp;adurl=http://www.valtrk.com/URL/track.aspx%3FAdID%3D1473%26AffID%3D3173%26SubID%3D0&amp;client=ca-aj-lexico-dict"; 
+google_ad.visible_url = "Wu-YiSource.com"; 
+google_ad.line1 = "1 rule of a flat stomach:"; 
+google_ad.line2 = "I cut down 24 lbs of stomach fat in"; 
+google_ad.line3 = "3 months by obeying this 1 old rule"; 
+google_ad.regionname = ""; 
+google_ads[4] = google_ad; 
+if (window.google_ad_request_done) { 
+google_ad_request_done(google_ads); 
+} 
+if (window.google_radlink_request_done) { 
+google_radlink_request_done(google_radlinks); 
+} 
+}

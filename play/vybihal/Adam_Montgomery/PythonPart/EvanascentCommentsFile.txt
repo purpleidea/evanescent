@@ -1,0 +1,15 @@
+Adam Montgomery (260 252 125)
+Nick Parenteau (260 329 005)
+
+Notes on our implementation:
+	-Implemented is_date() function and ipv4 exclusions
+	-is_date()
+		-Exclusion format: [[dd-]mm-]yyyy[,[[dd-]mm-]yyyy]
+			-Essentially you can specify a date value or range, with optional month and date parameters for both
+		-is_date() returns true if we are in the date range, which causes the hook in exclusions.py to validate the row
+		-timeshift and datetime parameters passed into dt.py are respected similiar to is_time()
+		-Syntax errors are thrown similiar to the is_time() function
+	-ipv4
+		-used the same case sensitive matching protocol as before, even though ipv4 is expected to be numeric
+		-uses socket to get ip address by the hostname and the hostname
+		-compares the ip value from the triplet with the ip in the exclusion yaml file

@@ -1,0 +1,26 @@
+--- evanescent/evanescent.py	2009-02-03 15:14:49.000000000 -0500
++++ evanescent2/tray_icon/evanescent.py	2009-04-20 05:06:05.000000000 -0400
+@@ -494,9 +494,11 @@
+ 		# note: we're using getpass.getuser() instead of os.getlogin() because the later isn't platform compatible.
+ 		f = yamlhelp.yamlhelp(os.path.join(config.SHAREDDIR, config.MSGSUBDIR, getpass.getuser()))
+ 		if os.name in ['posix']:
+-			# TODO: import a messaging class for posix. maybe pynotify?
+-			pass
+-
++			import lpytraymsg
++			msg = lpytraymsg.lpytraymsg()
++			msg.create_tray(config.ICONIMAGE, 'evanescent')
++			#Sample call to the tray icon:
++			#msg.msg('Title','Body')
+ 		if os.name in ['nt']:
+ 			i = idle.idle(tick_default=False, me=True)
+ 			g = yamlhelp.yamlhelp(os.path.join(config.SHAREDDIR, config.WIDLEPATH, getpass.getuser()))
+@@ -531,7 +533,7 @@
+ 							if (time.time() - x['tsync']) < config.STALETIME:
+ 								self.logs['evalog'].info('message: %s' % x['msg'])
+ 								if os.name in ['nt']: msg.msg('evanescent', x['msg'])	# send qt4 pop up msg
+-								elif os.name in ['posix']: pass				# send a pynotify msg
++								elif os.name in ['posix']: msg.msg('evanescent', x['msg'])	# send a pynotify msg
+ 								time.sleep(config.READSLEEP)				# sleep time b/w msgs
+ 						else:
+ 							# TODO: potentially we could prune the file by removing this message.

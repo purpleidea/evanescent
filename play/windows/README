@@ -1,0 +1,13 @@
+It seems that it is almost impossible to duplicate the features of linux based evanescent in windows.
+There needs to be a system wide service or daemon running that detects when the machine is idle.
+This would run as a system/root type user.
+It would use the GetLastInputInfo Function @ http://msdn.microsoft.com/en-us/library/ms646302(VS.85).aspx to get idle time information.
+However, it is impossible for this process to do GetLastInputInfo for any process other than itself.
+So you could do a RunAs type thing (wrapper in an existing RunAs api) and run that for each user you want idle time information about.
+But to do the RunAs you need the users password, even though you are the Administrator user.
+You could run a separate program that starts up with each user login as themselves. (such as through the all users/startup folder) and then
+then program could report idle time back to some common file on the filesystem, and then then main evanescent daemon could select/poll this
+file and determine idle info that way. This is hacky, but potentially could be possible.
+
+
+

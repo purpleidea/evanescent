@@ -1,0 +1,12 @@
+Jordan Catracchia
+260327257
+
+Ekaterina Osipova
+260331261
+
+The code base for the exculusions.py is well-organized such that the user can easily follow the case-senarios (such as date, or time) in which
+the varialbe row either returns true or false. There should be a more thorough description as to what specifically the variabes i and j 
+represent relative to the yaml file.
+
+The code base for the dt.py is well-constructed and organized. There is a sufficient amount of code that helps the user understand what is 
+happening. Also, the code for the time-based range allowed us to write the date-based range such that the consistency of the code was perserved.

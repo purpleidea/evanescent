@@ -1,0 +1,56 @@
+Comp 206 - Assingment 5 - comments.txt
+Andrew Smart - 260328206
+Meki Cherkaoui - 260329105
+
+The existing code base is well written in the sense that is is very clear what must be done, what has been done, 
+and possible things that might need to be done. With the abundace of comments and TODO's found through the code, 
+it is always clear what must be done. As this is the first assignment for anyone in our group where we got to build 
+on a significant code base, it was nice that that is was well structured and simple to follow. This can be said for
+ the main files such as exclusions and dt. However, the same cannot be said for the less viewed files where the commenting 
+ranges from very precise to rather informal to a point where the comments do little to provide information on what a problem may be. 
+This minor complaint aside, the code was well written in terms of reusability (especially when it came to implementing date) and formatting.
+ As for Evanescence as a whole, it was very helpful to have the dependencies included in the tarball. Code aside, it was a nice change to 
+work on something real and potentialy improve it to the point that it could be used (if only it weren't the end of semester and we had more time).
+
+
+
+This is what the time should look like on the yaml file
+-It has quotes
+-Inclusive or exclusive brackets
+-It can either be an interval or just a single time with a star
+
+
+time: '[10:45:13 , 13:56:34]'
+
+will include anything from 13:56:34 to 10:45:13 included
+
+time: '[10:*]'
+
+will include anything from 10:00:00 to 10:59:59 included
+
+time: ']10:10:*['
+
+will include anything from 10:10:00 to 10:10:59 excluded
+
+
+This is what the date sould look like on the yaml file
+- it doesn't have quotes 
+- It is always inclusive to the last date
+
+date: '1990, 2009'
+
+will include anthing from febuary first 1990 to december 31st 2009 included
+
+
+date: '1990-10-10, 2009-10-19'
+
+will include anthing from october 10th 1990 to october 19th 2009 included
+
+date: ' 2009-*'
+
+will include anything from febuary 1st to december 31st 2009
+
+date: '2009-10-*'
+
+will include anything from october 1st to october 31st 2009 included
+

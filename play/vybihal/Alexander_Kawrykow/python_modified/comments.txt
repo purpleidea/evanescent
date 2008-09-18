@@ -1,0 +1,66 @@
+COMP 206 
+A5
+Nadia Andruchow
+260 265 783
+Alexander Kawrykow
+260 324 367
+Pavel Levin
+260 182 836
+
+
+Comments on Evanescent
+
+
+
+I'm not sure if this is just something that is common when programming in python, but there is a lot of use of the not() funtion in conditional statements.  These can
+ make conditions harder to understand for the inexperienced programmer, or anyone who is skimming over the code. Example: 
+
+From dt.py
+
+                        if lhs_include:
+                                if not(lhs_datetime <= now):
+                                        return False
+                        else:
+                                if not(lhs_datetime < now):                                        return False
+
+
+
+
+From dt.py:  In this case the error might be able to be a bit more specific.  It may be redundant but one could put a try except around each condiional and state whet
+her it is a bad minute or second value.  
+
+try:
+                                hour = int(lhs[0])
+                                if len(lhs) > 1: minute = int(lhs[1])
+                                if len(lhs) > 2: second = int(lhs[2])
+                        except ValueError:
+                                raise SyntaxError, "bad lhs time value: `%s'" % split[0].strip()
+
+
+
+From exclusions.py:
+
+
+  def is_excluded(self, users=[]):
+                """returns True if there should be an exclusion to
+                shutdown the machine for a particular static (from
+                config file) reason. If you specify a username, then
+                it will do the exclusions based on _that_ user name
+                instead of based on the user running the script (root,
+                usually-- which we don't care about) so this it is a
+                good thing to use this with a username. if you specify
+                a list of usernames then it will try to exclude the
+                machine on any rule trying all usernames.
+                """
+
+This seems counterintuitive.  Although this is the basis for this whole function, it makes more sense for something to be excluded from shut down. The idea:  Returning true means that the computer won't be shut down, false that it would be.
+
+
+
+
+
+From evanescent.conf.yaml.example:
+ 
+
+idlelimit: 3600                                             # 1 hour before you're idle
+1 hour seems like a long time for a computer to be wait to be deemed idle. More time could be saved if it was 30 minutes are even 45.  Not many useers would leave their computer sitting for that long.  
