@@ -174,6 +174,7 @@ class daemon:
 				# run the daemon function
 				self.log('running start function', logging.INFO)
 				self.start_func()
+				# FIXME: when start_func finishes, we should clean up pid file+etc somehow right ?
 				return
 
 		else:

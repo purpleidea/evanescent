@@ -51,7 +51,7 @@ def evanescent():
 	evalog_logger.debug('entering main loop')
 	while True:
 
-		i = idle.idle()
+		i = idle.idle(tick_default=False)
 		# if entire machine is idle
 		if i.is_idle(threshold=IDLELIMIT):
 			evalog_logger.info('computer is idle')
@@ -63,7 +63,7 @@ def evanescent():
 				# if warning time is up!
 				if delta > COUNTDOWN:
 					evalog_logger.warn('machine shutting down now!')
-					misc.do_nologin('sorry, machine is shutting down')	# returns true of false if this worked
+					misc.do_nologin('sorry, machine is shutting down')	# returns true or false if this worked
 					misc.do_broadcast('machine is going down now')		# broadcasts a write to all the cli/gtk clients to say goodbye
 					misc.do_shutdown()	# kills the system
 					sys.exit(0)
@@ -81,7 +81,7 @@ def evanescent():
 				evalog_logger.debug('checking exclusions...')
 				try:
 					# if we should shutdown
-					if not(e.is_excluded()):
+					if not(e.is_excluded(users=i.unique_users())):
 
 						evalog_logger.debug('machine isn\'t excluded, doing warn')
 						# now we warn users of impending shutdown
@@ -130,7 +130,7 @@ def evanescent():
 				pass
 				# if we want to get rid of idle users even though the entire machine isn't idle
 				# TODO:
-				#DO: if i.ls_idle(tick=False) ...
+				#DO: if i.ls_idle() ...
 				#STILL NEED TO CHECK EXCLUSIONS, AND HAVE SOME SORT OF POLICY ON IF THEY APPLY.
 				#MAYBE RUN A SECOND EXCLUSION LOG FILE LIKE: E2.yaml.conf including policies for idle users.
 
@@ -139,7 +139,7 @@ def evanescent():
 			# the min time is the longest we're going to have to wait for everyone to go idle
 			# however, this would be less if someone logs off prematurely. to avoid this problem,
 			# we need to listen for log off events and wake up when one occurs.
-			m = int(math.ceil(i.min_idle(tick=False)))
+			m = int(math.ceil(i.min_idle()))
 			diff = IDLELIMIT - m
 
 			if diff < SLEEPTIME:

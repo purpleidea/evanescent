@@ -5,16 +5,19 @@ import yaml		# yaml for config file parsing
 import fnmatch		# for simple shell-style pattern matching
 import socket		# for gethostname() and getfqdn()
 import os		# for getlogin(), geteuid() and getegid()
+import pwd		# for unix passwd file lookup
 import dt		# i wrote this one-- for time/date range parsing
 
 
 # constants
 HOST = 'host'
 FQDN = 'fqdn'
+TIME = 'time'
+
+# these use the `users' parameter for is_excluded()
 USER = 'user'
 EUID = 'euid'
 EGID = 'egid'
-TIME = 'time'
 
 # TODO: (not yet implemented)
 DATE = 'date'
@@ -35,7 +38,7 @@ class exclusions:
 		self.case = case
 
 	def syntax_ok(self):
-		# FIXME: in the future, we could run some specific parser script to check syntax
+		# TODO: in the future, we could run some specific parser script to check syntax
 		# the easy way is to see if it actually fails when we run it...
 		# the problem is that the is_excluded exits early when it knows it can, and sometimes
 		# not all the picky syntax has been checked yet...
@@ -47,10 +50,50 @@ class exclusions:
 
 		return True
 
-	def is_excluded(self):
-		"""returns True if there should be an exclusion
-		to shutdown the machine for a particular static
-		(from config file) reason."""
+	def is_excluded(self, users=[]):
+		"""returns True if there should be an exclusion to
+		shutdown the machine for a particular static (from
+		config file) reason. If you specify a username, then
+		it will do the exclusions based on _that_ user name
+		instead of based on the user running the script (root,
+		usually-- which we don't care about) so this it is a
+		good thing to use this with a username. if you specify
+		a list of usernames then it will try to exclude the
+		machine on any rule trying all usernames.
+		"""
+
+		# array of users at least one long
+		if (type(users) == type([])) and (len(users) > 0):
+			for x in users:
+				temp = self.is_excluded(x)
+				# if it's excluded for this user, then it's
+				#excluded for the machine of course.
+				if temp:
+					return True
+
+			return False	# didn't exclude anyone.
+
+		# username with at least one character
+		elif (type(users) == type('')) and len(users) > 0:
+
+			user = users
+			try:
+				temp = pwd.getpwnam(users)
+				if users != temp[0]: raise AssertionError
+				euid = temp[2]	# pw_uid
+				egid = temp[3]	# pw_gid
+			except KeyError:
+				euid = False
+				egid = False
+
+		# old school, normal(bad) is_excluded() operation
+		else:
+			# use the info from the user running the script
+			user = os.getlogin()
+			euid = os.geteuid()
+			egid = os.getguid()
+
+
 		shutdown = True		# shutdown machines by default
 
 		try:
@@ -87,7 +130,7 @@ class exclusions:
 						#*** login (luser) name
 						elif j == USER:
 							# uses: os.getlogin()
-							if not(fnmatch.fnmatchcase(self.c(os.getlogin()), self.c(i[j]))):
+							if not(fnmatch.fnmatchcase(self.c(user), self.c(i[j]))):
 								row = False
 								break
 							else: row = True
@@ -95,7 +138,7 @@ class exclusions:
 						#*** effective user id
 						elif j == EUID:
 							# uses: os.geteuid()
-							if not(fnmatch.fnmatchcase(self.c(os.geteuid()), self.c(i[j]))):
+							if not(fnmatch.fnmatchcase(self.c(euid), self.c(i[j]))):
 								row = False
 								break
 							else: row = True
@@ -103,7 +146,7 @@ class exclusions:
 						#*** effective group id
 						elif j == EGID:
 							# uses: os.getegid()
-							if not(fnmatch.fnmatchcase(self.c(os.geteuid()), self.c(i[j]))):
+							if not(fnmatch.fnmatchcase(self.c(egid), self.c(i[j]))):
 								row = False
 								break
 							else: row = True
@@ -111,7 +154,7 @@ class exclusions:
 
 						elif j == TIME:
 							# uses: dt module that i wrote
-							# TODO: does this need to be enclosed in a try/catch (because it can raise?)
+							# TODO: does this need to be enclosed in a try/catch (because it can raise)
 							temp = dt.dt(time_shift=self.time_shift)
 							if not( temp.is_time(i[j]) ):
 								row = False

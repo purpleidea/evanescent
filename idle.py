@@ -2,7 +2,6 @@
 
 import utmp		# lib to read the utmp file
 import UTMPCONST
-
 import os		# for stat (to get idle times)
 import time		# for the idle time math
 
