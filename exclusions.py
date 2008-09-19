@@ -84,7 +84,7 @@ class exclusions:
 								break
 							else: row = True
 
-						# login (luser) name
+						#*** login (luser) name
 						elif j == USER:
 							# uses: os.getlogin()
 							if not(fnmatch.fnmatchcase(self.c(os.getlogin()), self.c(i[j]))):
@@ -92,7 +92,7 @@ class exclusions:
 								break
 							else: row = True
 
-						# effective user id
+						#*** effective user id
 						elif j == EUID:
 							# uses: os.geteuid()
 							if not(fnmatch.fnmatchcase(self.c(os.geteuid()), self.c(i[j]))):
@@ -100,7 +100,7 @@ class exclusions:
 								break
 							else: row = True
 
-						# effective group id
+						#*** effective group id
 						elif j == EGID:
 							# uses: os.getegid()
 							if not(fnmatch.fnmatchcase(self.c(os.geteuid()), self.c(i[j]))):
@@ -111,6 +111,7 @@ class exclusions:
 
 						elif j == TIME:
 							# uses: dt module that i wrote
+							# TODO: does this need to be enclosed in a try/catch (because it can raise?)
 							temp = dt.dt(time_shift=self.time_shift)
 							if not( temp.is_time(i[j]) ):
 								row = False

@@ -187,7 +187,7 @@ class daemon:
 		simple logging function
 		"""
 		# are we using the python library for logging, or our own
-		if type(self.logger) in [type(logging.Logger), type(logging.RootLogger)]:
+		if isinstance(self.logger, logging.Logger) or isinstance(self.logger, logging.RootLogger):
 			if level == None: self.logger.error(message)	# pick some default level here (we chose 'error')
 			else: self.logger.log(level, message)
 

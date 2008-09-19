@@ -14,7 +14,7 @@ def do_nologin(message=None):
 	else:
 		os.system("touch /etc/nologin")
 
-	# FIXME: fix this to True/False
+	# FIXME: fix this to return True/False based on if it worked or not.
 	return True
 
 

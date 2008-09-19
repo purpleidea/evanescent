@@ -38,33 +38,58 @@ class idle:
 		return result['min']
 
 	def get_idle(self, index, tick=None):
-		"""get idle time for particular index, as returned by idle_indices"""
+		"""get idle time for particular index, as returned by idle_indices
+		returns an array of idle times if we give an array of indices"""
 		self.tick(tick)
-		try:
-			return self.__result['line'][index]
-		except IndexError:
-			return False
+		if type(index) == type([]):
+			a = []
+			for x in index:
+				temp = self.get_idle(x)
+				if temp: a.append(temp)
+			return a
+		else:
+			try:
+				return self.__result['idle'][index]
+			except IndexError:
+				return False
 
 	def get_line(self, index, tick=None):
-		"""get line for particular index, as returned by idle_indices"""
+		"""get line for particular index, as returned by idle_indices
+		returns an array of lines if we give an array of indices"""
 		self.tick(tick)
-		try:
-			return self.__result['line'][index]
-		except IndexError:
-			return False
+		if type(index) == type([]):
+			a = []
+			for x in index:
+				temp = self.get_line(x)
+				if temp: a.append(temp)
+			return a
+		else:
+			try:
+				return self.__result['line'][index]
+			except IndexError:
+				return False
 
 	def get_user(self, index, tick=None):
-		"""get user for particular index, as returned by idle_indices"""
+		"""get user for particular index, as returned by idle_indices
+		returns an array of users if we give an array of indices"""
 		self.tick(tick)
-		try:
-			return self.__result['users'][index]
-		except IndexError:
-			return False
+		if type(index) == type([]):
+			a = []
+			for x in index:
+				temp = self.get_user(x)
+				if temp: a.append(temp)
+			return a
+		else:
+			try:
+				return self.__result['users'][index]
+			except IndexError:
+				return False
 
 	def idle_indices(self, threshold=0, tick=None, reverse=False):
 		"""returns a list of indices corresponding to which users are idle past a threshold"""
 		self.tick(tick)
-		a = z = []
+		a = []
+		z = []
 		i = 0
 		for x in self.__result['idle']:
 			if x >= threshold: a.append(i)

@@ -10,26 +10,19 @@ we don't check the exclusions again between IDLELIMIT and IDLELIMIT+COUNTDOWN
 """
 
 # TODO: kill idle users on a non-idle machine (OPTIONAL)
+# FIXME: mouse movement doesn't un-idle a machine (BUG/FEATURE ?)
 
 import sys				# for sys.exit()
 import math				# for math.ceil()
 import signal				# for signal stuff
+import datetime				# for time diffs
 import logging, logging.handlers	# for syslog stuff
 import daemon				# i wrote this one
 import exclusions			# i wrote this one
 import idle				# i wrote this one
 import misc				# i wrote this one
 
-DEBUGMODE = True			# debug mode
-IDLELIMIT = 60*60			# 1 hour before you're idle
-COUNTDOWN = 5*60			# five minute countdown before shutdown
-SLEEPTIME = 10*60			# check every 10 minutes
-FASTSLEEP = 1*60			# how often do we poll after the user has been warned
-THECONFIG = 'idle.conf.yaml'		# the config file
-LOGSERVER = ('logmaster', 514)		# syslog server
-DAEMONPID = '/var/run/evanescent.pid'	# pid file for daemon
-MYLOGPATH = '/var/log/evanescent.log'	# path for local log file
-LOGFORMAT = '%(asctime)s %(levelname)-8s %(name)-16s %(message)s'
+from config import *			# import to globals
 
 """
 # logging errors:
@@ -48,25 +41,28 @@ def evanescent():
 	# this avoids us having to wait for a machine to be idle before is_excluded runs
 	e = exclusions.exclusions(THECONFIG)
 	if not(e.syntax_ok()):
-		raise SyntaxError, 'problem with syntax in config file'
+		evalog_logger.fatal('syntax error in config file')
+		sys.exit(1)
 	e = None
 
 	warned = False
 	sleep = SLEEPTIME
 	# main loop (polling)
+	evalog_logger.debug('entering main loop')
 	while True:
 
 		i = idle.idle()
 		# if entire machine is idle
 		if i.is_idle(threshold=IDLELIMIT):
+			evalog_logger.info('computer is idle')
 
 			if warned:
-
 				# we've waited this long since users got warned
 				timedelta = datetime.datetime.today() - warned
 				delta = int(math.ceil(timedelta.seconds + (timedelta.days*24*60*60) + (timedelta.microseconds*(1/1000000))))
 				# if warning time is up!
 				if delta > COUNTDOWN:
+					evalog_logger.warn('machine shutting down now!')
 					misc.do_nologin('sorry, machine is shutting down')	# returns true of false if this worked
 					misc.do_broadcast('machine is going down now')		# broadcasts a write to all the cli/gtk clients to say goodbye
 					misc.do_shutdown()	# kills the system
@@ -74,6 +70,7 @@ def evanescent():
 
 				else:
 					# TODO: maybe we check for users pressing cancel here?
+					evalog_logger.debug('waiting for countdown to be up')
 					pass
 
 
@@ -81,10 +78,12 @@ def evanescent():
 			else:
 
 				e = exclusions.exclusions(THECONFIG)
+				evalog_logger.debug('checking exclusions...')
 				try:
 					# if we should shutdown
 					if not(e.is_excluded()):
 
+						evalog_logger.debug('machine isn\'t excluded, doing warn')
 						# now we warn users of impending shutdown
 						misc.do_broadcast('DO_WARN()')
 						warned = datetime.datetime.today()
@@ -94,14 +93,19 @@ def evanescent():
 						sleep = min(COUNTDOWN, FASTSLEEP)
 
 					else:
-						pass
+						evalog_logger.debug('machine is excluded')
 						# fix the sleep value back to normal-ness
-						#sleep = SLEEPTIME
+						# FIXME: technically, we could do the min thing and wake up
+						# in time to see another user go idle, but the exclusions
+						# might still hold, so we'll assume they are sane; eg:
+						# exclusions that vary from minute to minute would make this act funny.
+						sleep = SLEEPTIME
 
 
 				except SyntaxError, e:
 					# FIXME: improve the config parser checker code
-					raise SyntaxError, 'syntax error in config file: %s' % e
+					evalog_logger.critical('syntax error in live config file!')
+					evalog_logger.critical('FIXME: need to improve the config parser checker code')
 					sys.exit(1)
 
 				e = None	# free memory
@@ -109,10 +113,16 @@ def evanescent():
 
 
 		else:	# not idle
+			evalog_logger.debug('computer is not idle')
+			notidle = i.active_indices(threshold=IDLELIMIT)
+			evalog_logger.debug('user: %s' % ', '.join(i.get_user(notidle)))
+			evalog_logger.debug('line: %s' % ', '.join(i.get_line(notidle)))
+			evalog_logger.debug('idle: %s' % ', '.join(map(str, i.get_idle(notidle))))
 
 			# datetime objects should return true
 			if warned:
 				# shutdown was canceled, computer no longer idle
+				evalog_logger.info('shutdown canceled, not idle anymore')
 				warned = False
 				misc.do_broadcast('DO_SHUTDOWN_CANCELED_MESSAGE()')
 
@@ -126,20 +136,24 @@ def evanescent():
 
 
 
-			# sleep just long enough for someone to go idle
-			m = i.max_idle(tick=False)
+			# the min time is the longest we're going to have to wait for everyone to go idle
+			# however, this would be less if someone logs off prematurely. to avoid this problem,
+			# we need to listen for log off events and wake up when one occurs.
+			m = int(math.ceil(i.min_idle(tick=False)))
 			diff = IDLELIMIT - m
+
 			if diff < SLEEPTIME:
 				sleep = diff + 1
 			else:
 				sleep = SLEEPTIME
 
+
 		i = None	# free memory
 
-		# catch a signal here and wake up prematurely if we were poked by something.
+		# TODO: read some fd with select that looks for a user logout event
 
 		# easy sleep
-		#time.sleep(math.ceil(sleep))
+		#time.sleep(sleep)
 
 
 		# TODO: use select if we can wait for some FD giving us client information...
@@ -154,41 +168,52 @@ def evanescent():
 		# 2) SHHH (a signal from a user saying hey, i pressed cancel) -> our program can send this if they click a cancel button
 
 
+		# if we sleep for zero seconds or less, this can often make the sleep call hang forever
+		sleep = int(math.ceil(sleep))
+		if sleep > 0:
 
-		# allow/handle incoming signals
-		caught = False
-		signal.signal(signal.SIGUSR1, sigusr1)	# handle
-		signal.signal(signal.SIGUSR2, sigusr2)	# handle
-
-		def handler(signum, frame):
-			"""internal sleep handler function"""
-			raise KeyboardInterrupt
-
-		signal.signal(signal.SIGALRM, handler)
-		signal.alarm(math.ceil(sleep))
-
-		try:
-			signal.pause()
-			# pause exited, so a signal was caught
-			caught = True
-		except KeyboardInterrupt:
-			# exception happened, so alarm caused this
+			# allow/handle incoming signals
+			evalog_logger.debug('going to sleep for %s seconds' % sleep)
 			caught = False
+			signal.signal(signal.SIGUSR1, sigusr1)	# handle
+			signal.signal(signal.SIGUSR2, sigusr2)	# handle
+
+			def handler(signum, frame):
+				"""internal sleep handler function"""
+				raise KeyboardInterrupt
+
+			signal.signal(signal.SIGALRM, handler)
+			signal.alarm(sleep)
+
+			try:
+				signal.pause()
+				# pause exited, so a signal was caught
+				evalog_logger.debug('signal caught!')
+				caught = True
+			except KeyboardInterrupt:
+				# exception happened, so alarm caused this
+				caught = False
+				evalog_logger.debug('sleep over, waking up!')
+
+			# we continue...
+			signal.alarm(0)		# disable the alarm
+			signal.signal(signal.SIGUSR1, signal.SIG_IGN)	# ignore
+			signal.signal(signal.SIGUSR2, signal.SIG_IGN)	# ignore
+
+		# TODO: get rid of all this when debug is done...
+		#else:
+		#	if DEBUGMODE:
+		#		import time
+		#		time.sleep(1)
 
 
-		# we continue...
-		signal.alarm(0)		# disable the alarm
-		signal.signal(signal.SIGUSR1, signal.SIG_IGN)	# ignore
-		signal.signal(signal.SIGUSR2, signal.SIG_IGN)	# ignore
+
+def sigusr1(signum, frame):
+	#raise KeyboardInterrupt
+	evalog_logger.debug('someone poked me, waking up!')
 
 
-
-
-def sigusr1():
-	pass
-
-
-def sigusr2():
+def sigusr2(signum, frame):
 	pass
 
 if __name__ == "__main__":
@@ -202,11 +227,18 @@ if __name__ == "__main__":
 	formatter = logging.Formatter(LOGFORMAT)
 
 	# handler for local disk
-	RotatingFileHandler = logging.handlers.RotatingFileHandler(MYLOGPATH, maxBytes=1024*100, backupCount=9)
+	# FIXME: check file permission for log file before this line runs
+	try:
+		RotatingFileHandler = logging.handlers.RotatingFileHandler(MYLOGPATH, maxBytes=1024*100, backupCount=9)
+	except IOError:
+		message = "can't open log file for writing (are you root?)"
+		sys.stderr.write(message + "\n")
+		sys.exit(1)
 	RotatingFileHandler.setFormatter(formatter)
 
 	# handler for global logging server
-	SysLogHandler = logging.handlers.SysLogHandler(LOGSERVER)	# TODO: add a facility as a parameter here
+	SysLogHandler = logging.handlers.SysLogHandler(LOGSERVER)	# TODO: find a way to change the facility to 'evanescent'
+									#logging.handlers.SysLogHandler.LOG_DAEMON (does this even work? i can't find the logs...)
 	SysLogHandler.setFormatter(formatter)
 
 	# name a log route, set a level, add handlers
@@ -218,12 +250,12 @@ if __name__ == "__main__":
 
 	# handlers in x propagate down to everyone (y) in the x.y tree
 	daemon_logger = logging.getLogger('evanescent.daemon')
-	other_logger = logging.getLogger('evanescent.other')
+	evalog_logger = logging.getLogger('evanescent.evalog')
+	signal_logger = logging.getLogger('evanescent.signal')
 
-	l.info('evanescent says hi')	# send a hello message
+	l.debug('log says hi')				# send a hello message
 
-	daemon_logger.info('hi from daemon')	# send a hello message
-	#other_logger.info('hi from other')	# send a hello message
+	#daemon_logger.info('hi from daemon')		# send a hello message
 
 	d = daemon.daemon(pidfile=DAEMONPID, start_func=evanescent, logger=daemon_logger, close_fds=not(DEBUGMODE))
 	d.startstop()
