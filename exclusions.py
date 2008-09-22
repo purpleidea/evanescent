@@ -91,7 +91,7 @@ class exclusions:
 			# use the info from the user running the script
 			user = os.getlogin()
 			euid = os.geteuid()
-			egid = os.getguid()
+			egid = os.getegid()
 
 
 		shutdown = True		# shutdown machines by default

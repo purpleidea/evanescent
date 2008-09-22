@@ -258,5 +258,5 @@ if __name__ == "__main__":
 	#daemon_logger.info('hi from daemon')		# send a hello message
 
 	d = daemon.daemon(pidfile=DAEMONPID, start_func=evanescent, logger=daemon_logger, close_fds=not(DEBUGMODE))
-	d.startstop()
+	d.start_stop()
 

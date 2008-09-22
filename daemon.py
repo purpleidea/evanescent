@@ -31,6 +31,7 @@ import os
 import time
 import signal	# for signal.SIGTERM
 import logging	# for syslog support
+import atexit	# for deleting pid file on exit
 
 class daemon:
 
@@ -81,6 +82,7 @@ class daemon:
 		sys.stdout.write(message + "\n")
 
 		# truncate file to zero length before writing (the `+' flag)
+		atexit.register(self.del_pid)		# delete it on script exit
 		if self.pidfile: file(self.pidfile, 'w+').write("%s\n" % str(pid))
 
 		# make sure we clear out the buffers
@@ -94,7 +96,20 @@ class daemon:
 			sys.stderr = open('/dev/null', 'w')
 
 
-	def startstop(self, argv=None):
+	def del_pid(self):
+		"""deletes the pid file"""
+		try:
+			os.remove(self.pidfile)
+		except OSError:
+			# usually this happens if file doesn't exist
+			return False
+
+		return True
+
+
+	def start_stop(self, argv=None):
+		error = False
+
 		if argv == None:
 			argv = sys.argv
 
@@ -117,18 +132,20 @@ class daemon:
 				except: pass
 				pf = None
 
+
 			# do the action actions
 			if action in ['stop', 'restart']:
 				if not pid:
 					message = "could not stop, pid file `%s' is missing" % self.pidfile
 					sys.stderr.write(message + "\n")
 					self.log(message, logging.ERROR)
-					sys.exit(1)
+					error = True
+					#sys.exit(1)
 				else:
 
 					try:
 						# tries to kill whatever has that pid
-						os.remove(self.pidfile)
+						self.del_pid()
 						os.kill(pid, signal.SIGTERM)
 						message = "process %d stopped" % pid
 						self.log(message, logging.INFO)
@@ -142,7 +159,8 @@ class daemon:
 							message = "process not running, pid file removed."
 							self.log(message, logging.ERROR)
 							sys.stderr.write(message + "\n")
-							sys.exit(1)
+							error = True
+							#sys.exit(1)
 
 						else:
 							message = "problem stopping error: %s" % err
@@ -151,13 +169,14 @@ class daemon:
 							sys.exit(1)
 
 
-					if action == 'stop':
-						sys.exit(0)
+				if action == 'stop':
+					if error: sys.exit(1)
+					else: sys.exit(0)
 
-					elif action == 'restart':
-						# now setup to do the start below...
-						action = 'start'
-						pid = None
+				elif action == 'restart':
+					# now setup to do the start below...
+					action = 'start'
+					pid = None
 
 
 			# do a start from here, or a [re]start from above.
@@ -174,7 +193,6 @@ class daemon:
 				# run the daemon function
 				self.log('running start function', logging.INFO)
 				self.start_func()
-				# FIXME: when start_func finishes, we should clean up pid file+etc somehow right ?
 				return
 
 		else:

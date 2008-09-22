@@ -10,7 +10,7 @@ def do_nologin(message=None):
 	# and then return true or false based on whether it succeeds
 	# or not.
 	if message:
-		os.system("echo '%s' > /etc/nologin")
+		os.system("echo '%s' > /etc/nologin" % message)
 	else:
 		os.system("touch /etc/nologin")
 
