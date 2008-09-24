@@ -1,0 +1,18 @@
+# evanescent
+#
+# This service is started on boot up so that the machine can shutdown
+# itself when it goes idle.
+
+description	"shutdown on idle daemon"
+author		"James Shubin <purpleidea@gmail.com>"
+
+start on runlevel 2
+start on runlevel 3
+
+stop on runlevel 0
+stop on runlevel 1
+stop on runlevel 4
+stop on runlevel 5
+stop on runlevel 6
+
+exec /usr/local/pkgs/evanescent/evanescent.py
