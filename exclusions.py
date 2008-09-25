@@ -89,7 +89,13 @@ class exclusions:
 		# old school, normal(bad) is_excluded() operation
 		else:
 			# use the info from the user running the script
-			user = os.getlogin()
+			try:
+				#NOTE: when this runs with no environment variables it throws an error...
+				#OSError: [Errno 2] No such file or directory
+				user = os.getlogin()
+			except OSError:
+				#user = root
+				user = pwd.getpwuid(os.getuid())[0]
 			euid = os.geteuid()
 			egid = os.getegid()
 

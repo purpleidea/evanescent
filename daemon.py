@@ -196,7 +196,9 @@ class daemon:
 				return
 
 		else:
-			sys.stderr.write("usage: %s start|stop|restart\n" % argv[0])
+			message = "usage: %s start|stop|restart" % argv[0]
+			self.log(message, logging.INFO)
+			sys.stderr.write(message + "\n")
 			sys.exit(1)
 
 

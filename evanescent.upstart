@@ -4,7 +4,7 @@
 # itself when it goes idle.
 
 description	"shutdown on idle daemon"
-author		"James Shubin <purpleidea@gmail.com>"
+author		"James <purpleidea@gmail.com>"
 
 start on runlevel 2
 start on runlevel 3
@@ -15,4 +15,4 @@ stop on runlevel 4
 stop on runlevel 5
 stop on runlevel 6
 
-exec /usr/local/pkgs/evanescent/evanescent.py
+exec /usr/local/pkgs/evanescent/evanescent.py start

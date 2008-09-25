@@ -3,7 +3,7 @@
 * this script should be run on each machine at boot
 * this script hasn't been designed to avoid killing things like:
 	- long running user processes (eg: $ sleep 13h && echo 'hi mom')
-	- detached screen sessions (no line will be seen connected)
+- detached screen sessions (no line will be seen connected)
 	- long compute scripts should be run on linux.cs.mcgill.ca ($ ./my_big_c.py)
 * this script checks for exclusions at IDLELIMIT, but once the user is warned,
 we don't check the exclusions again between IDLELIMIT and IDLELIMIT+COUNTDOWN
