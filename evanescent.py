@@ -9,9 +9,11 @@
 we don't check the exclusions again between IDLELIMIT and IDLELIMIT+COUNTDOWN
 """
 
-# TODO: kill idle users on a non-idle machine (OPTIONAL)
 # FIXME: mouse movement doesn't un-idle a machine (BUG/FEATURE ?)
+# TODO: kill idle users on a non-idle machine (OPTIONAL)
 # TODO: check if LOCAL7 facility works on LOGMASTER
+# TODO: clean up info/debug messages and make them more sensible/informative
+# TODO: add GPL license info at the top of all the files
 
 import sys				# for sys.exit()
 import math				# for math.ceil()
