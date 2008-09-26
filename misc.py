@@ -33,4 +33,4 @@ def do_broadcast(message=None):
 
 def do_shutdown():
 	"""shuts down the system"""
-	os.system("shutdown -H -t 1 now")
+	os.system("shutdown -P now bye!")

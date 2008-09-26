@@ -11,6 +11,7 @@ we don't check the exclusions again between IDLELIMIT and IDLELIMIT+COUNTDOWN
 
 # TODO: kill idle users on a non-idle machine (OPTIONAL)
 # FIXME: mouse movement doesn't un-idle a machine (BUG/FEATURE ?)
+# TODO: check if LOCAL7 facility works on LOGMASTER
 
 import sys				# for sys.exit()
 import math				# for math.ceil()
@@ -200,13 +201,6 @@ def evanescent():
 			signal.signal(signal.SIGUSR1, signal.SIG_IGN)	# ignore
 			signal.signal(signal.SIGUSR2, signal.SIG_IGN)	# ignore
 
-		# TODO: get rid of all this when debug is done...
-		#else:
-		#	if DEBUGMODE:
-		#		import time
-		#		time.sleep(1)
-
-
 
 def sigusr1(signum, frame):
 	#raise KeyboardInterrupt
@@ -237,13 +231,13 @@ if __name__ == "__main__":
 	RotatingFileHandler.setFormatter(formatter)
 
 	# handler for global logging server
-	SysLogHandler = logging.handlers.SysLogHandler(LOGSERVER)	# TODO: find a way to change the facility to 'evanescent'
 									#logging.handlers.SysLogHandler.LOG_DAEMON (does this even work? i can't find the logs...)
+	SysLogHandler = logging.handlers.SysLogHandler(LOGSERVER, logging.handlers.SysLogHandler.LOG_LOCAL7)	# TODO: find a way to change the facility to 'evanescent'
 	SysLogHandler.setFormatter(formatter)
 
 	# name a log route, set a level, add handlers
 	l = logging.getLogger('evanescent')
-	if DEBUGMODE: l.setLevel(logging.DEBUG)
+	if WORDYMODE: l.setLevel(logging.DEBUG)
 	else: l.setLevel(logging.WARN)
 	l.addHandler(RotatingFileHandler)
 	l.addHandler(SysLogHandler)
