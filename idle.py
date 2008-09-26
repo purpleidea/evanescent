@@ -135,7 +135,7 @@ class idle:
 
 		a = []			# a is for array
 		# d is for dictionary
-		d = {'idle': [], 'users': [], 'line': [], 'max': None, 'min': None}
+		d = {'idle': [], 'users': [], 'line': [], 'max': None, 'min': None, 'len': 0}
 		u = utmp.UtmpRecord()	# (iterator)
 		for x in u:		# u is for utmp
 			if x.ut_type == UTMPCONST.USER_PROCESS:
@@ -155,6 +155,7 @@ class idle:
 				d['idle'].append(z)
 				d['users'].append(x.ut_user)
 				d['line'].append(x.ut_line)
+				d['len'] = d['len'] + 1
 
 		u.endutent()	# closes the utmp file
 

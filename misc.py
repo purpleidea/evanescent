@@ -19,7 +19,7 @@ def do_nologin(message=None):
 
 
 
-def do_broadcast(message=None):
+def do_broadcast(message, who={'users': []}):
 	"""broadcasts a write to all the cli/gtk clients to say goodbye"""
 	#FIXME: in the future we can have this be a more powerful library...
 	# it could use libnotify... and do fancy talking to gtk
@@ -28,9 +28,22 @@ def do_broadcast(message=None):
 	# it could specify particular lines (eg: terminals, like: tty7, or pts/0)
 	# it could do a combination of the above
 	# but for now it doesn't do anything.
-	pass
+
+	# TODO: sanitize message string for injection attacks and weird characters?
+	message = str(message)
+	if not(who.has_key('users')): return False
+	if who.has_key('line') and len(who['users']) != len(who['line']): raise AssertionError
+	if type(who['users']) == type([]):
+		for i in range(len(who['users'])):
+			if who.has_key('line'):
+				os.system("echo '%s' | write %s %s &>/dev/null" % (message, who['users'][i], who['line'][i]))
+			else:
+				os.system("echo '%s' | write %s &>/dev/null" % (message, who['users'][i]))
+
+	return True
 
 
 def do_shutdown():
 	"""shuts down the system"""
 	os.system("shutdown -P now bye!")
+

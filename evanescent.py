@@ -9,11 +9,13 @@
 we don't check the exclusions again between IDLELIMIT and IDLELIMIT+COUNTDOWN
 """
 
+# FIXME/TODO: go through all the files and fix all the FIXME's and do all the TODO's
 # FIXME: mouse movement doesn't un-idle a machine (BUG/FEATURE ?)
 # TODO: kill idle users on a non-idle machine (OPTIONAL)
 # TODO: check if LOCAL7 facility works on LOGMASTER
 # TODO: clean up info/debug messages and make them more sensible/informative
 # TODO: add GPL license info at the top of all the files
+# TODO: add a big try/except around the main script if possible to catch and log hidden script errors
 
 import sys				# for sys.exit()
 import math				# for math.ceil()
@@ -28,13 +30,13 @@ import misc				# i wrote this one
 from config import *			# import to globals
 
 """
-# logging errors:
-CRITICAL
-FATAL
-ERROR
-WARN
-INFO
-DEBUG
+*	logging errors:
+-	CRITICAL
+-	FATAL
+-	ERROR
+-	WARN
+-	INFO
+-	DEBUG
 """
 
 def evanescent():
@@ -55,6 +57,7 @@ def evanescent():
 	while True:
 
 		i = idle.idle(tick_default=False)
+		extract = i.idle()	# extract for do_broadcast()
 		# if entire machine is idle
 		if i.is_idle(threshold=IDLELIMIT):
 			evalog_logger.info('computer is idle')
@@ -67,7 +70,8 @@ def evanescent():
 				if delta > COUNTDOWN:
 					evalog_logger.warn('machine shutting down now!')
 					misc.do_nologin('sorry, machine is shutting down')	# returns true or false if this worked
-					misc.do_broadcast('machine is going down now')		# broadcasts a write to all the cli/gtk clients to say goodbye
+					# broadcasts a write to all the cli/gtk clients to say goodbye
+					misc.do_broadcast('machine is going down now', {'users': extract['users'], 'line': extract['line']})
 					misc.do_shutdown()	# kills the system
 					sys.exit(0)
 
@@ -88,7 +92,7 @@ def evanescent():
 
 						evalog_logger.debug('machine isn\'t excluded, doing warn')
 						# now we warn users of impending shutdown
-						misc.do_broadcast('DO_WARN()')
+						misc.do_broadcast('machine is shutting down in %d seconds if you continue to be idle. tap any key to cancel impending shutdown.' % COUNTDOWN, {'users': extract['users'], 'line': extract['line']})
 						warned = datetime.datetime.today()
 
 						# sleep less often (to see if someone will tap a mouse)
@@ -127,7 +131,7 @@ def evanescent():
 				# shutdown was canceled, computer no longer idle
 				evalog_logger.info('shutdown canceled, not idle anymore')
 				warned = False
-				misc.do_broadcast('DO_SHUTDOWN_CANCELED_MESSAGE()')
+				misc.do_broadcast('impending shutdown was canceled.', {'users': extract['users'], 'line': extract['line']})
 
 			else:
 				pass
