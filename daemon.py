@@ -1,5 +1,24 @@
 #!/usr/bin/python
 """
+    Copyright (C) 2008 School of Computer Science, McGill University
+    Written for McGill University by James Shubin <purpleidea@gmail.com>
+    This file is part of Evanescent.
+
+    Evanescent is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Evanescent is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with Evanescent.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+"""
 References:
 	1.7 How do I get my program to act like a daemon?
 		http://www.erlenstar.demon.co.uk/unix/faq_2.html#SEC16
