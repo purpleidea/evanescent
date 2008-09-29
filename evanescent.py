@@ -46,7 +46,9 @@ def evanescent():
 	# this avoids us having to wait for a machine to be idle before is_excluded runs
 	e = exclusions.exclusions(THECONFIG)
 	if not(e.syntax_ok()):
+		message = e.syntax_ok(message=True)
 		evalog_logger.fatal('syntax error in config file')
+		evalog_logger.fatal(str(message))
 		sys.exit(1)
 	e = None
 
@@ -258,5 +260,11 @@ if __name__ == "__main__":
 	#daemon_logger.info('hi from daemon')		# send a hello message
 
 	d = daemon.daemon(pidfile=DAEMONPID, start_func=evanescent, logger=daemon_logger, close_fds=not(DEBUGMODE))
-	d.start_stop()
+	try:
+		d.start_stop()
+	except SystemExit:
+		pass
+	except:
+		import traceback
+		traceback.print_exc(file=open('/var/log/evanescent.FAIL', 'w+'))
 

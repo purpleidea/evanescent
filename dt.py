@@ -1,6 +1,10 @@
 #!/usr/bin/python
 
 import datetime
+COLON = ':'
+COMMA = ','
+LBRACKET = '['
+RBRACKET = ']'
 
 class dt:
 	"""class to do simple parsing of date/time strings and to tell whether they represent a valid range of now()"""
@@ -37,7 +41,7 @@ class dt:
 
 
 		# time range: [#:#:# , #:#:#]
-		if time_str.count(',') == 1:
+		if time_str.count(COMMA) == 1:
 			# assume no brackets are present until found...
 			lhs_bracket = False
 			rhs_bracket = False
@@ -45,10 +49,10 @@ class dt:
 			lhs_include = True
 			rhs_include = True
 
-			if time_str[0] == '[':
+			if time_str[0] == LBRACKET:
 				lhs_bracket = True
 				lhs_include = True
-			if time_str[0] == ']':
+			if time_str[0] == RBRACKET:
 				lhs_bracket = True
 				lhs_include = False
 
@@ -56,10 +60,10 @@ class dt:
 				time_str = time_str[1:]
 
 
-			if time_str[-1] == '[':
+			if time_str[-1] == LBRACKET:
 				rhs_bracket = True
 				rhs_include = False
-			if time_str[-1] == ']':
+			if time_str[-1] == RBRACKET:
 				rhs_bracket = True
 				rhs_include = True
 
@@ -70,10 +74,10 @@ class dt:
 				raise SyntaxError, 'missing left and right square brackets'
 
 			# now split it up
-			split = time_str.split(',')
+			split = time_str.split(COMMA)
 
 			# *** do left
-			lhs = split[0].strip().split(':')
+			lhs = split[0].strip().split(COLON)
 
 			# defaults
 			minute = 0
@@ -101,7 +105,7 @@ class dt:
 					return False
 
 			# *** do right
-			rhs = split[1].strip().split(':')
+			rhs = split[1].strip().split(COLON)
 
 			# defaults
 			minute = 0
@@ -132,7 +136,7 @@ class dt:
 
 
 
-		elif time_str.count(',') == 0:
+		elif time_str.count(COMMA) == 0:
 			# TODO: add single time parsing (maybe allow 9:??:??  and 7:*    ?)
 			raise NotImplementedError
 

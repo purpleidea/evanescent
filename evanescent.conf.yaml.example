@@ -3,16 +3,16 @@
 - host: dude
   user: someone else
   date: 19-04-1984
-  time: [13:45:26, 15:45:06[
+  time: '[13:45:26, 15:45:06['
 
 - host: dazzle
   user: james
   fqdn: dazzle.CS.McGill.CA
 
 - user: dude
-  time: 093400
+  time: [09:00, 17]
   host: somehost
 
-- time: 085618
+- time: [11, 14:00:00]
   user: bob
 

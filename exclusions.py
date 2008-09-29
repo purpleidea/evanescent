@@ -37,7 +37,7 @@ class exclusions:
 		self.time_shift = int(time_shift)	# do date/time calculations assuming shift of delta seconds
 		self.case = case
 
-	def syntax_ok(self):
+	def syntax_ok(self, message=False):
 		# TODO: in the future, we could run some specific parser script to check syntax
 		# the easy way is to see if it actually fails when we run it...
 		# the problem is that the is_excluded exits early when it knows it can, and sometimes
@@ -45,8 +45,9 @@ class exclusions:
 		"""is the config file properly formatted"""
 		try:
 			self.is_excluded()
-		except SyntaxError:
-			return False
+		except SyntaxError, strerror:
+			if message: return "SyntaxError: %s" % strerror
+			else: return False
 
 		return True
 
