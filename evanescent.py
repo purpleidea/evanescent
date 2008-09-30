@@ -33,7 +33,7 @@ we don't check the exclusions again between IDLELIMIT and IDLELIMIT+COUNTDOWN
 # TODO: kill idle users on a non-idle machine (OPTIONAL)
 # TODO: check if LOCAL7 facility works on LOGMASTER
 # TODO: clean up info/debug messages and make them more sensible/informative
-# TODO: add GPL license info at the top of all the files
+# TODO: have script fail on startup if all the necessary modules aren't installed (ex: python-utmp, yaml)
 # TODO: add a big try/except around the main script if possible to catch and log hidden script errors
 
 import sys				# for sys.exit()
