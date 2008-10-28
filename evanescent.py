@@ -108,8 +108,16 @@ def evanescent():
 				e = exclusions.exclusions(THECONFIG)
 				evalog_logger.debug('checking exclusions...')
 				try:
+					# from the time when a machine comes up, give users a chance of `INITSLEEP' seconds
+					# to login before the empty machine is considered idle and shuts itself down.
+					# idea for this feature from andrewb@cs.mcgill.ca
+					uptime = misc.uptime()
+					if INITSLEEP > 0 and temp < INITSLEEP:
+						evalog_logger.debug('machine just booted, excluding from shutdown')
+						sleep = abs(INITSLEEP - temp)	# abs to be safe
+
 					# if we should shutdown
-					if not(e.is_excluded(users=i.unique_users())):
+					elif not(e.is_excluded(users=i.unique_users())):
 
 						evalog_logger.debug('machine isn\'t excluded, doing warn')
 						# now we warn users of impending shutdown
@@ -178,7 +186,11 @@ def evanescent():
 
 		i = None	# free memory
 
-		# TODO: read some fd with select that looks for a user logout event
+		# TODO: read some fd with select or listen for some signal that fires on a user logout event
+		# check online to see if the logout command broadcasts something ?
+		# we could select() on the utmp file and wake up everytime it changes
+		# we could get the /etc/gdm/PostSession script to run a kill -USR2 signal to poke this program
+		# we could select() on the /var/log/auth log file to check for sshd session closed events
 
 		# easy sleep
 		#time.sleep(sleep)

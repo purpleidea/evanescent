@@ -65,3 +65,32 @@ def do_shutdown():
 	"""shuts down the system"""
 	os.system("shutdown -P now bye!")
 
+
+def uptime():
+	"""returns the uptime of the system in seconds"""
+	# TODO: make this platform independent and test it!
+	# TODO: add dependency checking for the win32api module
+
+	# untested:
+	#import win32api
+	#return int(win32api.GetTickCount()/1000)
+
+	sec = -1
+	try:
+		f = open('/proc/uptime')
+		contents = f.read().split()
+		sec = int(float(contents[0]))
+
+	except e:
+		pass
+
+	finally:
+		if f != None: f.close()
+		f = None
+
+	return sec
+
+
+
+
+
