@@ -1,0 +1,377 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+
+
+
+<title>Dictionary.com/Word of the Day/evanescent</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta name="description" content="Dictionary.com Word of the Day for Thursday September 11, 2008">
+<meta name="keywords" content="evanescent: fleeting.">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="Mon, 26 Jul 1997 05:00:00 GMT">
+<link rel="search" type="application/opensearchdescription+xml" href="http://dictionary.reference.com/opensearch_desc.xml" title="Dictionary.com">
+<link rel="shortcut icon" href="http://cache.lexico.com/g/d/favicon.ico">
+<link rel="stylesheet" href="Dictionary%20Files/root.css" type="text/css" media="all">
+<link rel="stylesheet" href="Dictionary%20Files/dictionary.css" type="text/css" media="all">
+<script src="Dictionary%20Files/minmax.js" language="JavaScript" type="text/javascript"></script>
+<script src="Dictionary%20Files/common.js" language="JavaScript" type="text/javascript"></script>
+<link rel="microsummary" href="http://dictionary.reference.com/wordoftheday/wotdmicrosummary.txt">
+<link rel="alternate" type="application/rss+xml" title="Dictionary.com Word of the Day" href="http://dictionary.reference.com/wordoftheday/wotd.rss">
+<link rel="stylesheet" href="Dictionary%20Files/wotd.css" type="text/css" media="all">
+<link rel="stylesheet" href="Dictionary%20Files/wideright.css" type="text/css" media="all">
+<script type="text/javascript">
+aamPageId = Math.round(Math.random() * 1000000000);
+aamRndNum = Math.round(Math.random() * 1000000000) * 9;
+for (aamRndNum = ''; aamRndNum.length < 10;)
+aamRndNum += Math.round(Math.random() * 9);
+var adServer, aamPageId, aamRndNum;
+adServer = 'http://iacas.adbureau.net';
+</script>
+<script language="JavaScript" type="text/javascript" src="Dictionary%20Files/google_service.js"></script>
+<script language="JavaScript" type="text/javascript">
+<!--
+GS_googleAddAdSenseService("ca-gam-lexico");
+GS_googleEnableAllServices();
+//-->
+</script><script src="Dictionary%20Files/google_ads.js"></script>
+<script language="JavaScript" type="text/javascript">
+<!--
+GA_googleAddSlot("ca-gam-lexico", "All_TopRight");
+GA_googleAddSlot("ca-gam-lexico", "All_Bottom1");
+GA_googleFetchAds();
+//-->
+</script>
+<script language="JavaScript" type="text/javascript">
+LEXICO_Globals.SiteInfo = new Object();
+LEXICO_Globals.SiteInfo.dictionaryURL = "http://dictionary.reference.com";
+LEXICO_Globals.SiteInfo.thesaurusURL = "http://thesaurus.reference.com";
+LEXICO_Globals.SiteInfo.referenceURL = "http://www.reference.com";
+LEXICO_Globals.SiteInfo.thewebURL = "http://www.reference.com/browse/web/";
+LEXICO_Globals.SiteInfo.allURL = "http://www.reference.com/browse/all/";
+LEXICO_Globals.SiteInfo.currentSite = "dictionary";
+<!--
+function jump2form() {
+	document.search_form.q.focus();
+}
+
+function isblank(s) {
+	for(var i = 0; i < s.length; i++) {
+		var c = s.charAt(i);
+		if ((c != ' ') && (c != "\n") && (c != "\r") && (c != "\t")) {
+			return false;
+		}
+	}
+	return true;
+}
+
+function formcheck() {
+	var q = document.search_form.q.value;
+	var redirectURL = DetermineRedirectURL(q);
+		
+	if ((q == null) || (q == "") || isblank(q) || (typeof(q)  == "undefined")) {
+		redirectURL = DetermineRedirectURL('search');
+	}
+	location.href = redirectURL;
+	return false;
+}
+
+function formcheck_old() {
+	var q = document.search_form.q.value;
+	var redirectURL = DetermineRedirectURL(q);
+		
+	if ((q == null) || (q == "") || isblank(q) || (typeof(q)  == "undefined")) {
+		alert("Please enter a word to look up.");
+		jump2form();
+		return false;
+	}
+	location.href = redirectURL;
+	return false;
+}
+//-->
+</script>
+<script type="text/javascript">document.domain='reference.com';</script>
+</head><body class="dictionary">
+<a name="top"></a>
+<div id="panel">
+<div id="masthead">
+<div class="sub">
+<a href="http://dictionary.reference.com/" id="home"><img src="Dictionary%20Files/dictionary_logo.gif" alt="Dictionary.com" border="0" height="43" width="182"></a>
+<ul id="controls">
+<!-- <li><img src="http://cache.lexico.com/g/d/premium_mh.gif" alt="[P]" class="pl" width="17" height="16" border="0" /> <a href="/premium/index.html">Premium Content</a> | </li> -->
+<li><img src="Dictionary%20Files/premium_mh.gif" alt="[P]" class="pl" border="0" height="16" width="17"> <a href="https://secure.reference.com/cgi-bin/premium/register.pl">Register</a> | <a href="https://secure.reference.com/premium/login.html?u=http%3A%2F%2Fdictionary.reference.com%2Fwordoftheday%2F">Log In</a> | </li>
+<li><a href="http://dictionary.reference.com/help/">Help</a></li>
+</ul>
+<div id="search">
+<form name="search_form" method="get" action="/search" onsubmit="return formcheck();">
+<input name="q" value="evanescent" class="text" id="search-terms" maxlength="256" type="text">
+<input class="image" src="Dictionary%20Files/search_button.gif" alt="Search" type="image">
+</form>
+</div>
+</div>
+</div>
+<div id="nav">
+<div class="sub">
+<ul>
+<li class="current"><a href="http://dictionary.reference.com/" rel="tab">Dictionary</a></li>
+<li><a href="http://thesaurus.reference.com/" rel="tab">Thesaurus</a></li>
+<li><a href="http://www.reference.com/" rel="tab">Encyclopedia</a></li>
+<li><a href="http://www.reference.com/browse/all/" rel="tab">All Reference</a></li>
+<li><a href="http://www.reference.com/?db=web" rel="tab">The Web</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="main">
+<div class="sub">
+<div class="banner ad">
+<script language="javascript">
+var adTarget;
+adTarget ='/site=dictionary.com/area=wordoftheday/aamsz=728x90' +'/pageid=' + aamPageId +'/random=' + aamRndNum;
+document.writeln('<scr' + 'ipt language="javascript" type="text/javascript" ' +'src="' + adServer + '/jserver' + adTarget + '"></scr' + 'ipt>');
+</script><script language="javascript" type="text/javascript" src="Dictionary%20Files/random3943815296_003.js"></script><script language="JavaScript" type="text/javascript">
+ord=Math.random()*10000000000000000;
+document.write('<script language="JavaScript" src="http://ad.doubleclick.net/adj/aolc.lx.com/portal;tile=1;dcopt=ist;sz=728x90;ord=' + ord + '?" type="text/javascript"></scr' + 'ipt>');
+</script><script language="JavaScript" src="Dictionary%20Files/portal_002.js" type="text/javascript"></script><iframe src="Dictionary%20Files/a." marginheight="0" marginwidth="0" topmargin="0" leftmargin="0" allowtransparency="true" frameborder="0" height="90" scrolling="no" width="728">
+&lt;a
+href="http://ad.doubleclick.net/click%3Bh=v8/3738/3/0/%2a/n%3B206340831%3B0-0%3B0%3B17327255%3B3454-728/90%3B27671091/27688970/1%3B%3B%7Eaopt%3D2/1/dbc5/2%3B%7Esscs%3D%3fhttp://clk.atdmt.com/D1L/go/109867404/direct/01/"
+target="_blank"&gt;&lt;img
+src="http://view.atdmt.com/D1L/view/109867404/direct/01/"/&gt;&lt;/a&gt;&lt;noscript&gt;&lt;a
+href="http://ad.doubleclick.net/click%3Bh=v8/3738/3/0/%2a/n%3B206340831%3B0-0%3B0%3B17327255%3B3454-728/90%3B27671091/27688970/1%3B%3B%7Eaopt%3D2/1/dbc5/2%3B%7Esscs%3D%3fhttp://clk.atdmt.com/D1L/go/109867404/direct/01/"
+target="_blank"&gt;&lt;img border="0"
+src="http://view.atdmt.com/D1L/view/109867404/direct/01/"
+/&gt;&lt;/a&gt;&lt;/noscript&gt;</iframe><noscript><a
+href="http://ad.doubleclick.net/jump/aolc.lx.com/portal;tile=1;sz=728x90;ord=123456789?"
+target="_blank"><img
+src="http://ad.doubleclick.net/ad/aolc.lx.com/portal;tile=1;sz=728x90;ord=123456789?"
+width="728" height="90" border="0" alt=""></a></noscript>
+
+
+</div><p></p>
+<div id="primary" class="column">
+<h1>Word of the Day<br><em>Thursday September 11, 2008</em></h1>
+<p id="breadcrumbs">Today's Word | <a href="http://dictionary.reference.com/wordoftheday/archive/2008/09/10.html">Yesterday's Word</a> | <a href="http://dictionary.reference.com/wordoftheday/archive/">Previous Words</a> | <a href="http://dictionary.reference.com/wordoftheday/list/">Subscribe for Free</a> | <a href="http://dictionary.reference.com/help/faq/wordoftheday/">Help</a></p>
+<p>
+<span class="hw">evanescent</span> \ev-uh-NES-unt\, <i>adjective</i>:<br>
+<!-- wotd="evanescent" -->
+Liable to vanish or pass away like vapor; fleeting.
+</p>
+<!-- SECBR -->
+<p class="examples">The Pen which gives. . . permanence to the <strong>evanescent</strong> thought of a moment.<br> -- Horace Smith, <cite>Tin Trumpet</cite></p><p class="examples">Every tornado is a little different, and they are all capricious, <strong>evanescent</strong> and hard to get a fix on.<br> -- "Oklahoma Tornado Offers Hints of How a Killer Storm Is Born",  <cite><a href="http://www.nytimes.com/">New York Times</a></cite>, May 11, 1999</p><p class="examples">The
+accidentally famous. . . may write books, appear on talk shows, and, in
+so doing, attract even greater public attention. This type of celebrity
+status, of course, is brittle and <strong>evanescent</strong>.<br> -- Lawrence M. Friedman, <cite><a href="http://www.amazon.com/exec/obidos/ASIN/0300075456/ref=nosim/lexico">The Horizontal Society</a></cite></p>
+<span class="line"></span>
+<p><i>Evanescent</i> is from Latin <i>evanescere</i>, "to vanish," from <i>e-</i>, "from, out of" + <i>vanescere</i>, "to disappear," from <i>vanus</i>, "empty."</p>
+<p><a href="http://dictionary.reference.com/search?r=10&amp;q=evanescent">Dictionary.com Entry and Pronunciation for <b><i>evanescent</i></b></a></p>
+<script type="text/javascript" language="JavaScript">
+<!--
+LEXICO_Globals.GoogleAFC = new Object();
+LEXICO_Globals.GoogleAFC.ads = new Object();
+LEXICO_Globals.GoogleAFC.ads.sponsoredLinks = '<span style="float:right;font-weight:normal;font-size:0.9em;color:#666; margin-top:-0.3em;">Sponsored Links<\/span>';
+LEXICO_Globals.GoogleAFC.ads.contentTop = '<div><span style="display:block; height: 0.5em;"><\/span>';
+LEXICO_Globals.GoogleAFC.ads.contentTopSpan = '<span style="display:block; height: 0.5em;"><\/span>';
+LEXICO_Globals.GoogleAFC.ads.content = new Array();
+
+function google_ad_request_done(ads) {
+	var s = '';
+	var i;
+
+	if (google_ads.length == 0) {
+		return;
+	}
+
+	if (google_ads[0].type="text") {
+		for(i=0; i < google_ads.length; ++i) {
+			s = '<a href="' + google_ads[i].url + '" ' + 'onmouseout="window.status=\'\';" ' + 'onmouseover="window.status=\'go to ' + google_ads[i].visible_url + '\';return true;" ' + 'style="text-decoration:none;">';
+			s += '<span style="text-decoration:underline;font-size:0.9em">' + '<b>' + google_ads[i].line1 + '<\/b><br /><\/span>';
+			s += '<span style="color:#333;font-size:0.9em">' + google_ads[i].line2 + ' ' + google_ads[i].line3 + '<br /><\/span>';
+			s += '<span class=\"src\">' + google_ads[i].visible_url + '<\/span><\/a>';
+			LEXICO_Globals.GoogleAFC.ads.content[LEXICO_Globals.GoogleAFC.ads.content.length] = s;
+		}
+	}
+
+
+//	document.write(s);
+	return;
+}
+
+google_ad_client = 'ca-aj-lexico-dict';
+google_ad_channel = 'channel-06';
+google_ad_output = 'js';
+google_ad_type = 'text';
+google_max_num_ads = '5';
+google_safe = 'high';
+google_encoding = 'utf8';
+google_hints = 'evanescent';
+google_ad_section='def';
+
+// -->
+</script>	
+<script type="text/javascript" language="JavaScript" src="Dictionary%20Files/show_ads.js"></script><script language="JavaScript1.1" src="Dictionary%20Files/ads"></script>
+<span class="line"></span><script type="text/javascript" language="JavaScript">
+if (LEXICO_Globals.GoogleAFC.ads.content.length)
+{
+if (LEXICO_Globals.GoogleAFC.ads.content.length >= 1) {
+document.write(LEXICO_Globals.GoogleAFC.ads.contentTop);
+document.write(LEXICO_Globals.GoogleAFC.ads.sponsoredLinks);
+document.write(LEXICO_Globals.GoogleAFC.ads.content[0]);
+document.write("<\/div>");
+}
+if (LEXICO_Globals.GoogleAFC.ads.content.length >= 2) {
+document.write(LEXICO_Globals.GoogleAFC.ads.contentTop);
+document.write(LEXICO_Globals.GoogleAFC.ads.content[1]);
+document.write("<\/div>");
+}
+if (LEXICO_Globals.GoogleAFC.ads.content.length >= 3) {
+document.write(LEXICO_Globals.GoogleAFC.ads.contentTop);
+document.write(LEXICO_Globals.GoogleAFC.ads.content[2]);
+document.write("<\/div>");
+}
+if (LEXICO_Globals.GoogleAFC.ads.content.length)
+{
+if (LEXICO_Globals.GoogleAFC.ads.content.length >= 4) {
+document.write(LEXICO_Globals.GoogleAFC.ads.contentTop);
+document.write(LEXICO_Globals.GoogleAFC.ads.content[3]);
+document.write("<\/div>");
+}
+if (LEXICO_Globals.GoogleAFC.ads.content.length >= 5) {
+document.write(LEXICO_Globals.GoogleAFC.ads.contentTop);
+document.write(LEXICO_Globals.GoogleAFC.ads.content[4]);
+document.write("<\/div>");
+}
+}
+document.write("<span class=\"line\"><\/span>");
+}
+</script><div><span style="display: block; height: 0.5em;"></span><span style="float: right; font-weight: normal; font-size: 0.9em; color: rgb(102, 102, 102); margin-top: -0.3em;">Sponsored Links</span><a href="http://pagead2.googlesyndication.com/pagead/iclk?sa=l&amp;ai=BCwFGlybJSP_ZIJqYzAW8hMjOAqfekSWr3aDDBMCNtwGQsAoQARgBII-UoREoBTgAUKb41VBg_eiigfADoAGbt_b9A7IBGGRpY3Rpb25hcnkucmVmZXJlbmNlLmNvbcgBAdoBLWh0dHA6Ly9kaWN0aW9uYXJ5LnJlZmVyZW5jZS5jb20vd29yZG9mdGhlZGF5L4ACAagDAegDbOgDQugDtAX1AyAEAAD1AwQAAACIBAGQBAGYBAA&amp;num=1&amp;adurl=http://www.babylon.com/affiliates/landing/index.php%3Fempty%3D1%26id%3D10588%26lang%3Deng%26version%3Doxford3%26textlink%3Dgcn00147&amp;client=ca-aj-lexico-dict" onmouseout="window.status='';" onmouseover="window.status='go to www.Babylon.com';return true;" style="text-decoration: none;"><span style="text-decoration: underline; font-size: 0.9em;"><b>1 Click Oxford Dictionary</b><br></span><span style="color: rgb(51, 51, 51); font-size: 0.9em;">The Full Oxford Dictionary on Your Computer. Download Free Now!<br></span><span class="src">www.Babylon.com</span></a></div><div><span style="display: block; height: 0.5em;"></span><a href="http://pagead2.googlesyndication.com/pagead/iclk?sa=l&amp;ai=Bv8IhlybJSP_ZIJqYzAW8hMjOAtjM9Wzy1_WhB8CNtwHAuAIQAhgCII-UoREoBTgAUOnd6_j9_____wFg_eiigfADsgEYZGljdGlvbmFyeS5yZWZlcmVuY2UuY29tyAEB2gEtaHR0cDovL2RpY3Rpb25hcnkucmVmZXJlbmNlLmNvbS93b3Jkb2Z0aGVkYXkvyAL077oFqAMB6ANs6ANC6AO0BfUDIAQAAPUDBAAAAIgEAZAEAZgEAA&amp;num=2&amp;adurl=http://www.webcrawler.com/webcrawler300/ws/results/Web/mexican%2Bword%2Bof%2Bthe%2Bday/1/417/TopNavigation/Relevance/iq%3Dtrue/zoom%3Doff/_iceUrlFlag%3D7%3F_IceUrl%3Dtrue&amp;client=ca-aj-lexico-dict" onmouseout="window.status='';" onmouseover="window.status='go to www.webcrawler.com';return true;" style="text-decoration: none;"><span style="text-decoration: underline; font-size: 0.9em;"><b>Mexican Word Of The Day</b><br></span><span style="color: rgb(51, 51, 51); font-size: 0.9em;">Search multiple engines for mexican word of the day<br></span><span class="src">www.webcrawler.com</span></a></div><div><span style="display: block; height: 0.5em;"></span><a href="http://pagead2.googlesyndication.com/pagead/iclk?sa=l&amp;ai=BAT73lybJSP_ZIJqYzAW8hMjOAq3k-Xzxt4b5CMCNtwHQhgMQAxgDII-UoREoBTgAUNSLheUCYP3oooHwA6AB7dGg8wOyARhkaWN0aW9uYXJ5LnJlZmVyZW5jZS5jb23IAQHaAS1odHRwOi8vZGljdGlvbmFyeS5yZWZlcmVuY2UuY29tL3dvcmRvZnRoZWRheS-AAgGoAwHoA2zoA0LoA7QF9QMgBAAA9QMEAAAAiAQBkAQBmAQA&amp;num=3&amp;adurl=http://learnenglishsecrets.blogspot.com/2008/07/learn-how-to-learn-english.html&amp;client=ca-aj-lexico-dict" onmouseout="window.status='';" onmouseover="window.status='go to learnenglishsecrets.blogspot.com';return true;" style="text-decoration: none;"><span style="text-decoration: underline; font-size: 0.9em;"><b>English Phrases</b><br></span><span style="color: rgb(51, 51, 51); font-size: 0.9em;">Speak Excellent English 8 Secrets to Your Success.<br></span><span class="src">learnenglishsecrets.blogspot.com</span></a></div><div><span style="display: block; height: 0.5em;"></span><a href="http://pagead2.googlesyndication.com/pagead/iclk?sa=l&amp;ai=BC5o_lybJSP_ZIJqYzAW8hMjOAoDBsk7iyun-CcCNtwHwogQQBBgEII-UoREoBTgAUJ6Qmv77_____wFg_eiigfADoAHkz8z4A7IBGGRpY3Rpb25hcnkucmVmZXJlbmNlLmNvbcgBAdoBLWh0dHA6Ly9kaWN0aW9uYXJ5LnJlZmVyZW5jZS5jb20vd29yZG9mdGhlZGF5L6gDAegDbOgDQugDtAX1AyAEAAD1AwQAAACIBAGQBAGYBAA&amp;num=4&amp;adurl=http://www.cutdownbellyfat.com/4idiots/dietForIdiotsGend2.aspx&amp;client=ca-aj-lexico-dict" onmouseout="window.status='';" onmouseover="window.status='go to FatLoss4Idiots.com';return true;" style="text-decoration: none;"><span style="text-decoration: underline; font-size: 0.9em;"><b>1 rule of a flat stomach:</b><br></span><span style="color: rgb(51, 51, 51); font-size: 0.9em;">Cut down 9 lbs of stomach fat every 11 days by obeying this 1 tiny rule<br></span><span class="src">FatLoss4Idiots.com</span></a></div><div><span style="display: block; height: 0.5em;"></span><a href="http://pagead2.googlesyndication.com/pagead/iclk?sa=l&amp;ai=BbmLFlybJSP_ZIJqYzAW8hMjOAru433DTw9mCDMCNtwGw2wYQBRgFII-UoREoBTgAUMixn-P6_____wFg_eiigfADoAGLxqf7A7IBGGRpY3Rpb25hcnkucmVmZXJlbmNlLmNvbcgBAdoBLWh0dHA6Ly9kaWN0aW9uYXJ5LnJlZmVyZW5jZS5jb20vd29yZG9mdGhlZGF5L6gDAegDbOgDQugDtAX1AyAEAAD1AwQAAACIBAGQBAGYBAA&amp;num=5&amp;adurl=http://www.valtrk.com/URL/track.aspx%3FAdID%3D1473%26AffID%3D3173%26SubID%3D0&amp;client=ca-aj-lexico-dict" onmouseout="window.status='';" onmouseover="window.status='go to Wu-YiSource.com';return true;" style="text-decoration: none;"><span style="text-decoration: underline; font-size: 0.9em;"><b>1 rule of a flat stomach:</b><br></span><span style="color: rgb(51, 51, 51); font-size: 0.9em;">I cut down 24 lbs of stomach fat in 3 months by obeying this 1 old rule<br></span><span class="src">Wu-YiSource.com</span></a></div><span class="line"></span><a name="sharethis"></a><p align="center">Share This:   <a href="http://dictionary.reference.com/go/http://del.icio.us/post?url=http%3A%2F%2Fdictionary.reference.com/wordoftheday/" id="akst_delicious" title="Share This: del.icio.us"><img alt="Share This: del.icio.us" style="padding-right: 15px; vertical-align: middle;" src="Dictionary%20Files/delicious.gif" border="0"></a><a href="http://dictionary.reference.com/go/http://digg.com/submit?phase=2&amp;url=http%3A%2F%2Fdictionary.reference.com/wordoftheday/" id="akst_digg" title="Share This: digg.com"><img alt="Share This: digg.com" style="padding-right: 15px; vertical-align: middle;" src="Dictionary%20Files/digg.gif" border="0"></a><a href="http://dictionary.reference.com/go/http://www.facebook.com/sharer.php?u=http%3A%2F%2Fdictionary.reference.com/wordoftheday/" id="akst_facebook" title="Share This: Facebook"><img alt="Share This: Facebook" style="padding-right: 15px; vertical-align: middle;" src="Dictionary%20Files/facebook.png" border="0"></a><a href="http://dictionary.reference.com/go/http://furl.net/storeIt.jsp?u=http%3A%2F%2Fdictionary.reference.com/wordoftheday/" id="akst_furl" title="Share This: furl.net"><img alt="Share This: furl.net" style="padding-right: 15px; vertical-align: middle;" src="Dictionary%20Files/furl.gif" border="0"></a><a href="http://dictionary.reference.com/go/http://www.netscape.com/submit/?U=http%3A%2F%2Fdictionary.reference.com/wordoftheday/" id="akst_netscape" title="Share This: www.netscape.com"><img alt="Share This: www.netscape.com" style="padding-right: 15px; vertical-align: middle;" src="Dictionary%20Files/netscape.gif" border="0"></a><a href="http://dictionary.reference.com/go/http://myweb2.search.yahoo.com/myresults/bookmarklet?u=http%3A%2F%2Fdictionary.reference.com/wordoftheday/" id="akst_yahoo_myweb" title="Share This: myweb2.search.yahoo.com"><img alt="Share This: myweb2.search.yahoo.com" style="padding-right: 15px; vertical-align: middle;" src="Dictionary%20Files/yahoo_myweb.gif" border="0"></a><a href="http://dictionary.reference.com/go/http://www.stumbleupon.com/submit?url=http%3A%2F%2Fdictionary.reference.com/wordoftheday/" id="akst_stumbleupon" title="Share This: www.stumbleupon.com"><img alt="Share This: www.stumbleupon.com" style="padding-right: 15px; vertical-align: middle;" src="Dictionary%20Files/stumbleupon.gif" border="0"></a><a href="http://dictionary.reference.com/go/http://www.google.com/bookmarks/mark?op=edit&amp;bkmk=http%3A%2F%2Fdictionary.reference.com/wordoftheday/" id="akst_google_bmarks" title="Share This: www.google.com"><img alt="Share This: www.google.com" style="padding-right: 15px; vertical-align: middle;" src="Dictionary%20Files/google_bmarks.gif" border="0"></a><a href="http://dictionary.reference.com/go/http://www.technorati.com/faves?add=http%3A%2F%2Fdictionary.reference.com/wordoftheday/" id="akst_technorati" title="Share This: www.technorati.com"><img alt="Share This: www.technorati.com" style="padding-right: 15px; vertical-align: middle;" src="Dictionary%20Files/technorati.gif" border="0"></a><a href="http://dictionary.reference.com/go/http://blinklist.com/index.php?Action=Blink/addblink.php&amp;Url=http%3A%2F%2Fdictionary.reference.com/wordoftheday/" id="akst_blinklist" title="Share This: blinklist.com"><img alt="Share This: blinklist.com" style="padding-right: 15px; vertical-align: middle;" src="Dictionary%20Files/blinklist.gif" border="0"></a><a href="http://dictionary.reference.com/go/http://www.newsvine.com/_wine/save?u=http%3A%2F%2Fdictionary.reference.com/wordoftheday/" id="akst_newsvine" title="Share This: newsvine.com"><img alt="Share This: newsvine.com" style="padding-right: 15px; vertical-align: middle;" src="Dictionary%20Files/newsvine.gif" border="0"></a><a href="http://dictionary.reference.com/go/http://ma.gnolia.com/bookmarklet/add?url=http%3A%2F%2Fdictionary.reference.com/wordoftheday/" id="akst_magnolia" title="Share This: ma.gnolia.com"><img alt="Share This: ma.gnolia.com" style="padding-right: 15px; vertical-align: middle;" src="Dictionary%20Files/magnolia.gif" border="0"></a><a href="http://dictionary.reference.com/go/http://reddit.com/submit?url=http%3A%2F%2Fdictionary.reference.com/wordoftheday/" id="akst_reddit" title="Share This: reddit.com"><img alt="Share This: reddit.com" style="padding-right: 15px; vertical-align: middle;" src="Dictionary%20Files/reddit.gif" border="0"></a><a href="http://dictionary.reference.com/go/https://favorites.live.com/quickadd.aspx?marklet=1&amp;mkt=en-us&amp;url=http%3A%2F%2Fdictionary.reference.com/wordoftheday/&amp;top=1" id="akst_windows_live" title="Share This: favorites.live.com"><img alt="Share This: favorites.live.com" style="padding-right: 15px; vertical-align: middle;" src="Dictionary%20Files/windows_live.gif" border="0"></a></p></div>
+<div id="sidebar" class="column">
+<div class="banner ad">
+<script language="javascript">
+var adTarget;
+adTarget ='/site=dictionary.com/area=wordoftheday/aamsz=300x250' +'/pageid=' + aamPageId +'/random=' + aamRndNum;
+document.writeln('<scr' + 'ipt language="javascript" type="text/javascript" ' +'src="' + adServer + '/jserver' + adTarget + '"></scr' + 'ipt>');
+</script><script language="javascript" type="text/javascript" src="Dictionary%20Files/random3943815296_002.js"></script><script language="JavaScript" type="text/javascript">
+ord=Math.random()*10000000000000000;
+document.write('<script language="JavaScript" src="http://ad.doubleclick.net/adj/aolc.lx.com/portal/righttwo;tile=3;sz=300x250;ord=' + ord + '?" type="text/javascript"></scr' + 'ipt>');
+</script><script language="JavaScript" src="Dictionary%20Files/righttwo.js" type="text/javascript"></script><a target="_blank" href="http://ad.doubleclick.net/click;h=v8/3738/0/0/%2a/s;207150241;0-0;0;24343697;4307-300/250;28130715/28148594/1;;%7Eaopt=2/1/dbc5/2;%7Esscs=%3fhttp://clk.atdmt.com/00A/go/112265792/direct/01/"><img src="Dictionary%20Files/a" alt="Click here to find out more!" border="0"></a><noscript><a
+href="http://ad.doubleclick.net/jump/aolc.lx.com/portal/righttwo;tile=3;sz=300x250;ord=123456789?"
+target="_blank"><img
+src="http://ad.doubleclick.net/ad/aolc.lx.com/portal/righttwo;tile=3;sz=300x250;ord=123456789?"
+width="300" height="250" border="0" alt=""></a></noscript>
+
+
+</div><p></p>
+<link rel="stylesheet" href="Dictionary%20Files/styles.css" type="text/css" media="all"><!--// BOF ASK.COM AD //-->
+<table align="center" border="0" cellpadding="0" cellspacing="0" height="106" width="300">
+<tbody><tr>
+<td align="left" height="48" valign="top" width="69"><img src="Dictionary%20Files/askLogo_topbar.gif" border="0" height="48" width="69"></td>
+<td align="center" height="48" valign="middle" width="231">
+<table align="center" border="0" cellpadding="0" cellspacing="0" height="48" width="231">
+<tbody><tr><td align="center" height="10" valign="middle" width="231"></td></tr>
+<tr><td align="left" height="38" valign="middle" width="231">
+<table style="border-right: 1px solid rgb(220, 220, 220);" align="center" border="0" cellpadding="0" cellspacing="0" height="38" width="231">
+<tbody><tr>
+<td style="background-color: rgb(248, 248, 248);" align="left" background="Dictionary%20Files/topbar_gray_gradient.gif" height="26" valign="middle" width="231">
+<font style="color: rgb(191, 0, 0); font-family: arial; font-weight: bold; font-size: 16px; padding-left: 11px;">Learn More About</font></td></tr>
+<tr><td style="background-color: rgb(248, 248, 248);" align="center" height="12" valign="middle" width="231"></td></tr>
+</tbody></table>
+</td></tr>
+</tbody></table>
+</td>
+</tr>
+<tr><td colspan="2" style="background-color: rgb(248, 248, 248);" align="center" height="58" valign="top" width="300">
+<table style="border-left: 1px solid rgb(220, 220, 220); border-right: 1px solid rgb(220, 220, 220); border-bottom: 1px solid rgb(220, 220, 220);" align="center" border="0" cellpadding="0" cellspacing="0" height="58" width="300">
+<tbody><tr>
+<td style="background-color: rgb(248, 248, 248); padding-bottom: 18px;" align="center" height="12" valign="middle" width="231">
+
+<table style="background-color: rgb(248, 248, 248);" align="center" border="0" cellpadding="0" cellspacing="0" width="298">
+<tbody><tr><td style="padding-left: 16px; padding-top: 6px;" align="left" valign="top"><a href="http://www.ask.com/web?q=Definition+of+Evanescent&amp;o=1618&amp;l=dis" style="color: rgb(0, 96, 182); font-family: Arial; font-size: 12px; text-decoration: none;"><b>Definition</b> of Evanescent</a></td><td style="padding-left: 16px; padding-top: 6px;" align="left" valign="top" width="50%"><a href="http://www.ask.com/web?q=Evanescent+Music&amp;o=1618&amp;l=dis" style="color: rgb(0, 96, 182); font-family: Arial; font-size: 12px; text-decoration: none;"><b>Evanescent</b> Music</a></td></tr>
+<tr><td style="padding-left: 16px; padding-top: 6px;" align="left" valign="top" width="50%"><a href="http://www.ask.com/web?q=Evanescent+Wave&amp;o=1618&amp;l=dis" style="color: rgb(0, 96, 182); font-family: Arial; font-size: 12px; text-decoration: none;"><b>Evanescent</b> Wave</a></td><td style="padding-left: 16px; padding-top: 6px;" align="left" valign="top" width="50%"><a href="http://www.ask.com/web?q=Evanescent+Rash&amp;o=1618&amp;l=dis" style="color: rgb(0, 96, 182); font-family: Arial; font-size: 12px; text-decoration: none;"><b>Evanescent</b> Rash</a></td></tr>
+<tr><td style="padding-left: 16px; padding-top: 6px;" align="left" valign="top" width="50%"><a href="http://www.ask.com/web?q=Evanescent+Waves&amp;o=1618&amp;l=dis" style="color: rgb(0, 96, 182); font-family: Arial; font-size: 12px; text-decoration: none;"><b>Evanescent</b> Waves</a></td><td style="padding-left: 16px; padding-top: 6px;" align="left" valign="top" width="50%"><a href="http://www.ask.com/web?q=Evanescent+Light&amp;o=1618&amp;l=dis" style="color: rgb(0, 96, 182); font-family: Arial; font-size: 12px; text-decoration: none;"><b>Evanescent</b> Light</a></td></tr>
+</tbody></table>
+</td></tr></tbody></table>
+</td></tr></tbody></table>
+<!--// EOF ASK.COM AD //-->
+<p></p><div class="banner ad">
+<script language="javascript">
+var adTarget;
+adTarget ='/site=dictionary.com/area=wordoftheday/aamsz=160x600' +'/pageid=' + aamPageId +'/random=' + aamRndNum;
+document.writeln('<scr' + 'ipt language="javascript" type="text/javascript" ' +'src="' + adServer + '/jserver' + adTarget + '"></scr' + 'ipt>');
+</script><script language="javascript" type="text/javascript" src="Dictionary%20Files/random3943815296.js"></script><script language="JavaScript" type="text/javascript">
+ord=Math.random()*10000000000000000;
+document.write('<script language="JavaScript" src="http://ad.doubleclick.net/adj/aolc.lx.com/portal;tile=7;sz=160x600;ord=' + ord + '?" type="text/javascript"></scr' + 'ipt>');
+</script><script language="JavaScript" src="Dictionary%20Files/portal.js" type="text/javascript"></script><iframe src="Dictionary%20Files/a_002." marginheight="0" marginwidth="0" topmargin="0" leftmargin="0" allowtransparency="true" frameborder="0" height="600" scrolling="no" width="160">
+&lt;a
+href="http://ad.doubleclick.net/click%3Bh=v8/3738/3/0/%2a/f%3B206340819%3B0-0%3B0%3B17327255%3B2321-160/600%3B27671089/27688968/1%3B%3B%7Eaopt%3D2/1/dbc5/2%3B%7Esscs%3D%3fhttp://clk.atdmt.com/D1L/go/109867361/direct/01/"
+target="_blank"&gt;&lt;img
+src="http://view.atdmt.com/D1L/view/109867361/direct/01/"/&gt;&lt;/a&gt;&lt;noscript&gt;&lt;a
+href="http://ad.doubleclick.net/click%3Bh=v8/3738/3/0/%2a/f%3B206340819%3B0-0%3B0%3B17327255%3B2321-160/600%3B27671089/27688968/1%3B%3B%7Eaopt%3D2/1/dbc5/2%3B%7Esscs%3D%3fhttp://clk.atdmt.com/D1L/go/109867361/direct/01/"
+target="_blank"&gt;&lt;img border="0"
+src="http://view.atdmt.com/D1L/view/109867361/direct/01/"
+/&gt;&lt;/a&gt;&lt;/noscript&gt;</iframe><noscript><a
+href="http://ad.doubleclick.net/jump/aolc.lx.com/portal;tile=7;sz=160x600;ord=123456789?"
+target="_blank"><img
+src="http://ad.doubleclick.net/ad/aolc.lx.com/portal;tile=7;sz=728x90;ord=123456789?"
+width="160" height="600" border="0" alt=""></a></noscript>
+
+
+</div><p></p>
+<script language="JavaScript" type="text/javascript">
+<!--
+GA_googleFillSlot("All_TopRight"); 
+//-->
+</script><script src="Dictionary%20Files/ads_003"></script>
+<script language="JavaScript" type="text/javascript">
+<!--
+GA_googleFillSlot("All_Bottom1"); 
+//-->
+</script><script src="Dictionary%20Files/ads_002"></script><div id="google_ads_div_All_Bottom1"><p id="premium-box">Faster searching with no ads - <a href="http://pagead2.googlesyndication.com/pagead/iclk?sa=l&amp;ai=BChPjmCbJSKDjMKL4auycnJ0JnvzZKAAAABABIIq4vAU4AFiyvZ-5B2D96KKB8AOqAQoxNzU5MjQ1NTY0sgEYZGljdGlvbmFyeS5yZWZlcmVuY2UuY29tugEJZ2ZwX2ltYWdlyAEJ2gEtaHR0cDovL2RpY3Rpb25hcnkucmVmZXJlbmNlLmNvbS93b3Jkb2Z0aGVkYXkv4AECmALoB8ACAuACAeoCC0FsbF9Cb3R0b20x-AL40R6IAwGQA_BRmAO8UKgDAQ&amp;num=0&amp;client=ca-gam-lexico&amp;adurl=http://dictionary.reference.com/premium/?ad=fastersearching">click here to upgrade</a> to Dictionary.com Premium now!</p>
+
+
+</div>
+
+</div>
+<div class="iewinfix"></div>
+</div>
+</div>
+<div id="footer">
+<div class="sub">
+<ul>
+<li><a href="http://dictionary.reference.com/help/about.html">About Dictionary.com</a> | </li>
+<li><a href="http://dictionary.reference.com/help/privacy.html">Privacy Policy</a> | </li>
+<li><a href="http://dictionary.reference.com/help/terms.html">Terms of Use</a> | </li>
+<li><a href="http://dictionary.reference.com/help/linking/index.html">Link to Us</a> | </li>
+<li><a href="http://dictionary.reference.com/go/http://www.lexico.com/jobs/index.html">Jobs</a> | </li>
+<li><a href="http://dictionary.reference.com/help/contact.html">Contact Us</a></li>
+
+</ul>
+<p id="copyright">Copyright © <span title="B: 192.168.1.151">20</span><span title="D: 192.168.1.105">08</span>, <a href="http://dictionary.reference.com/go/http://www.lexico.com/">Dictionary.com, LLC</a>. All rights reserved.</p>
+</div>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script><script src="Dictionary%20Files/ga.js" type="text/javascript"></script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-4036279-1");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-4036279-9");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+
+<script type="text/javascript" language="JavaScript">
+<!--
+var wl_ord=new Date().getTime();
+document.write('<img width="1" height="1" src="' + 'http://tu.connect.wunderloop.net/TU/339/821/6005/?AC=on&ord=' + wl_ord + '" />');
+//-->
+</script><img src="Dictionary%20Files/a_002" height="1" width="1">
+<noscript>
+<img width="1" height="1" src="http://tu.connect.wunderloop.net/TU/339/821/6005/?AC=on&ord=12345" />
+</noscript>
+<script type="text/javascript" src="Dictionary%20Files/triggerParams.js"></script> 
+<script type="text/javascript" src="Dictionary%20Files/stdLauncher.js"></script>
+</body></html>
