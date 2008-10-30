@@ -112,9 +112,9 @@ def evanescent():
 					# to login before the empty machine is considered idle and shuts itself down.
 					# idea for this feature from andrewb@cs.mcgill.ca
 					uptime = misc.uptime()
-					if INITSLEEP > 0 and temp < INITSLEEP:
+					if INITSLEEP > 0 and uptime < INITSLEEP:
 						evalog_logger.debug('machine just booted, excluding from shutdown')
-						sleep = abs(INITSLEEP - temp)	# abs to be safe
+						sleep = abs(INITSLEEP - uptime)	# abs to be safe
 
 					# if we should shutdown
 					elif not(e.is_excluded(users=i.unique_users())):
