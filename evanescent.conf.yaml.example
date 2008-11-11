@@ -1,4 +1,5 @@
 # exclusion list
+# FIXME: i should probably make a better example file
 
 - host: dude
   user: someone else
