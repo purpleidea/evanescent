@@ -19,6 +19,7 @@
 """
 
 import os
+import config
 
 def do_nologin(message=None):
 	"""stops new logins from happening,
@@ -34,7 +35,6 @@ def do_nologin(message=None):
 
 	# FIXME: fix this to return True/False based on if it worked or not.
 	return True
-
 
 
 def do_broadcast(message, who={'users': []}):
@@ -62,8 +62,11 @@ def do_broadcast(message, who={'users': []}):
 
 
 def do_shutdown():
-	"""shuts down the system"""
-	os.system("shutdown -P now bye!")
+	"""takes down the system in some manner."""
+	# here are a list of allowed take-down commands to run.
+	# TODO: add more valid take-down commands to this list
+	allowed = ['shutdown -P now bye!', 'pm-suspend', 'pm-hibernate', 'pm-suspend-hybrid']
+	if config.TDCOMMAND in allowed: os.system(config.TDCOMMAND)
 
 
 def uptime():
@@ -89,8 +92,5 @@ def uptime():
 		f = None
 
 	return sec
-
-
-
 
 
