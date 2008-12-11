@@ -9,7 +9,6 @@ clean:
 revno:
 	echo -n 'VERSION ' > VERSION
 	bzr revno >> VERSION
-	echo '' >> VERSION
 
 # this target makes a package for distribution
 tar: clean revno
