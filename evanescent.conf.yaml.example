@@ -1,6 +1,50 @@
-# exclusion list
-# FIXME: i should probably make a better example file
+# Evanescent machine idle detection and shutdown tool.
+# Copyright (C) 2008  James Shubin, McGill University
+# Written for McGill University by James Shubin <purpleidea@gmail.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# FIXME: i should probably make this into a better example file
+
+#########
+# NOTES #
+#########
+# it would _not_ be wise to allow all admin users to be excluded from shutdown
+# because if an absent minded admin leaves his/her root session open, then that
+# session would actually get logged out given enough inactive time, hopefully
+# before a malicious user comes along and does something bad.
+
+##########
+# CONFIG #
+##########
+- conf:
+    debugmode: False				# debug mode
+    wordymode: True				# talk a lot (implied if debugmode is on)
+    idlelimit: 3600				# 1 hour before you're idle
+    countdown: 300				# five minute countdown before shutdown
+    sleeptime: 600				# poll/check computer every 10 minutes
+    fastsleep: 60				# how often do we poll after the user has been warned
+    initsleep: 900				# initial sleep before idle on first startup of machine
+    theconfig: '/etc/evanescent.conf.yaml'	# the config file
+    logserver: 'logmaster:514'			# syslog server
+    daemonpid: '/var/run/evanescent.pid'	# pid file for daemon
+    mylogpath: '/var/log/evanescent.log'	# path for local log file
+    logformat: '%(asctime)s %(levelname)-8s %(name)-17s %(message)s'
+
+##############
+# EXCLUSIONS #
+##############
 - host: dude
   user: someone else
   date: 19-04-1984
@@ -9,10 +53,15 @@
 - host: dazzle
   user: james
   fqdn: dazzle.CS.McGill.CA
+  note: this a comment
 
 - user: dude
   time: [09:00, 17]
   host: somehost
+  note: >
+        this is a very long note,
+        that can run for multiple lines
+        if you have a lot to say.
 
 - time: [11, 14:00:00]
   user: bob

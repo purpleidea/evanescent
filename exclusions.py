@@ -18,14 +18,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-
+# TODO: rework this exclusions file to use the yamlhelp wrapper functions i've made...
 import yaml		# yaml for config file parsing
 import fnmatch		# for simple shell-style pattern matching
 import socket		# for gethostname() and getfqdn()
 import os		# for getlogin(), geteuid() and getegid()
 import pwd		# for unix passwd file lookup
 import dt		# i wrote this one-- for time/date range parsing
-
 
 # constants
 HOST = 'host'
@@ -42,6 +41,10 @@ DATE = 'date'
 IPV4 = 'ipv4'
 IPV6 = 'ipv6'
 MACA = 'maca'	# mac address
+
+# special
+CONF = 'conf'	# for config options
+NOTE = 'note'	# for adding comments
 
 class exclusions:
 
@@ -118,7 +121,6 @@ class exclusions:
 			euid = os.geteuid()
 			egid = os.getegid()
 
-
 		shutdown = True		# shutdown machines by default
 
 		try:
@@ -176,7 +178,6 @@ class exclusions:
 								break
 							else: row = True
 
-
 						elif j == TIME:
 							# uses: dt module that i wrote
 							# TODO: does this need to be enclosed in a try/catch (because it can raise)
@@ -186,18 +187,17 @@ class exclusions:
 								break
 							else: row = True
 
-
-						elif j == 'date':
-
-
+						elif j == DATE:
+							# TODO...
 							pass
 
-						elif j == 'something...':
-
-
+						elif j == NOTE:
+							# the exclusions function should ignore any comments.
 							pass
 
-
+						elif j == CONF:
+							# the exclusions function should ignore configuration file options
+							pass
 						else:
 							raise SyntaxError, "identifier `%s' not supported" % j
 
