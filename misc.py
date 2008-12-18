@@ -24,14 +24,16 @@ import config
 def do_nologin(message=None):
 	"""stops new logins from happening,
 	displays message if they try."""
-	# FIXME: you need permission to change/create /etc/nologin,
-	# so this script should check if it has permission first,
-	# and then return true or false based on whether it succeeds
-	# or not.
-	if message:
-		os.system("echo '%s' > /etc/nologin" % message)
-	else:
-		os.system("touch /etc/nologin")
+
+	is os.name in ['posix']:
+		# FIXME: you need permission to change/create /etc/nologin,
+		# so this script should check if it has permission first,
+		# and then return true or false based on whether it succeeds
+		# or not.
+		if message:
+			os.system("echo '%s' > /etc/nologin" % message)
+		else:
+			os.system("touch /etc/nologin")
 
 	# FIXME: fix this to return True/False based on if it worked or not.
 	return True
@@ -47,16 +49,17 @@ def do_broadcast(message, who={'users': []}):
 	# it could do a combination of the above
 	# but for now it doesn't do anything.
 
-	# TODO: sanitize message string for injection attacks and weird characters?
-	message = str(message)
-	if not(who.has_key('users')): return False
-	if who.has_key('line') and len(who['users']) != len(who['line']): raise AssertionError
-	if type(who['users']) == type([]):
-		for i in range(len(who['users'])):
-			if who.has_key('line'):
-				os.system("echo '%s' | write %s %s &>/dev/null" % (message, who['users'][i], who['line'][i]))
-			else:
-				os.system("echo '%s' | write %s &>/dev/null" % (message, who['users'][i]))
+	if os.name in ['posix']:
+		# TODO: sanitize message string for injection attacks and weird characters?
+		message = str(message)
+		if not(who.has_key('users')): return False
+		if who.has_key('line') and len(who['users']) != len(who['line']): raise AssertionError
+		if type(who['users']) == type([]):
+			for i in range(len(who['users'])):
+				if who.has_key('line'):
+					os.system("echo '%s' | write %s %s &>/dev/null" % (message, who['users'][i], who['line'][i]))
+				else:
+					os.system("echo '%s' | write %s &>/dev/null" % (message, who['users'][i]))
 
 	return True
 
@@ -65,18 +68,21 @@ def do_shutdown():
 	"""takes down the system in some manner."""
 	# here are a list of allowed take-down commands to run.
 	# TODO: add more valid take-down commands to this list
-	allowed = ['shutdown -P now bye!', 'pm-suspend', 'pm-hibernate', 'pm-suspend-hybrid']
+	if os.name in ['posix']:
+		allowed = ['shutdown -P now bye!', 'pm-suspend', 'pm-hibernate', 'pm-suspend-hybrid']
+	elif os.name in ['nt']:
+		allowed = ['shutdown.exe -s -t 00 -c "bye!"']
+
 	if config.TDCOMMAND in allowed: os.system(config.TDCOMMAND)
 
 
 def uptime():
 	"""returns the uptime of the system in seconds"""
-	# TODO: make this platform independent and test it!
 	# TODO: add dependency checking for the win32api module
 
-	# untested:
-	#import win32api
-	#return int(win32api.GetTickCount()/1000)
+	if os.name in ['nt']:
+		import win32api
+		return int(win32api.GetTickCount()/1000)
 
 	sec = -1
 	try:

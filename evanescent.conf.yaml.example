@@ -41,6 +41,7 @@
     logserver: 'logmaster:514'			# syslog server
     daemonpid: '/var/run/evanescent.pid'	# pid file for daemon
     mylogpath: '/var/log/evanescent.log'	# path for local log file
+    myerrpath: '/var/log/evanescent.FAIL'	# path for FAIL log file
     logformat: '%(asctime)s %(levelname)-8s %(name)-17s %(message)s'
 
 ##############

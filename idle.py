@@ -147,6 +147,8 @@ class idle:
 	def __idle(self):
 		"""private function that does all the work"""
 
+		if os.name in ['nt']: return __widle()
+
 		#f = "%-10s %-5s %10s %-10s %-25s %-15s %-10s %-10s %-10s %-10s %-10s"
 		#print f % ("USER", "TTY", "PID", "HOST", "LOGIN", "IDLE", "TYPE", "SESSION", "ID", "EXIT", "IPV6")
 		#print f % (x.ut_user, x.ut_line, x.ut_pid, x.ut_host, time.ctime(x.ut_tv[0]), z, x.ut_type, x.ut_session, x.ut_id, x.ut_exit, x.ut_addr_v6)
@@ -183,4 +185,31 @@ class idle:
 
 		return d
 
+
+	def __widle(self):
+		"""windows version of the private __idle function."""
+		import locale
+		import getpass
+
+		d = {'idle': [], 'users': [], 'line': [], 'max': None, 'min': None, 'len': 0}
+		o = os.popen('widle.bat', 'r')		# run our script
+		a = o.readlines()			# grab all the output
+		o.close()
+		o = None
+		for i in range(len(a)):			# loop
+			if a[i].startswith('WIDLE'):	# find magic identifier
+				if i+1 < len(a):	# does the next index exist?
+					z = locale.atoi(a[i+1])
+
+					if d['max'] == None: d['max'] = z
+					if d['min'] == None: d['min'] = z
+					d['max'] = max(d['max'], z)	# set the new max
+					d['min'] = min(d['min'], z)	# set the new min
+
+					d['idle'].append(z)
+					d['users'].append(getpass.getuser())	# i guess this is how i could get the login
+					d['line'].append('FIXME')		# FIXME: put something useful/meaningful?
+					d['len'] = d['len'] + 1
+					break
+		return d
 

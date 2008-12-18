@@ -36,6 +36,7 @@ we don't check the exclusions again between IDLELIMIT and IDLELIMIT+COUNTDOWN
 # TODO: have script fail on startup if all the necessary modules aren't installed (ex: python-utmp, yaml)
 # TODO: add a big try/except around the main script if possible to catch and log hidden script errors
 
+import os				# for posix/nt detection
 import sys				# for sys.exit()
 import math				# for math.ceil()
 import signal				# for signal stuff
@@ -290,12 +291,14 @@ if __name__ == "__main__":
 
 	#daemon_logger.info('hi from daemon')		# send a hello message
 
-	d = daemon.daemon(pidfile=DAEMONPID, start_func=evanescent, logger=daemon_logger, close_fds=not(DEBUGMODE))
+	if os.name in ['posix']: d = daemon.daemon(pidfile=DAEMONPID, start_func=evanescent, logger=daemon_logger, close_fds=not(DEBUGMODE))
 	try:
-		d.start_stop()
+		if os.name in ['posix']: d.start_stop()
+		elif os.name in ['nt']: evanescent()
+		else: raise AssertionError('os: `%s\' is not supported at this time.' % os.name)
 	except SystemExit:
 		pass
 	except:
 		import traceback
-		traceback.print_exc(file=open('/var/log/evanescent.FAIL', 'w+'))
+		traceback.print_exc(file=open(MYERRPATH, 'w+'))
 

@@ -34,10 +34,11 @@ THECONFIG = '/etc/evanescent.conf.yaml'	# the config file
 LOGSERVER = ('logmaster', 514)		# syslog server
 DAEMONPID = '/var/run/evanescent.pid'	# pid file for daemon
 MYLOGPATH = '/var/log/evanescent.log'	# path for local log file
+MYERRPATH = '/var/log/evanescent.FAIL'	# path for FAIL log file
 LOGFORMAT = '%(asctime)s %(levelname)-8s %(name)-17s %(message)s'
 
 import yamlhelp
-conf = yamlhelp.yamlhelp(filename='/etc/evanescent.conf.yaml')
+conf = yamlhelp.yamlhelp(filename=THECONFIG)
 data = conf.get_yaml()
 if not(type(data) == type([])):
 	# TODO: add a warning explaining that the config file format is bad.
@@ -65,6 +66,7 @@ if data.has_key('THECONFIG'): THECONFIG =  str(data['THECONFIG'])
 if data.has_key('LOGSERVER'): LOGSERVER = (str(data['LOGSERVER'])[:str(data['LOGSERVER']).find(':')], int(str(data['LOGSERVER'])[str(data['LOGSERVER']).find(':')+1:]))
 if data.has_key('DAEMONPID'): DAEMONPID =  str(data['DAEMONPID'])
 if data.has_key('MYLOGPATH'): MYLOGPATH =  str(data['MYLOGPATH'])
+if data.has_key('MYERRPATH'): MYERRPATH =  str(data['MYERRPATH'])
 if data.has_key('LOGFORMAT'): LOGFORMAT =  str(data['LOGFORMAT'])
 
 if DEBUGMODE:				# make our debugging go faster
