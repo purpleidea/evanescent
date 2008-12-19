@@ -25,7 +25,7 @@ def do_nologin(message=None):
 	"""stops new logins from happening,
 	displays message if they try."""
 
-	is os.name in ['posix']:
+	if os.name in ['posix']:
 		# FIXME: you need permission to change/create /etc/nologin,
 		# so this script should check if it has permission first,
 		# and then return true or false based on whether it succeeds
@@ -49,17 +49,20 @@ def do_broadcast(message, who={'users': []}):
 	# it could do a combination of the above
 	# but for now it doesn't do anything.
 
-	if os.name in ['posix']:
-		# TODO: sanitize message string for injection attacks and weird characters?
-		message = str(message)
-		if not(who.has_key('users')): return False
-		if who.has_key('line') and len(who['users']) != len(who['line']): raise AssertionError
-		if type(who['users']) == type([]):
-			for i in range(len(who['users'])):
-				if who.has_key('line'):
-					os.system("echo '%s' | write %s %s &>/dev/null" % (message, who['users'][i], who['line'][i]))
-				else:
-					os.system("echo '%s' | write %s &>/dev/null" % (message, who['users'][i]))
+	if not(who.has_key('users')): return False
+	if who.has_key('line') and len(who['users']) != len(who['line']): raise AssertionError
+	# TODO: sanitize message string for injection attacks and weird characters?
+	message = str(message)
+
+	if type(who['users']) == type([]):
+		for i in range(len(who['users'])):
+			if who.has_key('line'):
+				if os.name in ['posix']: os.system("echo '%s' | write %s %s &>/dev/null" % (message, who['users'][i], who['line'][i]))
+				elif os.name in ['nt']: os.popen('net send %s %s' % (who['users'][i], message))
+			else:
+				if os.name in ['posix']: os.system("echo '%s' | write %s &>/dev/null" % (message, who['users'][i]))
+				# we popen() so that windows doesn't echo junk to the screen as it maybe does with system().
+				elif os.name in ['nt']: os.popen('net send %s %s' % (who['users'][i], message))
 
 	return True
 

@@ -41,6 +41,7 @@ import sys				# for sys.exit()
 import math				# for math.ceil()
 import signal				# for signal stuff
 import datetime				# for time diffs
+import time				# for sleeping in windows
 import logging, logging.handlers	# for syslog stuff
 import daemon				# i wrote this one
 import exclusions			# i wrote this one
@@ -212,35 +213,38 @@ def evanescent():
 		# if we sleep for zero seconds or less, this can often make the sleep call hang forever
 		sleep = int(math.ceil(sleep))
 		if sleep > 0:
-
 			# allow/handle incoming signals
 			evalog_logger.debug('going to sleep for %s seconds' % sleep)
-			caught = False
-			signal.signal(signal.SIGUSR1, sigusr1)	# handle
-			signal.signal(signal.SIGUSR2, sigusr2)	# handle
 
-			def handler(signum, frame):
-				"""internal sleep handler function"""
-				raise KeyboardInterrupt
-
-			signal.signal(signal.SIGALRM, handler)
-			signal.alarm(sleep)
-
-			try:
-				signal.pause()
-				# pause exited, so a signal was caught
-				evalog_logger.debug('signal caught!')
-				caught = True
-			except KeyboardInterrupt:
-				# exception happened, so alarm caused this
+			if os.name in ['posix']:
 				caught = False
-				evalog_logger.debug('sleep over, waking up!')
+				signal.signal(signal.SIGUSR1, sigusr1)	# handle
+				signal.signal(signal.SIGUSR2, sigusr2)	# handle
 
-			# we continue...
-			signal.alarm(0)		# disable the alarm
-			signal.signal(signal.SIGUSR1, signal.SIG_IGN)	# ignore
-			signal.signal(signal.SIGUSR2, signal.SIG_IGN)	# ignore
+				def handler(signum, frame):
+					"""internal sleep handler function"""
+					raise KeyboardInterrupt
 
+				signal.signal(signal.SIGALRM, handler)
+				signal.alarm(sleep)
+
+				try:
+					signal.pause()
+					# pause exited, so a signal was caught
+					evalog_logger.debug('signal caught!')
+					caught = True
+				except KeyboardInterrupt:
+					# exception happened, so alarm caused this
+					caught = False
+					evalog_logger.debug('sleep over, waking up!')
+
+				# we continue...
+				signal.alarm(0)		# disable the alarm
+				signal.signal(signal.SIGUSR1, signal.SIG_IGN)	# ignore
+				signal.signal(signal.SIGUSR2, signal.SIG_IGN)	# ignore
+
+			else:
+				time.sleep(sleep)
 
 def sigusr1(signum, frame):
 	#raise KeyboardInterrupt
@@ -252,9 +256,10 @@ def sigusr2(signum, frame):
 
 if __name__ == "__main__":
 
-	# read: $ man 7 signal
-	signal.signal(signal.SIGUSR1, signal.SIG_IGN)	# ignore
-	signal.signal(signal.SIGUSR2, signal.SIG_IGN)	# ignore
+	if os.name in ['posix']:
+		# read: $ man 7 signal
+		signal.signal(signal.SIGUSR1, signal.SIG_IGN)	# ignore
+		signal.signal(signal.SIGUSR2, signal.SIG_IGN)	# ignore
 
 	# everyone uses this format
 	#logging.basicConfig(level=logging.DEBUG, format=LOGFORMAT)

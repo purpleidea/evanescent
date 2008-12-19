@@ -17,6 +17,8 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+import os
+import yamlhelp
 
 # FIXME: change all the `from config import *' to import config, and change all
 # the globals to a config.WHATEVER instead of the WHATEVER's without the class.
@@ -37,7 +39,14 @@ MYLOGPATH = '/var/log/evanescent.log'	# path for local log file
 MYERRPATH = '/var/log/evanescent.FAIL'	# path for FAIL log file
 LOGFORMAT = '%(asctime)s %(levelname)-8s %(name)-17s %(message)s'
 
-import yamlhelp
+if os.name in ['nt']:
+	# TODO: verify these follow whatever the equivalent of a windows FHS would be.
+	TDCOMMAND = 'shutdown.exe -s -t 00 -c "bye!"'
+	THECONFIG = 'c:\WINDOWS\evanescent.conf.yaml'
+	DAEMONPID = None
+	MYLOGPATH = 'c:\WINDOWS\system32\config\evanescent.log'
+	MYERRPATH = 'c:\WINDOWS\system32\config\evanescent.FAIL'
+
 conf = yamlhelp.yamlhelp(filename=THECONFIG)
 data = conf.get_yaml()
 if not(type(data) == type([])):

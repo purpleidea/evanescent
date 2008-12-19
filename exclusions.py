@@ -19,12 +19,13 @@
 """
 
 # TODO: rework this exclusions file to use the yamlhelp wrapper functions i've made...
-import yaml		# yaml for config file parsing
-import fnmatch		# for simple shell-style pattern matching
-import socket		# for gethostname() and getfqdn()
-import os		# for getlogin(), geteuid() and getegid()
-import pwd		# for unix passwd file lookup
-import dt		# i wrote this one-- for time/date range parsing
+import yaml				# yaml for config file parsing
+import fnmatch				# for simple shell-style pattern matching
+import socket				# for gethostname() and getfqdn()
+import os				# for getlogin(), geteuid() and getegid()
+import dt				# i wrote this one-- for time/date range parsing
+if os.name in ['posix']: import pwd	# for unix passwd file lookup
+else: import getpass			# to find the username
 
 # constants
 HOST = 'host'
@@ -100,6 +101,7 @@ class exclusions:
 
 			user = users
 			try:
+				if not(os.name in ['posix']): raise KeyError
 				temp = pwd.getpwnam(users)
 				if users != temp[0]: raise AssertionError
 				euid = temp[2]	# pw_uid
@@ -110,16 +112,21 @@ class exclusions:
 
 		# old school, normal(bad) is_excluded() operation
 		else:
-			# use the info from the user running the script
-			try:
-				#NOTE: when this runs with no environment variables it throws an error...
-				#OSError: [Errno 2] No such file or directory
-				user = os.getlogin()
-			except OSError:
-				#user = root
-				user = pwd.getpwuid(os.getuid())[0]
-			euid = os.geteuid()
-			egid = os.getegid()
+			if os.name in ['posix']:
+				# use the info from the user running the script
+				try:
+					#NOTE: when this runs with no environment variables it throws an error...
+					#OSError: [Errno 2] No such file or directory
+					user = os.getlogin()
+				except OSError:
+					#user = root
+					user = pwd.getpwuid(os.getuid())[0]
+				euid = os.geteuid()
+				egid = os.getegid()
+			else:
+				user = getpass.getuser()
+				euid = False
+				egid = False
 
 		shutdown = True		# shutdown machines by default
 
@@ -163,7 +170,7 @@ class exclusions:
 							else: row = True
 
 						#*** effective user id
-						elif j == EUID:
+						elif j == EUID and os.name in ['posix']:
 							# uses: os.geteuid()
 							if not(fnmatch.fnmatchcase(self.c(euid), self.c(i[j]))):
 								row = False
@@ -171,7 +178,7 @@ class exclusions:
 							else: row = True
 
 						#*** effective group id
-						elif j == EGID:
+						elif j == EGID and os.name in ['posix']:
 							# uses: os.getegid()
 							if not(fnmatch.fnmatchcase(self.c(egid), self.c(i[j]))):
 								row = False

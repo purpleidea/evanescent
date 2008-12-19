@@ -18,10 +18,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import utmp		# lib to read the utmp file
-import UTMPCONST
 import os		# for stat (to get idle times)
 import time		# for the idle time math
+if os.name in ['posix']:
+	import utmp		# lib to read the utmp file
+	import UTMPCONST
 
 
 
@@ -147,7 +148,7 @@ class idle:
 	def __idle(self):
 		"""private function that does all the work"""
 
-		if os.name in ['nt']: return __widle()
+		if os.name in ['nt']: return self.__widle()
 
 		#f = "%-10s %-5s %10s %-10s %-25s %-15s %-10s %-10s %-10s %-10s %-10s"
 		#print f % ("USER", "TTY", "PID", "HOST", "LOGIN", "IDLE", "TYPE", "SESSION", "ID", "EXIT", "IPV6")
