@@ -20,6 +20,7 @@
 
 import os		# for stat (to get idle times)
 import time		# for the idle time math
+import math		# need this for math.floor for windows
 if os.name in ['posix']:
 	import utmp		# lib to read the utmp file
 	import UTMPCONST
@@ -63,7 +64,9 @@ class idle:
 			a = []
 			for x in index:
 				temp = self.get_idle(x)
-				if temp: a.append(temp)
+				# add as long as we don't have a boolean type
+				# (which could only to be a False value)
+				if not(type(temp) == type(False)): a.append(temp)
 			return a
 		else:
 			try:
@@ -79,7 +82,7 @@ class idle:
 			a = []
 			for x in index:
 				temp = self.get_line(x)
-				if temp: a.append(temp)
+				if not(type(temp) == type(False)): a.append(temp)
 			return a
 		else:
 			try:
@@ -95,7 +98,7 @@ class idle:
 			a = []
 			for x in index:
 				temp = self.get_user(x)
-				if temp: a.append(temp)
+				if not(type(temp) == type(False)): a.append(temp)
 			return a
 		else:
 			try:
@@ -200,7 +203,7 @@ class idle:
 		for i in range(len(a)):			# loop
 			if a[i].startswith('WIDLE'):	# find magic identifier
 				if i+1 < len(a):	# does the next index exist?
-					z = locale.atoi(a[i+1])
+					z = int(math.floor(locale.atoi(a[i+1])/1000))
 
 					if d['max'] == None: d['max'] = z
 					if d['min'] == None: d['min'] = z
