@@ -79,9 +79,10 @@ if data.has_key('MYERRPATH'): MYERRPATH =  str(data['MYERRPATH'])
 if data.has_key('LOGFORMAT'): LOGFORMAT =  str(data['LOGFORMAT'])
 
 if DEBUGMODE:				# make our debugging go faster
-	IDLELIMIT = 20
+	IDLELIMIT = 30
 	COUNTDOWN = 45
 	FASTSLEEP = 10
+	INITSLEEP = 2*60		# 2 min
 	WORDYMODE = True
 
 if (FASTSLEEP != 0) and (COUNTDOWN != 0) and FASTSLEEP >= COUNTDOWN:
