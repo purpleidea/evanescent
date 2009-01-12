@@ -35,6 +35,7 @@ we don't check the exclusions again between IDLELIMIT and IDLELIMIT+COUNTDOWN
 # TODO: clean up info/debug messages and make them more sensible/informative
 # TODO: have script fail on startup if all the necessary modules aren't installed (ex: python-utmp, yaml)
 # TODO: add a big try/except around the main script if possible to catch and log hidden script errors
+# TODO: pull in configuration file values from a remote file using wget or similar (idea from rgws@cs.mcgill.ca)
 
 import os				# for posix/nt detection
 import sys				# for sys.exit()
@@ -102,8 +103,6 @@ def evanescent():
 					# TODO: maybe we check for users pressing cancel here?
 					evalog_logger.debug('waiting for countdown to be up')
 					pass
-
-
 
 			else:
 
@@ -243,8 +242,15 @@ def evanescent():
 				signal.signal(signal.SIGUSR1, signal.SIG_IGN)	# ignore
 				signal.signal(signal.SIGUSR2, signal.SIG_IGN)	# ignore
 
+			# windows or otherwise...
 			else:
-				time.sleep(sleep)
+				try:
+					time.sleep(sleep)
+				except IOError, e:
+					# maybe someone pressed Control-Alt-Delete after
+					# script was already running on system startup
+					#DEBUG: open(MYERRPATH+str('4'), 'w+').write(str(e))
+					pass
 
 def sigusr1(signum, frame):
 	#raise KeyboardInterrupt
@@ -292,8 +298,7 @@ if __name__ == "__main__":
 	evalog_logger = logging.getLogger('evanescent.evalog')
 	signal_logger = logging.getLogger('evanescent.signal')
 
-	l.debug('log says hi')				# send a hello message
-
+	l.debug('hello from evanescent')		# send a hello message
 	#daemon_logger.info('hi from daemon')		# send a hello message
 
 	if os.name in ['posix']: d = daemon.daemon(pidfile=DAEMONPID, start_func=evanescent, logger=daemon_logger, close_fds=not(DEBUGMODE))
@@ -301,6 +306,12 @@ if __name__ == "__main__":
 		if os.name in ['posix']: d.start_stop()
 		elif os.name in ['nt']: evanescent()
 		else: raise AssertionError('os: `%s\' is not supported at this time.' % os.name)
+	except KeyboardInterrupt, e:
+		if os.name in ['posix']: d.start_stop([sys.argv[0], 'stop'])
+		elif os.name in ['nt']:
+			# VERIFY: it's possible that a KeyboardInterrupt gets generated when Control-Alt-Delete is pressed on user-login
+			# TODO: if e == 'some special thing that wasn't a standard control-c press then:' #evanescent()
+			pass
 	except SystemExit:
 		pass
 	except:
