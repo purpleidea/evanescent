@@ -49,7 +49,7 @@ import exclusions			# i wrote this one
 import idle				# i wrote this one
 import misc				# i wrote this one
 
-from config import *			# import to globals
+import config				# import configs
 
 """
 *	logging errors:
@@ -66,7 +66,7 @@ def evanescent():
 
 	# run this on first start to check for errors...
 	# this avoids us having to wait for a machine to be idle before is_excluded runs
-	e = exclusions.exclusions(THECONFIG)
+	e = exclusions.exclusions(config.THECONFIG)
 	if not(e.syntax_ok()):
 		message = e.syntax_ok(message=True)
 		evalog_logger.fatal('syntax error in config file')
@@ -75,7 +75,7 @@ def evanescent():
 	e = None
 
 	warned = False
-	sleep = SLEEPTIME
+	sleep = config.SLEEPTIME
 	# main loop (polling)
 	evalog_logger.debug('entering main loop')
 	while True:
@@ -83,7 +83,7 @@ def evanescent():
 		i = idle.idle(tick_default=False)
 		extract = i.idle()	# extract for do_broadcast()
 		# if entire machine is idle
-		if i.is_idle(threshold=IDLELIMIT):
+		if i.is_idle(threshold=config.IDLELIMIT):
 			evalog_logger.info('computer is idle')
 
 			if warned:
@@ -91,7 +91,7 @@ def evanescent():
 				timedelta = datetime.datetime.today() - warned
 				delta = int(math.ceil(timedelta.seconds + (timedelta.days*24*60*60) + (timedelta.microseconds*(1/1000000))))
 				# if warning time is up!
-				if delta > COUNTDOWN:
+				if delta > config.COUNTDOWN:
 					evalog_logger.warn('machine shutting down now!')
 					misc.do_nologin('sorry, machine is shutting down')	# returns true or false if this worked
 					# broadcasts a write to all the cli/gtk clients to say goodbye
@@ -106,28 +106,28 @@ def evanescent():
 
 			else:
 
-				e = exclusions.exclusions(THECONFIG)
+				e = exclusions.exclusions(config.THECONFIG)
 				evalog_logger.debug('checking exclusions...')
 				try:
 					# from the time when a machine comes up, give users a chance of `INITSLEEP' seconds
 					# to login before the empty machine is considered idle and shuts itself down.
 					# idea for this feature from andrewb@cs.mcgill.ca
 					uptime = misc.uptime()
-					if INITSLEEP > 0 and uptime < INITSLEEP:
+					if config.INITSLEEP > 0 and uptime < config.INITSLEEP:
 						evalog_logger.debug('machine just booted, excluding from shutdown')
-						sleep = abs(INITSLEEP - uptime)	# abs to be safe
+						sleep = abs(config.INITSLEEP - uptime)	# abs to be safe
 
 					# if we should shutdown
 					elif not(e.is_excluded(users=i.unique_users())):
 
 						evalog_logger.debug('machine isn\'t excluded, doing warn')
 						# now we warn users of impending shutdown
-						misc.do_broadcast('machine is shutting down in %d seconds if you continue to be idle. tap any key to cancel impending shutdown.' % COUNTDOWN, {'users': extract['users'], 'line': extract['line']})
+						misc.do_broadcast('machine is shutting down in %d seconds if you continue to be idle. tap any key to cancel impending shutdown.' % config.COUNTDOWN, {'users': extract['users'], 'line': extract['line']})
 						warned = datetime.datetime.today()
 
 						# sleep less often (to see if someone will tap a mouse)
 						# but also make sure that we wake up in time before countdown is up
-						sleep = min(COUNTDOWN, FASTSLEEP)
+						sleep = min(config.COUNTDOWN, FASTSLEEP)
 
 					else:
 						evalog_logger.debug('machine is excluded')
@@ -136,7 +136,7 @@ def evanescent():
 						# in time to see another user go idle, but the exclusions
 						# might still hold, so we'll assume they are sane; eg:
 						# exclusions that vary from minute to minute would make this act funny.
-						sleep = SLEEPTIME
+						sleep = config.SLEEPTIME
 
 
 				except SyntaxError, e:
@@ -151,7 +151,7 @@ def evanescent():
 
 		else:	# not idle
 			evalog_logger.debug('computer is not idle')
-			notidle = i.active_indices(threshold=IDLELIMIT)
+			notidle = i.active_indices(threshold=config.IDLELIMIT)
 			evalog_logger.debug('user: %s' % ', '.join(i.get_user(notidle)))
 			evalog_logger.debug('line: %s' % ', '.join(i.get_line(notidle)))
 			evalog_logger.debug('idle: %s' % ', '.join(map(str, i.get_idle(notidle))))
@@ -177,12 +177,12 @@ def evanescent():
 			# however, this would be less if someone logs off prematurely. to avoid this problem,
 			# we need to listen for log off events and wake up when one occurs.
 			m = int(math.ceil(i.min_idle()))
-			diff = IDLELIMIT - m
+			diff = config.IDLELIMIT - m
 
-			if diff < SLEEPTIME:
+			if diff < config.SLEEPTIME:
 				sleep = diff + 1
 			else:
-				sleep = SLEEPTIME
+				sleep = config.SLEEPTIME
 
 
 		i = None	# free memory
@@ -249,7 +249,7 @@ def evanescent():
 				except IOError, e:
 					# maybe someone pressed Control-Alt-Delete after
 					# script was already running on system startup
-					#DEBUG: open(MYERRPATH+str('4'), 'w+').write(str(e))
+					#DEBUG: open(config.MYERRPATH+str('4'), 'w+').write(str(e))
 					pass
 
 def sigusr1(signum, frame):
@@ -262,19 +262,21 @@ def sigusr2(signum, frame):
 
 if __name__ == "__main__":
 
+	if not(config.STARTMEUP): sys.exit(0)
+
 	if os.name in ['posix']:
 		# read: $ man 7 signal
 		signal.signal(signal.SIGUSR1, signal.SIG_IGN)	# ignore
 		signal.signal(signal.SIGUSR2, signal.SIG_IGN)	# ignore
 
 	# everyone uses this format
-	#logging.basicConfig(level=logging.DEBUG, format=LOGFORMAT)
-	formatter = logging.Formatter(LOGFORMAT)
+	#logging.basicConfig(level=logging.DEBUG, format=config.LOGFORMAT)
+	formatter = logging.Formatter(config.LOGFORMAT)
 
 	# handler for local disk
 	# FIXME: check file permission for log file before this line runs
 	try:
-		RotatingFileHandler = logging.handlers.RotatingFileHandler(MYLOGPATH, maxBytes=1024*100, backupCount=9)
+		RotatingFileHandler = logging.handlers.RotatingFileHandler(config.MYLOGPATH, maxBytes=1024*100, backupCount=9)
 	except IOError:
 		message = "can't open log file for writing (are you root?)"
 		sys.stderr.write(message + "\n")
@@ -283,12 +285,12 @@ if __name__ == "__main__":
 
 	# handler for global logging server
 									#logging.handlers.SysLogHandler.LOG_DAEMON (does this even work? i can't find the logs...)
-	SysLogHandler = logging.handlers.SysLogHandler(LOGSERVER, logging.handlers.SysLogHandler.LOG_LOCAL7)	# TODO: find a way to change the facility to 'evanescent'
+	SysLogHandler = logging.handlers.SysLogHandler(config.LOGSERVER, logging.handlers.SysLogHandler.LOG_LOCAL7)	# TODO: find a way to change the facility to 'evanescent'
 	SysLogHandler.setFormatter(formatter)
 
 	# name a log route, set a level, add handlers
 	l = logging.getLogger('evanescent')
-	if WORDYMODE: l.setLevel(logging.DEBUG)
+	if config.WORDYMODE: l.setLevel(logging.DEBUG)
 	else: l.setLevel(logging.WARN)
 	l.addHandler(RotatingFileHandler)
 	l.addHandler(SysLogHandler)
@@ -301,7 +303,7 @@ if __name__ == "__main__":
 	l.debug('hello from evanescent')		# send a hello message
 	#daemon_logger.info('hi from daemon')		# send a hello message
 
-	if os.name in ['posix']: d = daemon.daemon(pidfile=DAEMONPID, start_func=evanescent, logger=daemon_logger, close_fds=not(DEBUGMODE))
+	if os.name in ['posix']: d = daemon.daemon(pidfile=config.DAEMONPID, start_func=evanescent, logger=daemon_logger, close_fds=not(config.DEBUGMODE))
 	try:
 		if os.name in ['posix']: d.start_stop()
 		elif os.name in ['nt']: evanescent()
@@ -316,5 +318,5 @@ if __name__ == "__main__":
 		pass
 	except:
 		import traceback
-		traceback.print_exc(file=open(MYERRPATH, 'w+'))
+		traceback.print_exc(file=open(config.MYERRPATH, 'w+'))
 

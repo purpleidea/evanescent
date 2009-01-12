@@ -20,10 +20,8 @@
 import os
 import yamlhelp
 
-# FIXME: change all the `from config import *' to import config, and change all
-# the globals to a config.WHATEVER instead of the WHATEVER's without the class.
-
 # default constants
+STARTMEUP = True			# should evanescent run on this machine?
 DEBUGMODE = False			# debug mode
 WORDYMODE = True			# talk a lot (implied if debugmode is on)
 IDLELIMIT = 60*60			# 1 hour before you're idle
@@ -64,6 +62,7 @@ else: data = {}
 # convert all keys to uppercase and remove null values
 data = dict([ (key.upper(),value) for key,value in data.items() if not(value is None) ])
 
+if data.has_key('STARTMEUP'): STARTMEUP = bool(data['STARTMEUP'])
 if data.has_key('DEBUGMODE'): DEBUGMODE = bool(data['DEBUGMODE'])
 if data.has_key('WORDYMODE'): WORDYMODE = bool(data['WORDYMODE'])
 if data.has_key('IDLELIMIT'): IDLELIMIT =  int(data['IDLELIMIT'])

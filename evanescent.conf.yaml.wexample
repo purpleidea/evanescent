@@ -29,6 +29,7 @@
 # CONFIG #
 ##########
 - conf:
+    startmeup: True                                             # should evanescent run on this machine?
     debugmode: False                                            # debug mode
     wordymode: True                                             # talk a lot (implied if debugmode is on)
     idlelimit: 3600                                             # 1 hour before you're idle
