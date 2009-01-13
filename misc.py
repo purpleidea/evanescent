@@ -20,6 +20,9 @@
 
 import os
 import config
+if os.name in ['nt']:
+	import wpyqtmsg
+	msg = wpyqtmsg.wpyqtmsg()
 
 def do_nologin(message=None):
 	"""stops new logins from happening,
@@ -53,16 +56,17 @@ def do_broadcast(message, who={'users': []}):
 	if who.has_key('line') and len(who['users']) != len(who['line']): raise AssertionError
 	# TODO: sanitize message string for injection attacks and weird characters?
 	message = str(message)
-
 	if type(who['users']) == type([]):
 		for i in range(len(who['users'])):
-			if who.has_key('line'):
-				if os.name in ['posix']: os.system("echo '%s' | write %s %s &>/dev/null" % (message, who['users'][i], who['line'][i]))
-				elif os.name in ['nt']: os.popen('net send %s %s' % (who['users'][i], message))
-			else:
-				if os.name in ['posix']: os.system("echo '%s' | write %s &>/dev/null" % (message, who['users'][i]))
-				# we popen() so that windows doesn't echo junk to the screen as it maybe does with system().
-				elif os.name in ['nt']: os.popen('net send %s %s' % (who['users'][i], message))
+			if os.name in ['posix']:
+				if who.has_key('line'):
+					os.system("echo '%s' | write %s %s &>/dev/null" % (message, who['users'][i], who['line'][i]))
+				else:
+					os.system("echo '%s' | write %s &>/dev/null" % (message, who['users'][i]))
+
+			elif os.name in ['nt']:
+				os.popen('net send %s %s' % (who['users'][i], message))
+				msg.msg('evanescent', message)	# send qt4 pop up msg
 
 	return True
 

@@ -43,6 +43,7 @@
     mylogpath: 'c:\WINDOWS\system32\config\evanescent.log'      # path for local log file
     myerrpath: 'c:\WINDOWS\system32\config\evanescent.FAIL'     # path for FAIL log file
     logformat: '%(asctime)s %(levelname)-8s %(name)-17s %(message)s'
+    iconimage: 'evanescent.png'                                 # filename for `systray' icon
 
 ##############
 # EXCLUSIONS #

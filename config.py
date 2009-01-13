@@ -36,6 +36,7 @@ DAEMONPID = '/var/run/evanescent.pid'	# pid file for daemon
 MYLOGPATH = '/var/log/evanescent.log'	# path for local log file
 MYERRPATH = '/var/log/evanescent.FAIL'	# path for FAIL log file
 LOGFORMAT = '%(asctime)s %(levelname)-8s %(name)-17s %(message)s'
+ICONIMAGE = 'evanescent.png'		# filename for `systray' icon
 
 if os.name in ['nt']:
 	# TODO: verify these follow whatever the equivalent of a windows FHS would be.
@@ -76,6 +77,7 @@ if data.has_key('DAEMONPID'): DAEMONPID =  str(data['DAEMONPID'])
 if data.has_key('MYLOGPATH'): MYLOGPATH =  str(data['MYLOGPATH'])
 if data.has_key('MYERRPATH'): MYERRPATH =  str(data['MYERRPATH'])
 if data.has_key('LOGFORMAT'): LOGFORMAT =  str(data['LOGFORMAT'])
+if data.has_key('ICONIMAGE'): ICONIMAGE =  str(data['ICONIMAGE'])
 
 if DEBUGMODE:				# make our debugging go faster
 	IDLELIMIT = 30
