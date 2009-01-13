@@ -47,7 +47,12 @@ if os.name in ['nt']:
 	MYERRPATH = 'c:\WINDOWS\system32\config\evanescent.FAIL'
 
 conf = yamlhelp.yamlhelp(filename=THECONFIG)
-data = conf.get_yaml()
+try:
+	data = conf.get_yaml()
+except IOError:
+	# filename probably didn't exist
+	data = None
+
 if not(type(data) == type([])):
 	# TODO: add a warning explaining that the config file format is bad.
 	# (do this whenever we fail silently like we're doing now.)
