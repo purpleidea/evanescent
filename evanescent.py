@@ -302,12 +302,23 @@ if __name__ == "__main__":
 	SysLogHandler = logging.handlers.SysLogHandler(config.LOGSERVER, logging.handlers.SysLogHandler.LOG_LOCAL7)	# TODO: find a way to change the facility to 'evanescent'
 	SysLogHandler.setFormatter(formatter)
 
+	# handler for stderr
+	StreamHandler = logging.StreamHandler()
+	StreamHandler.setFormatter(formatter)
+
+	if os.name in ['nt']:
+		# handler for windows
+		NTEventLogHandler = logging.handlers.NTEventLogHandler('evanescent')
+		NTEventLogHandler.setFormatter(formatter)
+
 	# name a log route, set a level, add handlers
 	l = logging.getLogger('evanescent')
 	if config.WORDYMODE: l.setLevel(logging.DEBUG)
 	else: l.setLevel(logging.WARN)
 	l.addHandler(RotatingFileHandler)
 	l.addHandler(SysLogHandler)
+	l.addHandler(StreamHandler)
+	if os.name in ['nt']: l.addHandler(NTEventLogHandler)
 
 	# handlers in x propagate down to everyone (y) in the x.y tree
 	daemon_logger = logging.getLogger('evanescent.daemon')
@@ -315,6 +326,8 @@ if __name__ == "__main__":
 	signal_logger = logging.getLogger('evanescent.signal')
 
 	l.debug('hello from evanescent')		# send a hello message
+	#import getpass
+	#misc.do_broadcast('hello from evanescent', who={'users': [getpass.getuser()]})
 	#daemon_logger.info('hi from daemon')		# send a hello message
 
 	if os.name in ['posix']: d = daemon.daemon(pidfile=config.DAEMONPID, start_func=evanescent, logger=daemon_logger, close_fds=not(config.DEBUGMODE))
