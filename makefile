@@ -71,7 +71,7 @@ encode:
 force: ;
 
 
-# how do i fix this so that the pwd's aren't the same and you get persistence in makefiles> 
+# how do i fix this so that the pwd's aren't the same and you get persistence in makefiles?
 FIXME:
 	pwd
 	cd windows
