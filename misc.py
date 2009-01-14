@@ -22,7 +22,7 @@ import os
 import config
 if os.name in ['nt']:
 	import wpyqtmsg
-	msg = wpyqtmsg.wpyqtmsg()
+	msg = wpyqtmsg.wpyqtmsg(config.ICONIMAGE)
 
 def do_nologin(message=None):
 	"""stops new logins from happening,

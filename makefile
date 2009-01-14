@@ -63,7 +63,7 @@ encode:
 	# then encode each one, saving the outputted filename
 	# next, move that file to the main directory
 	# then save each generated filename in a `clean' file for later deletion
-	for x in `./windows/encoded.py`; do y=`./encode.sh "windows/$$x"`; mv $$y .; echo `basename $$y` >> clean; done
+	cd 'windows/' ; for x in `./../encoded.py`; do y=`./../encode.sh "$$x"`; mv $$y '../' ; echo `basename $$y` >> ../clean; done
 
 
 # this target does nothing, and can be used as a dependency when we always want
@@ -77,6 +77,8 @@ FIXME:
 	cd windows
 	pwd
 
+FIXME2:
+	pwd; cd windows; pwd
 
 # unix2dos file ending conversion
 # perl -pe 's/\r\n|\n|\r/\r\n/g' inputfile > outputfile
