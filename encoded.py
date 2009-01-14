@@ -21,6 +21,12 @@
 # enter a list of file names here that need to be encoded
 files = ['p_GetLastInput.dll', 'widle.bat', 'widle.vbs']
 
+# what nlines are these supposed to use?
+nline = [False, '\r\n', '\r\n']
+
+# make the filename `fixed' version so python doesn't choke
+encoded = [ f.replace('.', '_') for f in files ]
+
 # join them with spaces so we can loop through when called from our makefile
 if __name__ == '__main__':
 	print ' '.join(files)

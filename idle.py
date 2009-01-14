@@ -212,7 +212,7 @@ class idle:
 
 					d['idle'].append(z)
 					d['users'].append(getpass.getuser())	# i guess this is how i could get the login
-					d['line'].append('FIXME')		# FIXME: put something useful/meaningful?
+					d['line'].append('FIXME?')		# FIXME: put something useful/meaningful?
 					d['len'] = d['len'] + 1
 					break
 		return d

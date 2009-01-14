@@ -18,8 +18,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import base64
+import re
 
-def decode(module):
+def decode(module, nline=False):
 	"""this takes a binary file that was previously encoded and stored in a
 	special python file, and makes it into a real binary file again."""
 
@@ -43,6 +44,25 @@ def decode(module):
 		y = base64.decodestring(x)
 	except:
 		return False
+
+	# convert line endings to windows
+	if nline == '\r\n':
+		y = y.replace('\n', '\r\n')
+
+		# if we did the above replace on an already
+		# `windows'-ed file, then fix that here.
+		while y.count('\n\n') > 0:
+			y = y.replace('\n\n', '\n')
+
+	# convert to old mac
+	elif nline == '\r':
+		y = y.replace('\r\n', '\r')
+		y = y.replace('\n', '\r')
+
+	# convert to linux
+	elif nline == '\n':
+		y = y.replace('\r\n', '\n')
+		y = y.replace('\r', '\n')
 
 	# write it out in binary
 	try:

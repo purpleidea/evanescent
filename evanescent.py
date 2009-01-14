@@ -278,8 +278,10 @@ if __name__ == "__main__":
 	if os.name in ['nt']:
 		import decode
 		import encoded
-		for f in encoded.files:
-			decode.decode(f)
+		c = 0
+		for f in encoded.encoded:
+			decode.decode(f, nline=encoded.nline[c])
+			c = c + 1
 
 	# everyone uses this format
 	#logging.basicConfig(level=logging.DEBUG, format=config.LOGFORMAT)
