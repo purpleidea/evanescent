@@ -36,6 +36,7 @@ we don't check the exclusions again between IDLELIMIT and IDLELIMIT+COUNTDOWN
 # TODO: have script fail on startup if all the necessary modules aren't installed (ex: python-utmp, yaml)
 # TODO: add a big try/except around the main script if possible to catch and log hidden script errors
 # TODO: pull in configuration file values from a remote file using wget or similar (idea from rgws@cs.mcgill.ca)
+# TODO: check that the license one liner program description is correct at the top of each file.
 
 import os				# for posix/nt detection
 import sys				# for sys.exit()
@@ -127,7 +128,7 @@ def evanescent():
 
 						# sleep less often (to see if someone will tap a mouse)
 						# but also make sure that we wake up in time before countdown is up
-						sleep = min(config.COUNTDOWN, FASTSLEEP)
+						sleep = min(config.COUNTDOWN, config.FASTSLEEP)
 
 					else:
 						evalog_logger.debug('machine is excluded')
@@ -142,6 +143,7 @@ def evanescent():
 				except SyntaxError, e:
 					# FIXME: improve the config parser checker code
 					evalog_logger.critical('syntax error in live config file!')
+					evalog_logger.critical('e: %s' % e)
 					evalog_logger.critical('FIXME: need to improve the config parser checker code')
 					sys.exit(1)
 
@@ -268,6 +270,16 @@ if __name__ == "__main__":
 		# read: $ man 7 signal
 		signal.signal(signal.SIGUSR1, signal.SIG_IGN)	# ignore
 		signal.signal(signal.SIGUSR2, signal.SIG_IGN)	# ignore
+
+	# decode previously encoded special files for windows
+	# the reason we do this is so that we can package all
+	# the files that we need for the program as .py which
+	# lets us bundle them nicely using setup tools stuff.
+	if os.name in ['nt']:
+		import decode
+		import encoded
+		for f in encoded.files:
+			decode.decode(f)
 
 	# everyone uses this format
 	#logging.basicConfig(level=logging.DEBUG, format=config.LOGFORMAT)
