@@ -19,10 +19,10 @@
 """
 
 # enter a list of file names here that need to be encoded
-files = ['p_GetLastInput.dll', 'widle.bat', 'widle.vbs', 'evanescent.png', 'evanescent.reg']
+files = ['p_GetLastInput.dll', 'widle.bat', 'widle.vbs', 'evanescent.png', 'evanescent.reg', 'ps.exe', 'PSAPI.dll']
 
-# what new lines are these supposed to use?
-nline = [False, '\r\n', '\r\n', False, '\r\n']
+# what new lines are these supposed to use? False for binary files.
+nline = [False, '\r\n', '\r\n', False, '\r\n', False, False]
 
 # make the filename `fixed' version so python doesn't choke
 encoded = [ f.replace('.', '_') for f in files ]
