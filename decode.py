@@ -19,13 +19,15 @@
 """
 import base64
 import re
+import eerror
 
 def decode(module, nline=False):
+	# TODO: have this function throw errors instead of returning False everywhere.
 	"""this takes a binary file that was previously encoded and stored in a
 	special python file, and makes it into a real binary file again."""
 
 	# type check
-	if not(type(module) == type('')): return False
+	assert (type(module) == type(''))
 
 	# strip off a .py extension
 	if module[-3:] == '.py': module = module[0:-3]
@@ -34,7 +36,7 @@ def decode(module, nline=False):
 	try:
 		data = __import__(module)
 	except ImportError:
-		return False
+		raise eerror.DecodeError('error importing encoded module `%s\'' % module)
 
 	# get rid of all the newlines
 	x = data.base64.replace('\n', '')
@@ -43,7 +45,7 @@ def decode(module, nline=False):
 	try:
 		y = base64.decodestring(x)
 	except:
-		return False
+		raise eerror.DecodeError('error decoding `%s\' module' % module)
 
 	# convert line endings to windows
 	if nline == '\r\n':
@@ -70,10 +72,11 @@ def decode(module, nline=False):
 		f.write(y)
 		f.close()
 	except IOError:
-		return False
+		raise eerror.DecodeError('error writing binary file `%s\'' % data.filename)
 
 	# return the filename used
 	return data.filename
+
 
 if __name__ == '__main__':
 	import sys
