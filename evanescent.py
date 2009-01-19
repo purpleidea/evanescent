@@ -309,7 +309,6 @@ class evanescent:
 							# exclusions that vary from minute to minute would make this act funny.
 							sleep = config.SLEEPTIME
 
-
 					except SyntaxError, e:
 						# FIXME: improve the config parser checker code
 						self.logs['evalog'].critical('syntax error in live config file!')
@@ -322,10 +321,8 @@ class evanescent:
 			else:	# not idle
 				self.logs['evalog'].debug('computer is not idle')
 				notidle = i.active_indices(threshold=config.IDLELIMIT)
-				# TODO: log these the other way, so that a user, line and idle time appear all together
-				self.logs['evalog'].debug('user: %s' % ', '.join(i.get_user(notidle)))
-				self.logs['evalog'].debug('line: %s' % ', '.join(i.get_line(notidle)))
-				self.logs['evalog'].debug('idle: %s' % ', '.join(map(str, i.get_idle(notidle))))
+				for x in notidle:
+					self.logs['evalog'].debug('user: %s; line: %s; idle: %s' % (i.get_user(x), i.get_line(x), str(i.get_idle(x))[0:4]))
 
 				# datetime objects should return true
 				if warned:
