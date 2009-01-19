@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#   Evanescent machine idle detection and shutdown tool.
+#    Evanescent machine idle detection and shutdown tool.
 #    Copyright (C) 2008  James Shubin, McGill University
 #    Written for McGill University by James Shubin <purpleidea@gmail.com>
 #

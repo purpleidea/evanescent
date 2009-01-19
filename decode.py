@@ -22,7 +22,6 @@ import re
 import eerror
 
 def decode(module, nline=False):
-	# TODO: have this function throw errors instead of returning False everywhere.
 	"""this takes a binary file that was previously encoded and stored in a
 	special python file, and makes it into a real binary file again."""
 
