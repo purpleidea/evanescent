@@ -58,17 +58,25 @@ if os.name in ['posix']:
 
 if os.name in ['nt']:
 	import time			# for sleeping in windows
-	import decode
-	import encoded
+	import decode			# decode library for encoded files
+	import encoded			# list of encoded files
+	import wusers			# users functionality for windows
 
 import config				# import configs
 
+# available modes for evanescent
+MODE_NONE = None
+MODE_NT2NDEVA = 1			# win nt, 2nd evanescent.
+
 class evanescent:
 
-	def __init__(self, name='evanescent'):
-
+	def __init__(self, name=None, mode=None):
 		# name to be used as in script as main identifier
+		if name is None: name = os.path.splitext(__file__)[0]
 		self.name = str(name)
+
+		# run evanesent in a special mode
+		self.mode = mode
 
 		# logging variables
 		self.log = None	# main logger
@@ -249,8 +257,20 @@ class evanescent:
 			# extract for do_broadcast()
 			extract = i.idle()
 
+			nobody = False
+			# verify if no users are logged on for hacky windows mode.
+			if self.mode in [MODE_NT2NDEVA]:
+
+				# users that don't count as `logged in.' eg: system users
+				ignore = ['NT AUTHORITY\SYSTEM']
+				users = wps('USER') # grab users
+				users = [x for x in users if not(x in [ignore])]
+				if len(users) == 0:
+					nobody = True
+					self.logs['evalog'].info('nobody is logged on.')
+
 			# if entire machine is idle
-			if i.is_idle(threshold=config.IDLELIMIT):
+			if nobody or (self.mode in [None] and i.is_idle(threshold=config.IDLELIMIT)):
 				self.logs['evalog'].info('computer is idle')
 
 				if warned:
@@ -288,6 +308,10 @@ class evanescent:
 						if config.INITSLEEP > 0 and uptime < config.INITSLEEP:
 							self.logs['evalog'].debug('machine just booted, excluding from shutdown')
 							sleep = abs(config.INITSLEEP - uptime)	# abs to be safe
+
+
+			# what will it do while running in MODE_NT2NDEVA
+			#???FIXME: CHECK>>>	elif not(e.is_excluded(users=i.unique_users())):
 
 						# if we should shutdown
 						elif not(e.is_excluded(users=i.unique_users())):
