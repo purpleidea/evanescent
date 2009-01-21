@@ -40,6 +40,7 @@
 # TODO: make an evanescent error class, and create specific errors for all the random evanescent things.
 # TODO: instead of always logging to evalog, log things into better categories. daemon stuff always goes there, etc...
 # TODO: clean up all message strings and add %s data within them, and rewrite them to be clear and clean.
+# TODO: we could add an exclusion option for a particular process or program name. eg if program my_proc.py is running, don't shutdown.
 
 import os				# for posix/nt detection
 import sys				# for sys.exit()
