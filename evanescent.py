@@ -64,13 +64,8 @@ if os.name in ['nt']:
 	import time			# for sleeping in windows
 	import decode			# decode library for encoded files
 	import encoded			# list of encoded files
-	import wusers			# users functionality for windows
 
 import config				# import configs
-
-# available modes for evanescent
-MODE_NONE = None
-MODE_NT2NDEVA = 1			# win nt, 2nd evanescent.
 
 class evanescent:
 
@@ -265,25 +260,10 @@ class evanescent:
 			# extract for do_broadcast()
 			extract = i.idle()
 
-			nobody = False
-			# verify if no users are logged on for hacky windows mode.
-			if self.mode in [MODE_NT2NDEVA]:
-				self.log.debug('we\'re in the mode...')
-
-				# users that don't count as `logged in.' eg: system users
-				ignore = ['NT AUTHORITY\SYSTEM']
-				users = wusers.wps('USER') # grab users
-				self.log.debug('grabbed users: %s' % str(users))
-				users = [x for x in users if not(x in ignore)]
-				self.log.debug('after sorted: %s' % str(users))
-				if len(users) == 0:
-					nobody = True
-					self.logs['evalog'].info('nobody is logged on.')
-
 			self.log.debug('idle_dump: %s' % str(i.idle()))
 
 			# if entire machine is idle
-			if nobody or (self.mode in [None] and i.is_idle(threshold=config.IDLELIMIT)):
+			if i.is_idle(threshold=config.IDLELIMIT):
 				self.logs['evalog'].info('computer is idle')
 
 				if warned:
@@ -321,10 +301,6 @@ class evanescent:
 						if config.INITSLEEP > 0 and uptime < config.INITSLEEP:
 							self.logs['evalog'].debug('machine just booted, excluding from shutdown')
 							sleep = abs(config.INITSLEEP - uptime)	# abs to be safe
-
-
-			# what will it do while running in MODE_NT2NDEVA
-			#???FIXME: CHECK>>>	elif not(e.is_excluded(users=i.unique_users())):
 
 						# if we should shutdown
 						elif not(e.is_excluded(users=i.unique_users())):

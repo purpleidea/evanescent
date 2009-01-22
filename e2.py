@@ -18,9 +18,4 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import evanescent
-import os
-
-e2 = evanescent.evanescent(name=os.path.splitext(__file__)[0], mode=evanescent.MODE_NT2NDEVA)
-e2.main()
 
