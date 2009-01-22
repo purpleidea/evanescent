@@ -19,7 +19,7 @@
 """
 
 # enter a list of file names here that need to be encoded
-files = ['p_GetLastInput.dll', 'widle.bat', 'widle.vbs', 'evanescent.png', 'evanescent.reg', 'ps.exe', 'PSAPI.dll']
+files = ['p_GetLastInput.dll', 'widle.bat', 'widle.vbs', 'evanescent.png', 'evanescent.reg', 'ps.exe', 'PSAPI.DLL']
 
 # what new lines are these supposed to use? False for binary files.
 nline = [False, '\r\n', '\r\n', False, '\r\n', False, False]

@@ -54,7 +54,11 @@ import eerror				# custom exceptions classes
 
 if os.name in ['posix']:
 	import signal			# for signal stuff for linux
-	import daemon			# i wrote this one
+
+# FIXME: this file should only be included for linux, however since
+# there is a daemon.Error that is used in a try-except, windows
+# scripts fail since they look for this value even though it is never used.
+import daemon			# i wrote this one
 
 if os.name in ['nt']:
 	import time			# for sleeping in windows
@@ -72,6 +76,7 @@ class evanescent:
 
 	def __init__(self, name=None, mode=None):
 		# name to be used as in script as main identifier
+		# FIXME: the above name finder doesn't work on windows. FIX THAT. and put the same code in e2
 		if name is None: name = os.path.splitext(__file__)[0]
 		self.name = str(name)
 
@@ -125,6 +130,9 @@ class evanescent:
 		if not(self.decode()):
 			self.log.fatal('error decoding files, exiting.')
 			sys.exit(1)
+
+		# record which mode we're running in.
+		self.log.debug('mode is: %s' % str(self.mode))
 
 		# create daemon object
 		if os.name in ['posix']:
@@ -260,14 +268,19 @@ class evanescent:
 			nobody = False
 			# verify if no users are logged on for hacky windows mode.
 			if self.mode in [MODE_NT2NDEVA]:
+				self.log.debug('we\'re in the mode...')
 
 				# users that don't count as `logged in.' eg: system users
 				ignore = ['NT AUTHORITY\SYSTEM']
-				users = wps('USER') # grab users
-				users = [x for x in users if not(x in [ignore])]
+				users = wusers.wps('USER') # grab users
+				self.log.debug('grabbed users: %s' % str(users))
+				users = [x for x in users if not(x in ignore)]
+				self.log.debug('after sorted: %s' % str(users))
 				if len(users) == 0:
 					nobody = True
 					self.logs['evalog'].info('nobody is logged on.')
+
+			self.log.debug('idle_dump: %s' % str(i.idle()))
 
 			# if entire machine is idle
 			if nobody or (self.mode in [None] and i.is_idle(threshold=config.IDLELIMIT)):
@@ -398,7 +411,7 @@ class evanescent:
 			# 1) POKE to get code to loop and re-read config file (eg, from an admin)
 			# 2) SHHH (a signal from a user saying hey, i pressed cancel) -> our program can send this if they click a cancel button
 
-
+			self.log.debug('sleep_debug is: %d' % sleep)
 			# if we sleep for zero seconds or less, this can often make the sleep call hang forever
 			sleep = int(math.ceil(sleep))
 			if sleep > 0:

@@ -67,9 +67,20 @@ def wps(colname=None):
 	return values
 
 
+def wusers(clean=True):
+	"""users equivalent for windows, but in library form.
+	the clean option removes the hostname and slashes."""
+	result = wps('USER')
+	if clean:
+		result = [ x[x.find('\\')+1:] for x in result if x.find('\\') > 0 ]
+
+	return result
+
+
 if __name__ == '__main__':
-	# is run from command line, we can print users
 	# print out one per line, since the user names
 	# that get printed out can have spaces in them
-	print os.linesep.join(wps('USER'))
+	# when cleaned, we don't expect to see spaces.
+	#print os.linesep.join(wusers())
+	print ' '.join(wusers())
 
