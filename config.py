@@ -37,6 +37,13 @@ MYLOGPATH = '/var/log/evanescent.log'	# path for local log file
 MYERRPATH = '/var/log/evanescent.FAIL'	# path for FAIL log file
 LOGFORMAT = '%(asctime)s %(levelname)-8s %(name)-17s %(message)s'
 ICONIMAGE = 'evanescent.png'		# filename for `systray' icon
+READSLEEP = 5				# minimum sleep time between messages
+SHAREDDIR = '/var/run/evanescent/'	# directory for shared evanescent/eva data
+
+# constant constants
+# (no need to change these)
+MSGSUBDIR = 'msg'			# sub directory in shareddir for passing messages
+WIDLEPATH = 'idle'			# sub directory in shareddir for passing idletime
 
 if os.name in ['nt']:
 	# TODO: verify these follow whatever the equivalent of a windows FHS would be.
@@ -45,6 +52,7 @@ if os.name in ['nt']:
 	DAEMONPID = None
 	MYLOGPATH = 'c:\WINDOWS\system32\config\evanescent.log'
 	MYERRPATH = 'c:\WINDOWS\system32\config\evanescent.FAIL'
+	SHAREDDIR = 'c:\WINDOWS\system32\evanescent\\'
 
 conf = yamlhelp.yamlhelp(filename=THECONFIG)
 try:
@@ -68,6 +76,7 @@ else: data = {}
 # convert all keys to uppercase and remove null values
 data = dict([ (key.upper(),value) for key,value in data.items() if not(value is None) ])
 
+# TODO: convert this block into a few clever lines and a loop
 if data.has_key('STARTMEUP'): STARTMEUP = bool(data['STARTMEUP'])
 if data.has_key('DEBUGMODE'): DEBUGMODE = bool(data['DEBUGMODE'])
 if data.has_key('WORDYMODE'): WORDYMODE = bool(data['WORDYMODE'])
@@ -83,6 +92,8 @@ if data.has_key('MYLOGPATH'): MYLOGPATH =  str(data['MYLOGPATH'])
 if data.has_key('MYERRPATH'): MYERRPATH =  str(data['MYERRPATH'])
 if data.has_key('LOGFORMAT'): LOGFORMAT =  str(data['LOGFORMAT'])
 if data.has_key('ICONIMAGE'): ICONIMAGE =  str(data['ICONIMAGE'])
+if data.has_key('READSLEEP'): READSLEEP =  int(data['READSLEEP'])
+if data.has_key('SHAREDDIR'): SHAREDDIR =  str(data['SHAREDDIR'])
 
 if DEBUGMODE:				# make our debugging go faster
 	IDLELIMIT = 30

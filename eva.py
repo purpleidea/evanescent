@@ -35,3 +35,9 @@
 # MAYBE WE CAN GET SOME SORT OF IPC PYTHON THING GOING
 # INSTEAD OF PASSING THROUGH FILES. MAYBE NOT. WHO KNOWS.
 
+import evanescent
+
+e = evanescent.evanescent(name='eva')	# TODO: pull this name out of the eva.py filename... maybe the code for that goes in evanescent.py
+e.main()
+
+

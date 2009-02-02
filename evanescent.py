@@ -38,7 +38,7 @@
 # TODO: pull in configuration file values from a remote file using wget or similar (idea from rgws@cs.mcgill.ca)
 # TODO: check that the license one liner program description is correct at the top of each file.
 # TODO: make an evanescent error class, and create specific errors for all the random evanescent things.
-# TODO: instead of always logging to evalog, log things into better categories. daemon stuff always goes there, etc...
+# TODO: instead of always logging to dialog, log things into better categories. daemon stuff always goes there, etc...
 # TODO: clean up all message strings and add %s data within them, and rewrite them to be clear and clean.
 # TODO: we could add an exclusion option for a particular process or program name. eg if program my_proc.py is running, don't shutdown.
 
@@ -46,10 +46,12 @@ import os				# for posix/nt detection
 import sys				# for sys.exit()
 import math				# for math.ceil()
 import datetime				# for time diffs
+import time				# for sleep() and time()
 import logging, logging.handlers	# for syslog stuff
 import exclusions			# i wrote this one
 import idle				# i wrote this one
 import misc				# i wrote this one
+import yamlhelp				# i wrote this one
 import eerror				# custom exceptions classes
 
 if os.name in ['posix']:
@@ -61,21 +63,26 @@ if os.name in ['posix']:
 import daemon			# i wrote this one
 
 if os.name in ['nt']:
-	import time			# for sleeping in windows
 	import decode			# decode library for encoded files
 	import encoded			# list of encoded files
 
+# TODO: do some sort of INIT on config from evanescent init so that the name variable from evanescent gets passed and used in config.
 import config				# import configs
 
 class evanescent:
 
-	def __init__(self, name=None, mode=None):
+	NONMODE = 0
+	EVAMODE = 1
+
+	def __init__(self, name=None, mode=NONMODE):
 		# name to be used as in script as main identifier
-		# FIXME: the above name finder doesn't work on windows. FIX THAT. and put the same code in e2
+		if name is None: name = 'evanescent'	# FIXME: remove this line. it is a temporary fix until the above works on windows.
+		# FIXME: the below name finder doesn't work on windows. FIX THAT.
 		if name is None: name = os.path.splitext(__file__)[0]
+
 		self.name = str(name)
 
-		# run evanesent in a special mode
+		# run evanescent in a special mode
 		self.mode = mode
 
 		# logging variables
@@ -87,12 +94,12 @@ class evanescent:
 	def sigusr1(self, signum, frame):
 		"""signal handler for sigusr1"""
 		#raise KeyboardInterrupt
-		self.logs['evalog'].debug('caught signal: sigusr1')
+		self.logs['dialog'].debug('caught signal: sigusr1')
 
 
 	def sigusr2(self, signum, frame):
 		"""signal handler for sigusr2"""
-		self.logs['evalog'].debug('caught signal: sigusr2')
+		self.logs['dialog'].debug('caught signal: sigusr2')
 
 
 	def main(self):
@@ -121,6 +128,24 @@ class evanescent:
 			sys.exit(1)
 		e = None
 
+		# make all the special directories we might need
+		try:
+			if not(os.path.exists(config.SHAREDDIR)): os.makedirs(config.SHAREDDIR)
+
+			# make directory for putting shared messages
+			d = os.path.join(config.SHAREDDIR, config.MSGSUBDIR)
+			if not(os.path.exists(d)): os.makedirs(d)
+
+			if os.name in ['nt']:
+				# make idle time reporting directory
+				d = os.path.join(config.SHAREDDIR, config.WIDLEPATH)
+				if not(os.path.exists(d)): os.makedirs(d)
+
+		except IOError, e:
+			self.log.fatal('error making directories, exiting.')
+			self.log.debug('error:%s%s' % (os.linesep, e))
+			sys.exit(1)
+
 		# extract all the special files we might need
 		if not(self.decode()):
 			self.log.fatal('error decoding files, exiting.')
@@ -129,13 +154,17 @@ class evanescent:
 		# record which mode we're running in.
 		self.log.debug('mode is: %s' % str(self.mode))
 
+		# which loop do we want to run?
+		if self.mode == self.EVAMODE: start_func = self.eva_loop
+		else: start_func = self.main_loop
+
 		# create daemon object
 		if os.name in ['posix']:
-			d = daemon.daemon(pidfile=config.DAEMONPID, start_func=self.main_loop, logger=self.logs['daemon'], close_fds=not(config.DEBUGMODE))
+			d = daemon.daemon(pidfile=config.DAEMONPID, start_func=start_func, logger=self.logs['daemon'], close_fds=not(config.DEBUGMODE))
 
 		try:
 			if os.name in ['posix']: d.start_stop()
-			elif os.name in ['nt']: self.main_loop()
+			elif os.name in ['nt']: start_func()
 			else: raise AssertionError('os: `%s\' is not supported at this time.' % os.name)
 
 		except KeyboardInterrupt, e:
@@ -216,8 +245,9 @@ class evanescent:
 
 		# handlers in x propagate down to everyone (y) in the x.y tree
 		self.logs['daemon'] = logging.getLogger('%s.daemon' % self.name)
-		self.logs['evalog'] = logging.getLogger('%s.evalog' % self.name)
+		self.logs['dialog'] = logging.getLogger('%s.dialog' % self.name)
 		self.logs['signal'] = logging.getLogger('%s.signal' % self.name)
+		self.logs['evalog'] = logging.getLogger('%s.evalog' % self.name)
 
 		# send a hello message
 		self.log.debug('hello from %s' % self.name)
@@ -251,20 +281,18 @@ class evanescent:
 		warned = False
 		sleep = config.SLEEPTIME
 		# main loop
-		self.logs['evalog'].debug('entering main loop')
+		self.logs['dialog'].debug('entering main loop')
 		while True:
 
 			# create idle time object
-			i = idle.idle(tick_default=False)
+			i = idle.idle(tick_default=False, me=None)	# [nt] me==None: get current idle data and others
 
 			# extract for do_broadcast()
 			extract = i.idle()
 
-			self.log.debug('idle_dump: %s' % str(i.idle()))
-
 			# if entire machine is idle
 			if i.is_idle(threshold=config.IDLELIMIT):
-				self.logs['evalog'].info('computer is idle')
+				self.logs['dialog'].info('computer is idle')
 
 				if warned:
 					# we've waited this long since users got warned
@@ -272,11 +300,11 @@ class evanescent:
 					delta = int(math.ceil(timedelta.seconds + (timedelta.days*24*60*60) + (timedelta.microseconds*(1/1000000))))
 					# if warning time is up!
 					if delta > config.COUNTDOWN:
-						self.logs['evalog'].warn('machine shutting down now!')
+						self.logs['dialog'].warn('machine shutting down now!')
 
 						# returns true or false if this worked
 						if not(misc.do_nologin('sorry, machine is shutting down')):
-							self.logs['evalog'].warn('running: do_nologin() failed.')
+							self.logs['dialog'].warn('running: do_nologin() failed.')
 
 						# broadcasts a write to all the cli/gtk clients to say goodbye
 						misc.do_broadcast('machine is going down now', {'users': extract['users'], 'line': extract['line']})
@@ -286,26 +314,26 @@ class evanescent:
 
 					else:
 						# TODO: maybe we check for users pressing cancel here?
-						self.logs['evalog'].debug('waiting for countdown to be up')
+						self.logs['dialog'].debug('waiting for countdown to be up')
 						pass
 
 				else:
 
 					e = exclusions.exclusions(config.THECONFIG)
-					self.logs['evalog'].debug('checking exclusions...')
+					self.logs['dialog'].debug('checking exclusions...')
 					try:
 						# from the time when a machine comes up, give users a chance of `INITSLEEP' seconds
 						# to login before the empty machine is considered idle and shuts itself down.
 						# idea for this feature from andrewb@cs.mcgill.ca
 						uptime = misc.uptime()
 						if config.INITSLEEP > 0 and uptime < config.INITSLEEP:
-							self.logs['evalog'].debug('machine just booted, excluding from shutdown')
+							self.logs['dialog'].debug('machine just booted, excluding from shutdown')
 							sleep = abs(config.INITSLEEP - uptime)	# abs to be safe
 
 						# if we should shutdown
 						elif not(e.is_excluded(users=i.unique_users())):
 
-							self.logs['evalog'].debug('machine isn\'t excluded, doing warn')
+							self.logs['dialog'].debug('machine isn\'t excluded, doing warn')
 							# now we warn users of impending shutdown
 							misc.do_broadcast('machine is shutting down in %d seconds if you continue to be idle. tap any key to cancel impending shutdown.' % config.COUNTDOWN, {'users': extract['users'], 'line': extract['line']})
 							warned = datetime.datetime.today()
@@ -315,7 +343,7 @@ class evanescent:
 							sleep = min(config.COUNTDOWN, config.FASTSLEEP)
 
 						else:
-							self.logs['evalog'].debug('machine is excluded')
+							self.logs['dialog'].debug('machine is excluded')
 							# fix the sleep value back to normal-ness
 							# FIXME: technically, we could do the min thing and wake up
 							# in time to see another user go idle, but the exclusions
@@ -325,23 +353,23 @@ class evanescent:
 
 					except SyntaxError, e:
 						# FIXME: improve the config parser checker code
-						self.logs['evalog'].critical('syntax error in live config file!')
-						self.logs['evalog'].critical('e: %s' % e)
-						self.logs['evalog'].critical('FIXME: need to improve the config parser checker code')
+						self.logs['dialog'].critical('syntax error in live config file!')
+						self.logs['dialog'].critical('e: %s' % e)
+						self.logs['dialog'].critical('FIXME: need to improve the config parser checker code')
 						sys.exit(1)
 
 					e = None	# free memory
 
 			else:	# not idle
-				self.logs['evalog'].debug('computer is not idle')
+				self.logs['dialog'].debug('computer is not idle')
 				notidle = i.active_indices(threshold=config.IDLELIMIT)
 				for x in notidle:
-					self.logs['evalog'].debug('user: %s; line: %s; idle: %s' % (i.get_user(x), i.get_line(x), str(i.get_idle(x))[0:4]))
+					self.logs['dialog'].debug('user: %s; line: %s; idle: %s' % (i.get_user(x), i.get_line(x), str(i.get_idle(x))[0:4]))
 
 				# datetime objects should return true
 				if warned:
 					# shutdown was canceled, computer no longer idle
-					self.logs['evalog'].info('shutdown canceled, not idle anymore')
+					self.logs['dialog'].info('shutdown canceled, not idle anymore')
 					warned = False
 					misc.do_broadcast('impending shutdown was canceled.', {'users': extract['users'], 'line': extract['line']})
 
@@ -371,6 +399,7 @@ class evanescent:
 			# we could select() on the utmp file and wake up everytime it changes
 			# we could get the /etc/gdm/PostSession script to run a kill -USR2 signal to poke this program
 			# we could select() on the /var/log/auth log file to check for sshd session closed events
+			# there are pam session events that get triggered. look into pam session for more info.
 
 			# easy sleep
 			#time.sleep(sleep)
@@ -387,12 +416,11 @@ class evanescent:
 			# 1) POKE to get code to loop and re-read config file (eg, from an admin)
 			# 2) SHHH (a signal from a user saying hey, i pressed cancel) -> our program can send this if they click a cancel button
 
-			self.log.debug('sleep_debug is: %d' % sleep)
 			# if we sleep for zero seconds or less, this can often make the sleep call hang forever
 			sleep = int(math.ceil(sleep))
 			if sleep > 0:
 				# allow/handle incoming signals
-				self.logs['evalog'].debug('going to sleep for %s seconds' % sleep)
+				self.logs['dialog'].debug('going to sleep for %s seconds' % sleep)
 
 				if os.name in ['posix']:
 					caught = False
@@ -409,12 +437,12 @@ class evanescent:
 					try:
 						signal.pause()
 						# pause exited, so a signal was caught
-						self.logs['evalog'].debug('signal caught!')
+						self.logs['dialog'].debug('signal caught!')
 						caught = True
 					except KeyboardInterrupt:
 						# exception happened, so alarm caused this
 						caught = False
-						self.logs['evalog'].debug('sleep over, waking up!')
+						self.logs['dialog'].debug('sleep over, waking up!')
 
 					# we continue...
 					signal.alarm(0)		# disable the alarm
@@ -428,7 +456,57 @@ class evanescent:
 					except IOError, e:
 						# maybe someone pressed Control-Alt-Delete after
 						# script was already running on system startup
-						self.logs['evalog'].debug('ioerror while sleeping: %s' % str(e))
+						self.logs['dialog'].debug('ioerror while sleeping: %s' % str(e))
+
+
+	def eva_loop(self):
+		"""this is the main loop for eva."""
+		# note: we're using getpass.getuser() instead of os.getlogin() because the later isn't platform compatible.
+		f = yamlhelp.yamlhelp(os.path.join(config.SHAREDDIR, config.MSGSUBDIR, getpass.getuser()))
+		if os.name in ['posix']:
+			# TODO: import a messaging class for posix. maybe pynotify?
+			pass
+
+		if os.name in ['nt']:
+			i = idle.idle(tick_default=False, me=True)
+			g = yamlhelp.yamlhelp(os.path.join(config.SHAREDDIR, config.WIDLEPATH, getpass.getuser()))
+
+			import wpyqtmsg
+			msg = wpyqtmsg.wpyqtmsg(config.ICONIMAGE)
+
+		last_message = -1
+
+		self.logs['evalog'].debug('entering main loop')
+		while True:
+			# if we are a windows client, then we need to `report'
+			# our idle time for the main evanescent process which
+			# won't be able to read it on its own.
+			if os.name in ['nt']:
+				self.logs['evalog'].debug('client is reporting idle time')
+				g.put_yaml({'tsync': time.time(), 'widle': i.idle()})
+
+			# if there are any messages to display, then display them
+			m = os.path.join(config.SHAREDDIR, config.MSGSUBDIR, getpass.getuser())
+			if os.path.exists(m):
+				self.logs['evalog'].debug('there are messages to display')
+				d = f.get_yaml()
+				# there should be an array of messages in yaml
+				if type(d) == type([]):
+					for x in d:
+						# if the next message in line is newer than what we've seen so far...
+						if last_message < x['id']:
+							last_message = x['id']
+							self.logs['evalog'].info('message: %s' % d['msg'])
+							if os.name in ['nt']: msg.msg('evanescent', d['msg'])	# send qt4 pop up msg
+							elif os.name in ['posix']: pass				# send a pynotify msg
+							time.sleep(config.READSLEEP)				# sleep time b/w msgs
+						else:
+							# TODO: potentially we could prune the file by removing this message.
+							pass
+
+			# go around the loop
+			self.logs['evalog'].debug('going to sleep for %s seconds' % sleep)
+			time.sleep(config.FASTSLEEP)
 
 
 if __name__ == "__main__":

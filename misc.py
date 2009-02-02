@@ -20,9 +20,6 @@
 
 import os
 import config
-if os.name in ['nt']:
-	import wpyqtmsg
-	msg = wpyqtmsg.wpyqtmsg(config.ICONIMAGE)
 
 def do_nologin(message=None):
 	"""stops new logins from happening,
@@ -43,14 +40,13 @@ def do_nologin(message=None):
 
 
 def do_broadcast(message, who={'users': []}):
-	"""broadcasts a write to all the cli/gtk clients to say goodbye"""
+	"""broadcasts a message to all the cli/gtk clients."""
 	#FIXME: in the future we can have this be a more powerful library...
 	# it could use libnotify... and do fancy talking to gtk
 	# it could use write
 	# it could specify just a user or multiple users...
 	# it could specify particular lines (eg: terminals, like: tty7, or pts/0)
 	# it could do a combination of the above
-	# but for now it doesn't do anything.
 
 	if not(who.has_key('users')): return False
 	if who.has_key('line') and len(who['users']) != len(who['line']): raise AssertionError
@@ -58,6 +54,25 @@ def do_broadcast(message, who={'users': []}):
 	message = str(message)
 	if type(who['users']) == type([]):
 		for i in range(len(who['users'])):
+
+			# send a message to all clients through text file
+			# ipc. using a text file to pass messages is both
+			# simple and compatible in both windows and unix.
+
+			f = yamlhelp.yamlhelp(os.path.join(config.SHAREDDIR, config.MSGSUBDIR, who['users'][i]))
+			try:
+				# make a new message id... have it be slightly larger than the last.
+				result = f.get_yaml()
+				if not(type(result) == type([])) or (len(result) < 1): raise IOError
+				new_id = max([ x['id'] for x in result ]) + 1
+
+			except IOError:
+				new_id = 1
+
+			yaml_msg = [ {'id': new_id, 'msg': message} ]
+			# append a message to the text file message queue
+			f.put_yaml(yaml_msg, mode='a')
+
 			if os.name in ['posix']:
 				if who.has_key('line'):
 					os.system("echo '%s' | write %s %s &>/dev/null" % (message, who['users'][i], who['line'][i]))
@@ -66,7 +81,6 @@ def do_broadcast(message, who={'users': []}):
 
 			elif os.name in ['nt']:
 				os.popen('net send %s %s' % (who['users'][i], message))
-				msg.msg('evanescent', message)	# send qt4 pop up msg
 
 	return True
 
