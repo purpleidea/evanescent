@@ -526,10 +526,13 @@ class evanescent:
 						# if the next message in line is newer than what we've seen so far...
 						if last_message < x['id']:
 							last_message = x['id']
-							self.logs['evalog'].info('message: %s' % x['msg'])
-							if os.name in ['nt']: msg.msg('evanescent', x['msg'])	# send qt4 pop up msg
-							elif os.name in ['posix']: pass				# send a pynotify msg
-							time.sleep(config.READSLEEP)				# sleep time b/w msgs
+
+							# check if messages are `stale'. eg from a previous login/logout.
+							if (time.time() - x['tsync']) < config.STALETIME:
+								self.logs['evalog'].info('message: %s' % x['msg'])
+								if os.name in ['nt']: msg.msg('evanescent', x['msg'])	# send qt4 pop up msg
+								elif os.name in ['posix']: pass				# send a pynotify msg
+								time.sleep(config.READSLEEP)				# sleep time b/w msgs
 						else:
 							# TODO: potentially we could prune the file by removing this message.
 							pass

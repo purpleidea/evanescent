@@ -19,6 +19,7 @@
 """
 
 import os
+import time
 import config
 import yamlhelp
 
@@ -70,7 +71,7 @@ def do_broadcast(message, who={'users': []}):
 			except IOError:
 				new_id = 1
 
-			yaml_msg = [ {'id': new_id, 'msg': message} ]
+			yaml_msg = [ {'id': new_id, 'tsync': time.time(), 'msg': message} ]
 			# append a message to the text file message queue
 			f.put_yaml(yaml_msg, mode='a')
 

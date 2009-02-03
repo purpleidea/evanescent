@@ -27,7 +27,7 @@ WORDYMODE = True			# talk a lot (implied if debugmode is on)
 IDLELIMIT = 60*60			# 1 hour before you're idle
 COUNTDOWN = 5*60			# five minute countdown before shutdown
 SLEEPTIME = 10*60			# poll/check computer every 10 minutes
-FASTSLEEP = 1*60			# how often do we poll after the user has been warned
+FASTSLEEP = 45				# how often do we poll after the user has been warned
 INITSLEEP = 15*60			# initial sleep before idle on first startup of machine
 TDCOMMAND = 'shutdown -P now bye!'	# take-down command to run
 THECONFIG = '/etc/evanescent.conf.yaml'	# the config file
@@ -39,7 +39,7 @@ LOGFORMAT = '%(asctime)s %(levelname)-8s %(name)-17s %(message)s'
 ICONIMAGE = 'evanescent.png'		# filename for `systray' icon
 READSLEEP = 5				# minimum sleep time between messages
 SHAREDDIR = '/var/run/evanescent/'	# directory for shared evanescent/eva data
-STALETIME = 3*60			# time limit before widle data considered stale
+STALETIME = 60				# time limit before widle or msg data considered stale
 
 # constant constants
 # (no need to change these)
@@ -104,8 +104,9 @@ if DEBUGMODE:				# make our debugging go faster
 	INITSLEEP = 2*60		# 2 min
 	WORDYMODE = True
 
-if (FASTSLEEP != 0) and (COUNTDOWN != 0) and FASTSLEEP >= COUNTDOWN:
-	import sys
-	message = "FASTSLEEP value should be SMALLER than COUNTDOWN"
-	sys.stderr.write(message + "\n")
-	sys.exit(1)
+# so that... hmmm FIXME: i forget, haha.
+assert not((FASTSLEEP != 0) and (COUNTDOWN != 0) and FASTSLEEP >= COUNTDOWN), 'FASTSLEEP value should be smaller than COUNTDOWN'
+
+# so that messages don't go stale before they get a chance to be read
+assert READSLEEP+FASTSLEEP < STALETIME, 'READSLEEP+FASTSLEEP should be smaller than STALETIME'
+
