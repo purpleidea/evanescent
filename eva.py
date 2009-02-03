@@ -37,7 +37,7 @@
 
 import evanescent
 
-e = evanescent.evanescent(name='eva')	# TODO: pull this name out of the eva.py filename... maybe the code for that goes in evanescent.py
+e = evanescent.evanescent(start='eva_loop')	# TODO: pull the name out of the eva.py filename... maybe the code for that goes in evanescent.py
 e.main()
 
 

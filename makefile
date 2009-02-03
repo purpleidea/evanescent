@@ -17,14 +17,17 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# in case someone runs make randomly
+# if someone runs make randomly
 all:
 	ls -lah
 
-
+# clean up any mess that can be generated
 clean: force
 	# remove any python mess
 	rm -f *.pyc
+
+	# remove the python windowless mess too
+	rm -f *.pyw
 
 	# remove the tar archive
 	rm evanescent.tar.bz2 2> /dev/null || true
@@ -53,10 +56,12 @@ tar: clean revno encode
 
 # make a package for windows...
 windows: encode
+	# the client needs a windowless version
+	cp eva.py eva.pyw
 	echo 'figure out py2exe and do it...'
 
 
-encode:
+encode: clean
 	# empty the clean file
 	echo -n '' > clean
 	# find out which files need encoding and loop through them

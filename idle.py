@@ -21,10 +21,11 @@
 import os		# for stat (to get idle times)
 import time		# for the idle time math
 import math		# need this for math.floor for windows
+import yamlhelp		# for getting foreign idle times
+import config
 if os.name in ['posix']:
 	import utmp		# lib to read the utmp file
 	import UTMPCONST
-
 
 
 class idle:
@@ -33,11 +34,13 @@ class idle:
 	multiple queries (eg: unique_users, ls_idle, etc...)
 	without worrying about """
 
+
 	def __init__(self, tick_default=False, me=True):
 		self.__result = None			# saved result from __idle
 		self.tick_default = tick_default	# default value for tick
 		self.me = me				# used by __widle() for nt only
 		self.tick(True)				# tick once
+
 
 	def is_idle(self, threshold=0, tick=None):
 		"""returns whether the entire machine is idle or not"""
@@ -45,17 +48,20 @@ class idle:
 		result = self.__result
 		return (len(self.active_indices(threshold=threshold, tick=tick)) == 0)
 
+
 	def max_idle(self, tick=None):
 		"""returns the longest duration someone has been idle for"""
 		self.tick(tick)
 		result = self.__result
 		return result['max']
 
+
 	def min_idle(self, tick=None):
 		"""returns the shortest duration someone has been idle for"""
 		self.tick(tick)
 		result = self.__result
 		return result['min']
+
 
 	def get_idle(self, index, tick=None):
 		"""get idle time for particular index, as returned by idle_indices
@@ -75,6 +81,7 @@ class idle:
 			except IndexError:
 				return False
 
+
 	def get_line(self, index, tick=None):
 		"""get line for particular index, as returned by idle_indices
 		returns an array of lines if we give an array of indices"""
@@ -90,6 +97,7 @@ class idle:
 				return self.__result['line'][index]
 			except IndexError:
 				return False
+
 
 	def get_user(self, index, tick=None):
 		"""get user for particular index, as returned by idle_indices
@@ -107,6 +115,7 @@ class idle:
 			except IndexError:
 				return False
 
+
 	def idle_indices(self, threshold=0, tick=None, reverse=False):
 		"""returns a list of indices corresponding to which users are idle past a threshold"""
 		self.tick(tick)
@@ -121,9 +130,11 @@ class idle:
 		if not(reverse): return a
 		else: return z
 
+
 	def active_indices(self, threshold=0, tick=None):
 		"""returns a list of indices corresponding to which users aren't idle past a threshold"""
 		return self.idle_indices(threshold=threshold, tick=tick, reverse=True)
+
 
 	def ls_users(self, tick=None):
 		"""returns a list of users logged in-- duplicates for multiple logins"""
@@ -131,9 +142,11 @@ class idle:
 		result = self.__result
 		return result['users']
 
+
 	def unique_users(self, tick=None):
 		"""returns a unique (no duplicates) list of logged in users"""
 		return list(set(self.ls_users(tick)))
+
 
 	def tick(self, do_tick=None):
 		"""tries to update the idle cache.
@@ -142,8 +155,10 @@ class idle:
 			do_tick = self.tick_default
 		if do_tick: self.__result = self.__idle()
 
+
 	def idle(self, tick=None):
-		"""runs a fresh idle call and returns it"""
+		"""returns the output from a standard
+		idle call; with and without tick()"""
 		result = self.__idle()
 		if tick: self.__result = result
 		return self.__result
@@ -227,36 +242,40 @@ class idle:
 
 		# get the data from any clients broadcasting
 		if (self.me is None) or not(self.me):
-			clients = os.listdir( os.path.join(config.SHAREDDIR, self.IDLEDIR) )
+			clients = os.listdir( os.path.join(config.SHAREDDIR, config.WIDLEPATH) )
 			t = time.time()
-			for i in range(len(clients)):
+			for i in clients:
 				# get the data from that particular client
-				g = yamlhelp.yamlhelp(os.path.join(config.SHAREDDIR, self.IDLEDIR, i))
+				g = yamlhelp.yamlhelp(os.path.join(config.SHAREDDIR, config.WIDLEPATH, i))
 				data = g.get_yaml()
 				# when we grab from a file, we only every expect one element.
-				if len(data['users']) > 1: raise AssertionError('only expected one user')
+				if len(data['widle']['users']) > 1: raise AssertionError('only expected one user')
 
-				# the current idle time for a user is:
-				# the sum of the idle time reported at
-				# a specific time in the past, and the
-				# time difference between that reading
-				# and the current time now. the offset
-				# addition is probably a fair estimate
-				# since idle data from clients is read
-				# fairly often and any time errors are
-				# insignificant, with respect to total
-				# timeout times for the inactive user.
-				z = data['widle']['idle'][0] + ( t - data['tsync'] )
+				# when a user logs out, or if a client eva program is killed,
+				# the widle files still hang around, reporting their original
+				# (incorrect) idle time, so after some threshold ignore them.
+				if (t - data['tsync']) < config.STALETIME:
+					# the current idle time for a user is:
+					# the sum of the idle time reported at
+					# a specific time in the past, and the
+					# time difference between that reading
+					# and the current time now. the offset
+					# addition is probably a fair estimate
+					# since idle data from clients is read
+					# fairly often and any time errors are
+					# insignificant, with respect to total
+					# timeout times for the inactive user.
+					z = data['widle']['idle'][0] + ( t - data['tsync'] )
 
-				if d['max'] == None: d['max'] = z
-				if d['min'] == None: d['min'] = z
-				d['max'] = max(d['max'], z)	# set the new max
-				d['min'] = min(d['min'], z)	# set the new min
+					if d['max'] == None: d['max'] = z
+					if d['min'] == None: d['min'] = z
+					d['max'] = max(d['max'], z)	# set the new max
+					d['min'] = min(d['min'], z)	# set the new min
 
-				d['idle'].append(z)
-				d['users'].append( data['widle']['users'][0] )
-				d['line'].append( data['widle']['line'][0] )
-				d['len'] = d['len'] + 1
+					d['idle'].append(z)
+					d['users'].append( data['widle']['users'][0] )
+					d['line'].append( data['widle']['line'][0] )
+					d['len'] = d['len'] + 1
 
 		return d
 

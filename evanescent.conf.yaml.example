@@ -45,6 +45,9 @@
     myerrpath: '/var/log/evanescent.FAIL'                       # path for FAIL log file
     logformat: '%(asctime)s %(levelname)-8s %(name)-17s %(message)s'
     iconimage: 'evanescent.png'                                 # filename for `systray' icon
+    readsleep: 5                                                # minimum sleep time between messages
+    shareddir: '/var/run/evanescent/'                           # directory for shared evanescent/eva data
+    staletime: 180                                              # time limit before widle data considered stale
 
 ##############
 # EXCLUSIONS #

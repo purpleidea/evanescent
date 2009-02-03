@@ -39,6 +39,7 @@ LOGFORMAT = '%(asctime)s %(levelname)-8s %(name)-17s %(message)s'
 ICONIMAGE = 'evanescent.png'		# filename for `systray' icon
 READSLEEP = 5				# minimum sleep time between messages
 SHAREDDIR = '/var/run/evanescent/'	# directory for shared evanescent/eva data
+STALETIME = 3*60			# time limit before widle data considered stale
 
 # constant constants
 # (no need to change these)
@@ -94,6 +95,7 @@ if data.has_key('LOGFORMAT'): LOGFORMAT =  str(data['LOGFORMAT'])
 if data.has_key('ICONIMAGE'): ICONIMAGE =  str(data['ICONIMAGE'])
 if data.has_key('READSLEEP'): READSLEEP =  int(data['READSLEEP'])
 if data.has_key('SHAREDDIR'): SHAREDDIR =  str(data['SHAREDDIR'])
+if data.has_key('STALETIME'): STALETIME =  int(data['STALETIME'])
 
 if DEBUGMODE:				# make our debugging go faster
 	IDLELIMIT = 30

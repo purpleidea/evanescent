@@ -48,6 +48,7 @@ import math				# for math.ceil()
 import datetime				# for time diffs
 import time				# for sleep() and time()
 import logging, logging.handlers	# for syslog stuff
+import getpass				# for eva loop
 import exclusions			# i wrote this one
 import idle				# i wrote this one
 import misc				# i wrote this one
@@ -71,10 +72,7 @@ import config				# import configs
 
 class evanescent:
 
-	NONMODE = 0
-	EVAMODE = 1
-
-	def __init__(self, name=None, mode=NONMODE):
+	def __init__(self, name=None, start=None):
 		# name to be used as in script as main identifier
 		if name is None: name = 'evanescent'	# FIXME: remove this line. it is a temporary fix until the above works on windows.
 		# FIXME: the below name finder doesn't work on windows. FIX THAT.
@@ -83,7 +81,7 @@ class evanescent:
 		self.name = str(name)
 
 		# run evanescent in a special mode
-		self.mode = mode
+		self.start = str(start)
 
 		# logging variables
 		self.log = None	# main logger
@@ -151,11 +149,12 @@ class evanescent:
 			self.log.fatal('error decoding files, exiting.')
 			sys.exit(1)
 
-		# record which mode we're running in.
-		self.log.debug('mode is: %s' % str(self.mode))
+		# record which start mode we're running in.
+		self.log.debug('start is: %s' % str(self.start))
 
 		# which loop do we want to run?
-		if self.mode == self.EVAMODE: start_func = self.eva_loop
+		if self.start == 'eva_loop': start_func = self.eva_loop
+		#elif self.start == 'main_loop': start_func = self.main_loop
 		else: start_func = self.main_loop
 
 		# create daemon object
@@ -278,14 +277,39 @@ class evanescent:
 	def main_loop(self):
 		"""this is the main loop for evanescent."""
 
+		# clean directory for putting shared messages
+		d = os.path.join(config.SHAREDDIR, config.MSGSUBDIR)
+		if os.path.exists(d):
+			for x in os.listdir(d):
+				try:
+					os.remove(os.path.join(d, x))
+				except OSError:
+					pass
+
+		if os.name in ['nt']:
+			# clean idle time reporting directory
+			d = os.path.join(config.SHAREDDIR, config.WIDLEPATH)
+			if os.path.exists(d):
+				for x in os.listdir(d):
+					try:
+						os.remove(os.path.join(d, x))
+					except OSError:
+						pass
+
 		warned = False
 		sleep = config.SLEEPTIME
+
+		# create idle time object
+		# we don't want to tick, because we want the
+		# same snapshot inside the entire loop.
+		# tick once per loop to refresh the snapshot.
+		i = idle.idle(tick_default=False, me=None)	# [nt] me==None: get current idle data and others
+
 		# main loop
 		self.logs['dialog'].debug('entering main loop')
 		while True:
 
-			# create idle time object
-			i = idle.idle(tick_default=False, me=None)	# [nt] me==None: get current idle data and others
+			i.tick(True)	# refresh idle data
 
 			# extract for do_broadcast()
 			extract = i.idle()
@@ -362,9 +386,17 @@ class evanescent:
 
 			else:	# not idle
 				self.logs['dialog'].debug('computer is not idle')
+				self.logs['dialog'].debug('active users are:')
 				notidle = i.active_indices(threshold=config.IDLELIMIT)
 				for x in notidle:
 					self.logs['dialog'].debug('user: %s; line: %s; idle: %s' % (i.get_user(x), i.get_line(x), str(i.get_idle(x))[0:4]))
+
+				# idle
+				areidle = i.idle_indices(threshold=config.IDLELIMIT)
+				if len(areidle) > 0: self.logs['dialog'].debug('idle users are:')
+				for x in areidle:
+					self.logs['dialog'].debug('user: %s; line: %s; idle: %s' % (i.get_user(x), i.get_line(x), str(i.get_idle(x))[0:4]))
+
 
 				# datetime objects should return true
 				if warned:
@@ -391,8 +423,6 @@ class evanescent:
 					sleep = diff + 1
 				else:
 					sleep = config.SLEEPTIME
-
-			i = None	# free memory
 
 			# TODO: read some fd with select or listen for some signal that fires on a user logout event
 			# check online to see if the logout command broadcasts something ?
@@ -476,19 +506,19 @@ class evanescent:
 
 		last_message = -1
 
-		self.logs['evalog'].debug('entering main loop')
+		self.logs['evalog'].debug('entering eva loop')
 		while True:
 			# if we are a windows client, then we need to `report'
 			# our idle time for the main evanescent process which
 			# won't be able to read it on its own.
 			if os.name in ['nt']:
-				self.logs['evalog'].debug('client is reporting idle time')
-				g.put_yaml({'tsync': time.time(), 'widle': i.idle()})
+				self.logs['evalog'].debug('now reporting idle time')
+				g.put_yaml({'tsync': time.time(), 'widle': i.idle(tick=True)})
 
 			# if there are any messages to display, then display them
 			m = os.path.join(config.SHAREDDIR, config.MSGSUBDIR, getpass.getuser())
 			if os.path.exists(m):
-				self.logs['evalog'].debug('there are messages to display')
+				self.logs['evalog'].debug('the message bank is not empty')
 				d = f.get_yaml()
 				# there should be an array of messages in yaml
 				if type(d) == type([]):
@@ -496,8 +526,8 @@ class evanescent:
 						# if the next message in line is newer than what we've seen so far...
 						if last_message < x['id']:
 							last_message = x['id']
-							self.logs['evalog'].info('message: %s' % d['msg'])
-							if os.name in ['nt']: msg.msg('evanescent', d['msg'])	# send qt4 pop up msg
+							self.logs['evalog'].info('message: %s' % x['msg'])
+							if os.name in ['nt']: msg.msg('evanescent', x['msg'])	# send qt4 pop up msg
 							elif os.name in ['posix']: pass				# send a pynotify msg
 							time.sleep(config.READSLEEP)				# sleep time b/w msgs
 						else:
@@ -505,7 +535,7 @@ class evanescent:
 							pass
 
 			# go around the loop
-			self.logs['evalog'].debug('going to sleep for %s seconds' % sleep)
+			self.logs['evalog'].debug('going to sleep for %s seconds' % config.FASTSLEEP)
 			time.sleep(config.FASTSLEEP)
 
 
