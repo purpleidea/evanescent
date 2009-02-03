@@ -248,34 +248,41 @@ class idle:
 				# get the data from that particular client
 				g = yamlhelp.yamlhelp(os.path.join(config.SHAREDDIR, config.WIDLEPATH, i))
 				data = g.get_yaml()
-				# when we grab from a file, we only every expect one element.
-				if len(data['widle']['users']) > 1: raise AssertionError('only expected one user')
 
-				# when a user logs out, or if a client eva program is killed,
-				# the widle files still hang around, reporting their original
-				# (incorrect) idle time, so after some threshold ignore them.
-				if (t - data['tsync']) < config.STALETIME:
-					# the current idle time for a user is:
-					# the sum of the idle time reported at
-					# a specific time in the past, and the
-					# time difference between that reading
-					# and the current time now. the offset
-					# addition is probably a fair estimate
-					# since idle data from clients is read
-					# fairly often and any time errors are
-					# insignificant, with respect to total
-					# timeout times for the inactive user.
-					z = data['widle']['idle'][0] + ( t - data['tsync'] )
+				# apparently some of these could be None (and cause the program to die)
+				if (type(data) == type({})) and (type(data['widle']) == type({})):
 
-					if d['max'] == None: d['max'] = z
-					if d['min'] == None: d['min'] = z
-					d['max'] = max(d['max'], z)	# set the new max
-					d['min'] = min(d['min'], z)	# set the new min
+					# when we grab from a file, we only every expect one element.
+					if len(data['widle']['users']) > 1: raise AssertionError('only expected one user')
 
-					d['idle'].append(z)
-					d['users'].append( data['widle']['users'][0] )
-					d['line'].append( data['widle']['line'][0] )
-					d['len'] = d['len'] + 1
+					# when a user logs out, or if a client eva program is killed,
+					# the widle files still hang around, reporting their original
+					# (incorrect) idle time, so after some threshold ignore them.
+					if (t - data['tsync']) < config.STALETIME:
+						# occasionally (for some magical reason) we
+						# get an empty list which we should ignore.
+						if len(data['widle']['idle']) > 0:
+							# the current idle time for a user is:
+							# the sum of the idle time reported at
+							# a specific time in the past, and the
+							# time difference between that reading
+							# and the current time now. the offset
+							# addition is probably a fair estimate
+							# since idle data from clients is read
+							# fairly often and any time errors are
+							# insignificant, with respect to total
+							# timeout times for the inactive user.
+							z = data['widle']['idle'][0] + ( t - data['tsync'] )
+
+							if d['max'] == None: d['max'] = z
+							if d['min'] == None: d['min'] = z
+							d['max'] = max(d['max'], z)	# set the new max
+							d['min'] = min(d['min'], z)	# set the new min
+
+							d['idle'].append(z)
+							d['users'].append( data['widle']['users'][0] )
+							d['line'].append( data['widle']['line'][0] )
+							d['len'] = d['len'] + 1
 
 		return d
 
