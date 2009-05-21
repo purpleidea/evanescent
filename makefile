@@ -50,7 +50,7 @@ revno:
 # make a package for distribution
 tar: clean revno encode
 
-	cd .. && tar --exclude=old --exclude=play --exclude=.bzr --bzip2 -cf evanescent.tar.bz2 evanescent/
+	cd .. && tar --exclude=old --exclude=play --exclude=.swp --exclude=.bzr --bzip2 -cf evanescent.tar.bz2 evanescent/
 	mv ../evanescent.tar.bz2 .
 
 

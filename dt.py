@@ -18,8 +18,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-
 import datetime
+
 COLON = ':'
 COMMA = ','
 LBRACKET = '['
@@ -57,7 +57,6 @@ class dt:
 			now = now - delta
 		else:
 			now = now + delta
-
 
 		# time range: [#:#:# , #:#:#]
 		if time_str.count(COMMA) == 1:
@@ -153,19 +152,15 @@ class dt:
 			# if it didn't fail yet, then it's good!
 			return True
 
-
-
 		elif time_str.count(COMMA) == 0:
 			# TODO: add single time parsing (maybe allow 9:??:??  and 7:*    ?)
 			raise NotImplementedError
-
 
 		else:
 			raise SyntaxError, "bad time syntax: `%s'" % time_str
 
 
-
 	def is_date(self, date_str):
-
+		# TODO:
 		raise NotImplementedError
 

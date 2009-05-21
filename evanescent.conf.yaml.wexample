@@ -46,7 +46,7 @@
     iconimage: 'evanescent.png'                                 # filename for `systray' icon
     readsleep: 5                                                # minimum sleep time between messages
     shareddir: 'c:\WINDOWS\system32\evanescent\'                # directory for shared evanescent/eva data
-    staletime: 60                                              # time limit before widle or msg data considered stale
+    staletime: 60                                               # time limit before widle or msg data considered stale
 
 ##############
 # EXCLUSIONS #

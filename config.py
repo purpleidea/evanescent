@@ -44,7 +44,7 @@ STALETIME = 60				# time limit before widle or msg data considered stale
 # constant constants
 # (no need to change these)
 MSGSUBDIR = 'msg'			# sub directory in shareddir for passing messages
-WIDLEPATH = 'idle'			# sub directory in shareddir for passing idletime
+CIDLEPATH = 'idle'			# sub directory in shareddir for passing idletime
 
 if os.name in ['nt']:
 	# TODO: verify these follow whatever the equivalent of a windows FHS would be.

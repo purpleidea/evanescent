@@ -29,7 +29,7 @@
 ################################################################################
 
 # FIXME/TODO: go through all the files and fix all the FIXME's and do all the TODO's
-# FIXME: mouse movement doesn't un-idle a machine (BUG/FEATURE ?)
+# FIXME: mouse movement doesn't un-idle a machine in linux (BUG)
 # TODO: kill idle users on a non-idle machine (OPTIONAL)
 # TODO: check if LOCAL7 facility works on LOGMASTER
 # TODO: clean up info/debug messages and make them more sensible/informative
@@ -136,7 +136,7 @@ class evanescent:
 
 			if os.name in ['nt']:
 				# make idle time reporting directory
-				d = os.path.join(config.SHAREDDIR, config.WIDLEPATH)
+				d = os.path.join(config.SHAREDDIR, config.CIDLEPATH)
 				if not(os.path.exists(d)): os.makedirs(d)
 
 		except IOError, e:
@@ -288,7 +288,7 @@ class evanescent:
 
 		if os.name in ['nt']:
 			# clean idle time reporting directory
-			d = os.path.join(config.SHAREDDIR, config.WIDLEPATH)
+			d = os.path.join(config.SHAREDDIR, config.CIDLEPATH)
 			if os.path.exists(d):
 				for x in os.listdir(d):
 					try:
@@ -499,7 +499,7 @@ class evanescent:
 
 		if os.name in ['nt']:
 			i = idle.idle(tick_default=False, me=True)
-			g = yamlhelp.yamlhelp(os.path.join(config.SHAREDDIR, config.WIDLEPATH, getpass.getuser()))
+			g = yamlhelp.yamlhelp(os.path.join(config.SHAREDDIR, config.CIDLEPATH, getpass.getuser()))
 
 			import wpyqtmsg
 			msg = wpyqtmsg.wpyqtmsg(config.ICONIMAGE)
@@ -513,7 +513,7 @@ class evanescent:
 			# won't be able to read it on its own.
 			if os.name in ['nt']:
 				self.logs['evalog'].debug('now reporting idle time')
-				g.put_yaml({'tsync': time.time(), 'widle': i.idle(tick=True)})
+				g.put_yaml({'tsync': time.time(), 'cidle': i.idle(tick=True)})
 
 			# if there are any messages to display, then display them
 			m = os.path.join(config.SHAREDDIR, config.MSGSUBDIR, getpass.getuser())
@@ -534,7 +534,7 @@ class evanescent:
 								elif os.name in ['posix']: pass				# send a pynotify msg
 								time.sleep(config.READSLEEP)				# sleep time b/w msgs
 						else:
-							# TODO: potentially we could prune the file by removing this message.
+							# TODO: potentially we could prune the file by removing the message we just read.
 							pass
 
 			# go around the loop

@@ -38,7 +38,6 @@ class idle:
 	def __init__(self, tick_default=False, me=True):
 		self.__result = None			# saved result from __idle
 		self.tick_default = tick_default	# default value for tick
-		self.me = me				# used by __widle() for nt only
 		self.tick(True)				# tick once
 
 
@@ -150,7 +149,8 @@ class idle:
 
 	def tick(self, do_tick=None):
 		"""tries to update the idle cache.
-		does so if do_tick is true. if it's None, then does the default."""
+		does so if do_tick is true. if it's
+		None, then it does the default."""
 		if do_tick == None:	# then do the default
 			do_tick = self.tick_default
 		if do_tick: self.__result = self.__idle()
@@ -165,15 +165,123 @@ class idle:
 
 
 	def __idle(self):
-		"""private function that does all the work"""
+		"""private function that collaborates the work
+		from all the various idle functions calls. this
+		is what is typically called when deciding if a
+		machine is considered idle or not."""
 
-		if os.name in ['nt']: return self.__widle()
+		#if os.name in ['nt']: return self.__widle()
+
+		# d is for dictionary
+		d = {'idle': [], 'users': [], 'line': [], 'max': None, 'min': None, 'len': 0}
+
+
+		#u = __utmpidle()
+		#x = __xssidle()
+
+		#...
+		return None
+
+		#return d
+
+
+	def __xprintidle(self):
+		"""return idle time in ms from xprintidle command."""
+		import os
+		import getpass
+		# TODO: add check for xprintidle command being installed.
+		result = False
+		try:
+			o = os.popen('xprintidle', 'r')		# run the program
+			a = o.readlines()			# grab all the output
+		except:
+			pass
+		finally:
+			o.close()
+			o = None
+
+		if len(a) == 1: result = int(a[0].strip())
+
+		# FIXME: find out how to get the line associated with the current X server running the xprintidle
+		# NOTE: this should work if the user is calling the script: os.ttyname(sys.stdin)
+		if not(result): return {'idle': [], 'users': [], 'line': [], 'max': None, 'min': None, 'len': 0}
+		return {'idle': [result], 'users': [getpass.getuser()], 'line': ['?'], 'max': result, 'min': result, 'len': 1}
+
+
+	def __widle(self):
+		"""return windows idle time in ms from widle.bat command."""
+		import os
+		import math
+		import getpass
+		result = False
+		a = []
+		try:
+			o = os.popen('widle.bat', 'r')		# run our script
+			a = o.readlines()			# grab all the output
+		except:
+			pass
+
+		finally:
+			o.close()
+			o = None
+
+		for i in range(len(a)):			# loop
+			if a[i].startswith('WIDLE'):	# find magic identifier
+				if i+1 < len(a):	# does the next index exist?
+					result = int(math.floor(locale.atoi(a[i+1])))
+					break
+
+		# FIXME: find out how to get the line associated with the running command (if one even exists)
+		if not(result): return {'idle': [], 'users': [], 'line': [], 'max': None, 'min': None, 'len': 0}
+		return {'idle': [result], 'users': [getpass.getuser()], 'line': ['?'], 'max': result, 'min': result, 'len': 1}
+
+
+	def __xssidle(self):
+		"""return idle time in ms from X11 xss extensions."""
+		# FIXME: this may or may not suffer from the dpms bug.
+		import os
+		import ctypes
+		import getpass
+
+		class XScreenSaverInfo(ctypes.Structure):
+			"""typedef struct { ... } XScreenSaverInfo;"""
+			_fields_ = [
+				('window',      ctypes.c_ulong),	# screen saver window
+				('state',       ctypes.c_int),		# off,on,disabled
+				('kind',        ctypes.c_int),		# blanked,internal,external
+				('since',       ctypes.c_ulong),	# milliseconds
+				('idle',        ctypes.c_ulong),	# milliseconds
+				('event_mask',  ctypes.c_ulong)		# events
+			]
+
+		xlib = ctypes.cdll.LoadLibrary('libX11.so')
+		# TODO: can this be modified to query a different Xdisplay?
+		# this way it can be run as root in the daemon, and doesn't
+		# have to depend on the client running an eva style program
+		dpy = xlib.XOpenDisplay(os.environ['DISPLAY'])
+		root = xlib.XDefaultRootWindow(dpy)
+		xss = ctypes.cdll.LoadLibrary('libXss.so')
+		xss.XScreenSaverAllocInfo.restype = ctypes.POINTER(XScreenSaverInfo)
+		xss_info = xss.XScreenSaverAllocInfo()
+		xss.XScreenSaverQueryInfo(dpy, root, xss_info)
+
+		result = int(xss_info.contents.idle)			# idle time in milliseconds
+
+		# FIXME: find out how to get the line associated with the current X server running on $DISPLAY
+		return {'idle': [result], 'users': [getpass.getuser()], 'line': ['?'], 'max': result, 'min': result, 'len': 1}
+
+
+	def __utmpidle(self):
+		"""return idle times in ms from utmp database."""
+		import os
+		import utmp
+		import time
 
 		#f = "%-10s %-5s %10s %-10s %-25s %-15s %-10s %-10s %-10s %-10s %-10s"
 		#print f % ("USER", "TTY", "PID", "HOST", "LOGIN", "IDLE", "TYPE", "SESSION", "ID", "EXIT", "IPV6")
 		#print f % (x.ut_user, x.ut_line, x.ut_pid, x.ut_host, time.ctime(x.ut_tv[0]), z, x.ut_type, x.ut_session, x.ut_id, x.ut_exit, x.ut_addr_v6)
 
-		a = []			# a is for array
+		a = []
 		# d is for dictionary
 		d = {'idle': [], 'users': [], 'line': [], 'max': None, 'min': None, 'len': 0}
 		u = utmp.UtmpRecord()	# (iterator)
@@ -206,73 +314,47 @@ class idle:
 		return d
 
 
-	def __widle(self):
-		"""windows version of the private __idle function.
-		if me is True, return widle of just the current user.
-		if me is False, return widle of every user that
-		broadcast text file idle data to us. if me is None,
-		then return widle data from both of those. Choosing
-		which of these are good ideas is up to you!"""
-		import locale
-		import getpass
-
+	def __cidle(self):
+		"""grab all the client idle data that has been dumped into the
+		shared folder, and process it in a mostly safe way."""
+		import os
+		import config
+		import yamlhelp
 		d = {'idle': [], 'users': [], 'line': [], 'max': None, 'min': None, 'len': 0}
 
-		# get the data from the current user
-		if (self.me is None) or self.me:
-			o = os.popen('widle.bat', 'r')		# run our script
-			a = o.readlines()			# grab all the output
-			o.close()
-			o = None
-			for i in range(len(a)):			# loop
-				if a[i].startswith('WIDLE'):	# find magic identifier
-					if i+1 < len(a):	# does the next index exist?
-						z = int(math.floor(locale.atoi(a[i+1])/1000))
+		clients = os.listdir(os.path.join(config.SHAREDDIR, config.CIDLEPATH))
+		t = time.time()
+		for i in clients:
+			# get the data from that particular client
+			g = yamlhelp.yamlhelp(os.path.join(config.SHAREDDIR, config.CIDLEPATH, i))
+			data = g.get_yaml()
 
-						if d['max'] == None: d['max'] = z
-						if d['min'] == None: d['min'] = z
-						d['max'] = max(d['max'], z)	# set the new max
-						d['min'] = min(d['min'], z)	# set the new min
+			# apparently some of these could be None (and cause the program to die)
+			if (type(data) == type({})) and (type(data['cidle']) == type({})):
 
-						d['idle'].append(z)
-						d['users'].append(getpass.getuser())	# i guess this is how i could get the login
-						d['line'].append('FIXME?')		# FIXME: put something useful/meaningful?
-						d['len'] = d['len'] + 1
-						break
-
-		# get the data from any clients broadcasting
-		if (self.me is None) or not(self.me):
-			clients = os.listdir( os.path.join(config.SHAREDDIR, config.WIDLEPATH) )
-			t = time.time()
-			for i in clients:
-				# get the data from that particular client
-				g = yamlhelp.yamlhelp(os.path.join(config.SHAREDDIR, config.WIDLEPATH, i))
-				data = g.get_yaml()
-
-				# apparently some of these could be None (and cause the program to die)
-				if (type(data) == type({})) and (type(data['widle']) == type({})):
-
-					# when we grab from a file, we only every expect one element.
-					if len(data['widle']['users']) > 1: raise AssertionError('only expected one user')
-
-					# when a user logs out, or if a client eva program is killed,
-					# the widle files still hang around, reporting their original
-					# (incorrect) idle time, so after some threshold ignore them.
-					if (t - data['tsync']) < config.STALETIME:
-						# occasionally (for some magical reason) we
-						# get an empty list which we should ignore.
-						if len(data['widle']['idle']) > 0:
-							# the current idle time for a user is:
-							# the sum of the idle time reported at
-							# a specific time in the past, and the
-							# time difference between that reading
-							# and the current time now. the offset
-							# addition is probably a fair estimate
-							# since idle data from clients is read
-							# fairly often and any time errors are
-							# insignificant, with respect to total
-							# timeout times for the inactive user.
-							z = data['widle']['idle'][0] + ( t - data['tsync'] )
+				# when a user logs out, or if a client eva program is killed,
+				# the files are still hanging around reporting their original
+				# (incorrect) idle time, so after some threshold ignore them.
+				if (t - data['tsync']) < config.STALETIME:
+					# occasionally (for some magical reason) we
+					# get an empty list which we should ignore.
+					aa = len(data['cidle']['idle'])
+					bb = len(data['cidle']['users']
+					cc = len(data['cidle']['line'])
+					dd = data['cidle']['len']
+					if (type(dd) == type(1)) and (dd > 0) and (aa == bb == cc == dd):
+						# the current idle time for a user is:
+						# the sum of the idle time reported at
+						# a specific time in the past, and the
+						# time difference between that reading
+						# and the current time now. the offset
+						# addition is probably a fair estimate
+						# since idle data from clients is read
+						# fairly often and any time errors are
+						# insignificant, with respect to total
+						# timeout times for the inactive user.
+						for j in range(data['cidle']['len']):
+							z = data['cidle']['idle'][j] + ( t - data['tsync'] )
 
 							if d['max'] == None: d['max'] = z
 							if d['min'] == None: d['min'] = z
@@ -280,9 +362,25 @@ class idle:
 							d['min'] = min(d['min'], z)	# set the new min
 
 							d['idle'].append(z)
-							d['users'].append( data['widle']['users'][0] )
-							d['line'].append( data['widle']['line'][0] )
+							d['users'].append( data['cidle']['users'][j] )
+							d['line'].append( data['cidle']['line'][j] )
 							d['len'] = d['len'] + 1
 
 		return d
+
+
+
+
+def put_cidle():
+	"""stores the result of an idle() call in the shared
+	directory, to be later read by the cidle() function."""
+	import getpass
+	import yamlhelp
+
+	g = yamlhelp.yamlhelp(os.path.join(config.SHAREDDIR, config.CIDLEPATH, getpass.getuser()))
+	g.put_yaml({'tsync': time.time(), 'cidle': ???i.idle(tick=True)???   })
+
+
+def clean_cidle():
+
 
