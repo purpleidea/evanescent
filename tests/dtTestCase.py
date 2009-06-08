@@ -23,7 +23,8 @@ class dtTestCase(unittest.TestCase):
 	def testBoundary1(self):
 		self.failUnless(self.obj.is_time('[15:14:15 , 15:15:16]'), 'time doesn\'t match range 3')
 
-suite = unittest.TestLoader().loadTestsFromTestCase(globals()[__name__])
+__myname__ = __name__[__name__.rfind('.')+1:]
+suite = unittest.TestLoader().loadTestsFromTestCase(globals()[__myname__])
 
 if __name__ == '__main__':
 	unittest.main()

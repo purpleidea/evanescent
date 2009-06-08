@@ -25,7 +25,8 @@ class modelTestCase(unittest.TestCase):
 		self.failUnless(self.obj.is_time('[15:14:15 , 15:15:16]'), 'time doesn\'t match range 3')
 
 # group all tests into a suite
-suite = unittest.TestLoader().loadTestsFromTestCase(globals()[__name__])
+__myname__ = __name__[__name__.rfind('.')+1:]
+suite = unittest.TestLoader().loadTestsFromTestCase(globals()[__myname__])
 
 # if this file is run individually, then run these test cases
 if __name__ == '__main__':

@@ -21,8 +21,6 @@
 import os		# for stat (to get idle times)
 import time		# for the idle time math
 import math		# need this for math.floor for windows
-import yamlhelp		# for getting foreign idle times
-import config
 if os.name in ['posix']:
 	import utmp		# lib to read the utmp file
 	import UTMPCONST
@@ -312,75 +310,4 @@ class idle:
 		# key: `users' is a list of users logged on. (duplicates may occur!)
 
 		return d
-
-
-	def __cidle(self):
-		"""grab all the client idle data that has been dumped into the
-		shared folder, and process it in a mostly safe way."""
-		import os
-		import config
-		import yamlhelp
-		d = {'idle': [], 'users': [], 'line': [], 'max': None, 'min': None, 'len': 0}
-
-		clients = os.listdir(os.path.join(config.SHAREDDIR, config.CIDLEPATH))
-		t = time.time()
-		for i in clients:
-			# get the data from that particular client
-			g = yamlhelp.yamlhelp(os.path.join(config.SHAREDDIR, config.CIDLEPATH, i))
-			data = g.get_yaml()
-
-			# apparently some of these could be None (and cause the program to die)
-			if (type(data) == type({})) and (type(data['cidle']) == type({})):
-
-				# when a user logs out, or if a client eva program is killed,
-				# the files are still hanging around reporting their original
-				# (incorrect) idle time, so after some threshold ignore them.
-				if (t - data['tsync']) < config.STALETIME:
-					# occasionally (for some magical reason) we
-					# get an empty list which we should ignore.
-					aa = len(data['cidle']['idle'])
-					bb = len(data['cidle']['users']
-					cc = len(data['cidle']['line'])
-					dd = data['cidle']['len']
-					if (type(dd) == type(1)) and (dd > 0) and (aa == bb == cc == dd):
-						# the current idle time for a user is:
-						# the sum of the idle time reported at
-						# a specific time in the past, and the
-						# time difference between that reading
-						# and the current time now. the offset
-						# addition is probably a fair estimate
-						# since idle data from clients is read
-						# fairly often and any time errors are
-						# insignificant, with respect to total
-						# timeout times for the inactive user.
-						for j in range(data['cidle']['len']):
-							z = data['cidle']['idle'][j] + ( t - data['tsync'] )
-
-							if d['max'] == None: d['max'] = z
-							if d['min'] == None: d['min'] = z
-							d['max'] = max(d['max'], z)	# set the new max
-							d['min'] = min(d['min'], z)	# set the new min
-
-							d['idle'].append(z)
-							d['users'].append( data['cidle']['users'][j] )
-							d['line'].append( data['cidle']['line'][j] )
-							d['len'] = d['len'] + 1
-
-		return d
-
-
-
-
-def put_cidle():
-	"""stores the result of an idle() call in the shared
-	directory, to be later read by the cidle() function."""
-	import getpass
-	import yamlhelp
-
-	g = yamlhelp.yamlhelp(os.path.join(config.SHAREDDIR, config.CIDLEPATH, getpass.getuser()))
-	g.put_yaml({'tsync': time.time(), 'cidle': ???i.idle(tick=True)???   })
-
-
-def clean_cidle():
-
 
