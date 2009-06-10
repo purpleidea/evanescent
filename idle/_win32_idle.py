@@ -11,7 +11,7 @@ _GetLastInputInfo = ctypes.windll.user32.GetLastInputInfo
 class _LastInputInfo(ctypes.Structure):
 	_fields_ = [("cbSize", ctypes.c_uint), ("dwTime", ctypes.c_uint32)]
 
-def _mouseidle():
+def _idle():
 	"""returns the number of milliseconds a user is idle."""
 	inputinfo = _LastInputInfo()
 	inputinfo.cbSize = ctypes.sizeof(inputinfo)

@@ -1,4 +1,5 @@
 #!/usr/bin/python
+#FIXME: this file has to be cleaned up to do something useful and cross platform
 """
     Evanescent machine idle detection and shutdown tool.
     Copyright (C) 2008  James Shubin, McGill University
@@ -183,92 +184,6 @@ class idle:
 		#return d
 
 
-	def __xprintidle(self):
-		"""return idle time in ms from xprintidle command."""
-		import os
-		import getpass
-		# TODO: add check for xprintidle command being installed.
-		result = False
-		try:
-			o = os.popen('xprintidle', 'r')		# run the program
-			a = o.readlines()			# grab all the output
-		except:
-			pass
-		finally:
-			o.close()
-			o = None
-
-		if len(a) == 1: result = int(a[0].strip())
-
-		# FIXME: find out how to get the line associated with the current X server running the xprintidle
-		# NOTE: this should work if the user is calling the script: os.ttyname(sys.stdin)
-		if not(result): return {'idle': [], 'users': [], 'line': [], 'max': None, 'min': None, 'len': 0}
-		return {'idle': [result], 'users': [getpass.getuser()], 'line': ['?'], 'max': result, 'min': result, 'len': 1}
-
-
-	def __widle(self):
-		"""return windows idle time in ms from widle.bat command."""
-		import os
-		import math
-		import getpass
-		result = False
-		a = []
-		try:
-			o = os.popen('widle.bat', 'r')		# run our script
-			a = o.readlines()			# grab all the output
-		except:
-			pass
-
-		finally:
-			o.close()
-			o = None
-
-		for i in range(len(a)):			# loop
-			if a[i].startswith('WIDLE'):	# find magic identifier
-				if i+1 < len(a):	# does the next index exist?
-					result = int(math.floor(locale.atoi(a[i+1])))
-					break
-
-		# FIXME: find out how to get the line associated with the running command (if one even exists)
-		if not(result): return {'idle': [], 'users': [], 'line': [], 'max': None, 'min': None, 'len': 0}
-		return {'idle': [result], 'users': [getpass.getuser()], 'line': ['?'], 'max': result, 'min': result, 'len': 1}
-
-
-	def __xssidle(self):
-		"""return idle time in ms from X11 xss extensions."""
-		# FIXME: this may or may not suffer from the dpms bug.
-		import os
-		import ctypes
-		import getpass
-
-		class XScreenSaverInfo(ctypes.Structure):
-			"""typedef struct { ... } XScreenSaverInfo;"""
-			_fields_ = [
-				('window',      ctypes.c_ulong),	# screen saver window
-				('state',       ctypes.c_int),		# off,on,disabled
-				('kind',        ctypes.c_int),		# blanked,internal,external
-				('since',       ctypes.c_ulong),	# milliseconds
-				('idle',        ctypes.c_ulong),	# milliseconds
-				('event_mask',  ctypes.c_ulong)		# events
-			]
-
-		xlib = ctypes.cdll.LoadLibrary('libX11.so')
-		# TODO: can this be modified to query a different Xdisplay?
-		# this way it can be run as root in the daemon, and doesn't
-		# have to depend on the client running an eva style program
-		dpy = xlib.XOpenDisplay(os.environ['DISPLAY'])
-		root = xlib.XDefaultRootWindow(dpy)
-		xss = ctypes.cdll.LoadLibrary('libXss.so')
-		xss.XScreenSaverAllocInfo.restype = ctypes.POINTER(XScreenSaverInfo)
-		xss_info = xss.XScreenSaverAllocInfo()
-		xss.XScreenSaverQueryInfo(dpy, root, xss_info)
-
-		result = int(xss_info.contents.idle)			# idle time in milliseconds
-
-		# FIXME: find out how to get the line associated with the current X server running on $DISPLAY
-		return {'idle': [result], 'users': [getpass.getuser()], 'line': ['?'], 'max': result, 'min': result, 'len': 1}
-
-
 	def __utmpidle(self):
 		"""return idle times in ms from utmp database."""
 		import os
@@ -310,4 +225,8 @@ class idle:
 		# key: `users' is a list of users logged on. (duplicates may occur!)
 
 		return d
+
+if __name__ == "__main__":
+	print 'i am: %s' % __file__
+	print 'FIXME'
 

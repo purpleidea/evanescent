@@ -21,23 +21,68 @@
 
 """this is the evanescent client that runs in the machines session"""
 
-# THIS SHOULD BE A CLIENT THAT RUNS ON USER LOGIN.
-# IT SHOULD WRITE THE USERNAME AND IDLE TIME TO A
-# COMMON FOLDER UNDER A UNIQUE NAME
-# eg: common_folder/username
-# AND THE MAIN EVANESCENT JOB SHOULD POLL THAT AND
-# INCLUDE THOSE IN IT'S SEARCH FOR GETTING DATA FOR
-# THE __WIDLE() FUNCTION. THIS MAIN DAEMON/JOB WOULD
-# ALSO WRITE STATUS BUBBLE MESSAGES TO A COMMON FILE
-# eg: common_folder_msg/username WHERE THE EVA CLIENT
-# (WHICH IS THIS PROGRAM, WILL POLL OR SELECT FROM
-# AND THEN DISPLAY TO THE CLIENT.)
-# MAYBE WE CAN GET SOME SORT OF IPC PYTHON THING GOING
-# INSTEAD OF PASSING THROUGH FILES. MAYBE NOT. WHO KNOWS.
-
-import evanescent
-
-e = evanescent.evanescent(start='eva_loop')	# TODO: pull the name out of the eva.py filename... maybe the code for that goes in evanescent.py
-e.main()
+from idle.mouseidle import *
+import evanescent.config
 
 
+
+import pqueue				# my priority queue implementation
+GGG.pq = pqueue.pqueue()		# initialize the priority queue
+
+import clock				# my clock function
+GGG.pq.put(clock.clock(ggg=GGG))	# run it as soon as possible
+
+"""
+sleep_until_idle(config.idle_time_limit)
+if warned_user and not excluded:
+	logmeoff()
+"""
+
+while True:
+
+	m = mouseidle()
+	if m < evanescent.config.IDLELIMIT:
+
+		time.sleep(
+
+	else:
+
+
+
+
+
+
+
+while True:				# main loop
+
+	peek = GGG.pq.peek()
+
+	if peek == None:		# no events, so block and wait for file descriptor
+		found = select.select(GGG.ins, GGG.outs, [])
+
+	else:
+		(item, datetime) = peek
+		found = select.select(GGG.ins, GGG.outs, [], max(datetime - time.time(), 0) )
+
+
+
+	# reading
+	for obj in found[0]:		# if we have file descriptor classes that have returned, go through each of them
+		obj.read()
+
+	# writing
+	for obj in found[1]:
+		obj.write()
+
+
+	ready = GGG.pq.ready()
+	while ready > 0:
+		(item, datetime) = GGG.pq.get()
+
+		item.run()
+
+		ready = ready - 1
+
+
+print evanescent.config.IDLELIMIT
+print mouseidle()

@@ -64,7 +64,7 @@ unsigned long workaroundCreepyXServer(Display *dpy, unsigned long _idleTime) {
 }
 
 
-static PyObject *mouseidle(PyObject *self, PyObject *args) {
+static PyObject *idle(PyObject *self, PyObject *args) {
 
 	XScreenSaverInfo ssi;
 	Display *dpy;
@@ -100,7 +100,7 @@ static PyObject *mouseidle(PyObject *self, PyObject *args) {
 
 
 PyMethodDef x11_idle_methods[] = {
-	{"_mouseidle", mouseidle, METH_VARARGS, NULL},
+	{"_idle", idle, METH_VARARGS, NULL},
 };
 
 PyMODINIT_FUNC init_x11_idle(void) {
