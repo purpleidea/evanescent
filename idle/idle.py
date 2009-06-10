@@ -23,9 +23,9 @@ __all__ = ['idle']
 
 if os.name == 'nt': from _win32_idle import _idle
 elif os.name == 'posix':
-	from _x11_idle import _idle as _idle1
-	from _utmp_idle import _idle as _idle2
-	_idle = lambda: min(idle_1, idle_2)
+	from _x11_idle import _idle as __idle1
+	from _utmp_idle import _idle as __idle2
+	_idle = lambda: min(__idle1(), __idle2())
 else: raise ImportError("operating system not supported")
 
 def idle():
@@ -36,5 +36,5 @@ def idle():
 	return _idle()
 
 if __name__ == '__main__':
-	print mouseidle()
+	print idle()
 
