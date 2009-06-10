@@ -27,7 +27,7 @@ def do_nologin(message=None):
 	"""stops new logins from happening,
 	displays message if they try."""
 
-	if os.name in ['posix']:
+	if os.name == 'posix':
 		# FIXME: you need permission to change/create /etc/nologin,
 		# so this script should check if it has permission first,
 		# and then return true or false based on whether it succeeds
@@ -75,13 +75,13 @@ def do_broadcast(message, who={'users': []}):
 			# append a message to the text file message queue
 			f.put_yaml(yaml_msg, mode='a')
 
-			if os.name in ['posix']:
+			if os.name == 'posix':
 				if who.has_key('line'):
 					os.system("echo '%s' | write %s %s &>/dev/null" % (message, who['users'][i], who['line'][i]))
 				else:
 					os.system("echo '%s' | write %s &>/dev/null" % (message, who['users'][i]))
 
-			elif os.name in ['nt']:
+			elif os.name == 'nt':
 				os.popen('net send %s %s' % (who['users'][i], message))
 
 	return True
@@ -91,9 +91,9 @@ def do_shutdown():
 	"""takes down the system in some manner."""
 	# here are a list of allowed take-down commands to run.
 	# TODO: add more valid take-down commands to this list
-	if os.name in ['posix']:
+	if os.name == 'posix':
 		allowed = ['shutdown -P now bye!', 'pm-suspend', 'pm-hibernate', 'pm-suspend-hybrid']
-	elif os.name in ['nt']:
+	elif os.name == 'nt':
 		allowed = ['shutdown.exe -s -t 00 -c "bye!"']
 
 	if config.TDCOMMAND in allowed: os.system(config.TDCOMMAND)
@@ -103,7 +103,7 @@ def uptime():
 	"""returns the uptime of the system in seconds"""
 	# TODO: add dependency checking for the win32api module
 
-	if os.name in ['nt']:
+	if os.name == 'nt':
 		import win32api
 		return int(win32api.GetTickCount()/1000)
 

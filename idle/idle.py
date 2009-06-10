@@ -17,35 +17,24 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
-# Based on code from Alexandre Vassalotti <alexandre@peadrop.com>
-
 import os
-if os.name != 'nt':
-	raise ImportError("This modules requires Windows 2000 or newer.")
-import ctypes
-import time
 
-__all__ = ['_idle']
+__all__ = ['idle']
 
-_GetTickCount = ctypes.windll.kernel32.GetTickCount
-_GetLastInputInfo = ctypes.windll.user32.GetLastInputInfo
+if os.name == 'nt': from _win32_idle import _idle
+elif os.name == 'posix':
+	from _x11_idle import _idle as _idle1
+	from _utmp_idle import _idle as _idle2
+	_idle = lambda: min(idle_1, idle_2)
+else: raise ImportError("operating system not supported")
 
-class _LastInputInfo(ctypes.Structure):
-	_fields_ = [("cbSize", ctypes.c_uint), ("dwTime", ctypes.c_uint32)]
-
-def _idle():
-	"""returns the number of milliseconds a user is idle."""
-	inputinfo = _LastInputInfo()
-	inputinfo.cbSize = ctypes.sizeof(inputinfo)
-
-	if not _GetLastInputInfo(ctypes.byref(inputinfo)):
-		raise OSError("GetLastInputInfo failed")
-
-	# number of idle milliseconds:
-	return (_GetTickCount() - inputinfo.dwTime)
-
+def idle():
+	"""Returns the number of milliseconds that the machine has been idle.
+	This should work on X11 (including the DPMS bug workaround) and on
+	Windows. With this function, moving the mouse resets the counter.
+	This also looks at each readable tty. (using utmp on posix)"""
+	return _idle()
 
 if __name__ == '__main__':
-	print _idle()
+	print mouseidle()
 

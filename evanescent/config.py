@@ -46,7 +46,7 @@ STALETIME = 60				# time limit before widle or msg data considered stale
 MSGSUBDIR = 'msg'			# sub directory in shareddir for passing messages
 CIDLEPATH = 'idle'			# sub directory in shareddir for passing idletime
 
-if os.name in ['nt']:
+if os.name == 'nt':
 	# TODO: verify these follow whatever the equivalent of a windows FHS would be.
 	TDCOMMAND = 'shutdown.exe -s -t 00 -c "bye!"'
 	THECONFIG = 'c:\WINDOWS\evanescent.conf.yaml'

@@ -5,6 +5,25 @@
 #include <X11/extensions/scrnsaver.h>
 #include <X11/Xlib.h>
 
+/*
+    Evanescent machine idle detection and shutdown tool.
+    Copyright (C) 2008  James Shubin, McGill University
+    Written for McGill University by James Shubin <purpleidea@gmail.com>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 // Based on code in xprintidle.c for the xprintidle command on linux
 // and python help from Alexandre Vassalotti <alexandre@peadrop.com>
 
@@ -98,7 +117,9 @@ static PyObject *idle(PyObject *self, PyObject *args) {
 
 }
 
-
+// FIXME: add the relevant code so that the python equivalent of:
+// __all__ = ['_idle']
+// works when you use this compiled module.
 PyMethodDef x11_idle_methods[] = {
 	{"_idle", idle, METH_VARARGS, NULL},
 };

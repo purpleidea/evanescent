@@ -55,7 +55,7 @@ import misc				# i wrote this one
 import yamlhelp				# i wrote this one
 import eerror				# custom exceptions classes
 
-if os.name in ['posix']:
+if os.name == 'posix':
 	import signal			# for signal stuff for linux
 
 # FIXME: this file should only be included for linux, however since
@@ -63,7 +63,7 @@ if os.name in ['posix']:
 # scripts fail since they look for this value even though it is never used.
 import daemon			# i wrote this one
 
-if os.name in ['nt']:
+if os.name == 'nt':
 	import decode			# decode library for encoded files
 	import encoded			# list of encoded files
 
@@ -111,7 +111,7 @@ class evanescent:
 		self.logging()
 
 		# setup signal handling
-		if os.name in ['posix']:
+		if os.name == 'posix':
 			# read: $ man 7 signal
 			signal.signal(signal.SIGUSR1, signal.SIG_IGN)	# ignore
 			signal.signal(signal.SIGUSR2, signal.SIG_IGN)	# ignore
@@ -134,7 +134,7 @@ class evanescent:
 			d = os.path.join(config.SHAREDDIR, config.MSGSUBDIR)
 			if not(os.path.exists(d)): os.makedirs(d)
 
-			if os.name in ['nt']:
+			if os.name == 'nt':
 				# make idle time reporting directory
 				d = os.path.join(config.SHAREDDIR, config.CIDLEPATH)
 				if not(os.path.exists(d)): os.makedirs(d)
@@ -158,17 +158,17 @@ class evanescent:
 		else: start_func = self.main_loop
 
 		# create daemon object
-		if os.name in ['posix']:
+		if os.name == 'posix':
 			d = daemon.daemon(pidfile=config.DAEMONPID, start_func=start_func, logger=self.logs['daemon'], close_fds=not(config.DEBUGMODE))
 
 		try:
-			if os.name in ['posix']: d.start_stop()
-			elif os.name in ['nt']: start_func()
+			if os.name == 'posix': d.start_stop()
+			elif os.name == 'nt': start_func()
 			else: raise AssertionError('os: `%s\' is not supported at this time.' % os.name)
 
 		except KeyboardInterrupt, e:
-			if os.name in ['posix']: d.start_stop([sys.argv[0], 'stop'])
-			elif os.name in ['nt']:
+			if os.name == 'posix': d.start_stop([sys.argv[0], 'stop'])
+			elif os.name == 'nt':
 				# VERIFY: it's possible that a KeyboardInterrupt gets generated when Control-Alt-Delete is pressed on user-login
 				# TODO: if e == 'some special thing that wasn't a standard control-c press then:' #main_loop()
 				pass
@@ -223,7 +223,7 @@ class evanescent:
 		self.log.addHandler(self.logh['SysLogHandler'])
 
 		# handler for windows event log
-		if os.name in ['nt']:
+		if os.name == 'nt':
 			self.logh['NTEventLogHandler'] = logging.handlers.NTEventLogHandler(self.name)
 			self.logh['NTEventLogHandler'].setFormatter(formatter)
 			self.log.addHandler(self.logh['NTEventLogHandler'])
@@ -261,7 +261,7 @@ class evanescent:
 		# if we want this code to be used for other platforms
 		# besides windows, then we might need to modify it to
 		# support some extra settings, and folder parameters.
-		if os.name in ['nt']:
+		if os.name == 'nt':
 			c = 0
 			for f in encoded.encoded:
 				try:
@@ -286,7 +286,7 @@ class evanescent:
 				except OSError:
 					pass
 
-		if os.name in ['nt']:
+		if os.name == 'nt':
 			# clean idle time reporting directory
 			d = os.path.join(config.SHAREDDIR, config.CIDLEPATH)
 			if os.path.exists(d):
@@ -452,7 +452,7 @@ class evanescent:
 				# allow/handle incoming signals
 				self.logs['dialog'].debug('going to sleep for %s seconds' % sleep)
 
-				if os.name in ['posix']:
+				if os.name == 'posix':
 					caught = False
 					signal.signal(signal.SIGUSR1, self.sigusr1)	# handle
 					signal.signal(signal.SIGUSR2, self.sigusr2)	# handle
@@ -493,11 +493,11 @@ class evanescent:
 		"""this is the main loop for eva."""
 		# note: we're using getpass.getuser() instead of os.getlogin() because the later isn't platform compatible.
 		f = yamlhelp.yamlhelp(os.path.join(config.SHAREDDIR, config.MSGSUBDIR, getpass.getuser()))
-		if os.name in ['posix']:
+		if os.name == 'posix':
 			# TODO: import a messaging class for posix. maybe pynotify?
 			pass
 
-		if os.name in ['nt']:
+		if os.name == 'nt':
 			i = idle.idle(tick_default=False, me=True)
 			g = yamlhelp.yamlhelp(os.path.join(config.SHAREDDIR, config.CIDLEPATH, getpass.getuser()))
 
@@ -511,7 +511,7 @@ class evanescent:
 			# if we are a windows client, then we need to `report'
 			# our idle time for the main evanescent process which
 			# won't be able to read it on its own.
-			if os.name in ['nt']:
+			if os.name == 'nt':
 				self.logs['evalog'].debug('now reporting idle time')
 				g.put_yaml({'tsync': time.time(), 'cidle': i.idle(tick=True)})
 
@@ -530,8 +530,8 @@ class evanescent:
 							# check if messages are `stale'. eg from a previous login/logout.
 							if (time.time() - x['tsync']) < config.STALETIME:
 								self.logs['evalog'].info('message: %s' % x['msg'])
-								if os.name in ['nt']: msg.msg('evanescent', x['msg'])	# send qt4 pop up msg
-								elif os.name in ['posix']: pass				# send a pynotify msg
+								if os.name == 'nt': msg.msg('evanescent', x['msg'])	# send qt4 pop up msg
+								elif os.name == 'posix': pass				# send a pynotify msg
 								time.sleep(config.READSLEEP)				# sleep time b/w msgs
 						else:
 							# TODO: potentially we could prune the file by removing the message we just read.
