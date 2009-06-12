@@ -24,6 +24,7 @@ import yamlhelp
 STARTMEUP = True			# should evanescent run on this machine?
 DEBUGMODE = False			# debug mode
 WORDYMODE = True			# talk a lot (implied if debugmode is on)
+# TODO: does it make sense to rename this to: THRESHOLD
 IDLELIMIT = 60*60			# 1 hour before you're idle
 COUNTDOWN = 5*60			# five minute countdown before shutdown
 SLEEPTIME = 10*60			# poll/check computer every 10 minutes
@@ -36,11 +37,10 @@ DAEMONPID = '/var/run/evanescent.pid'	# pid file for daemon
 MYLOGPATH = '/var/log/evanescent.log'	# path for local log file
 MYERRPATH = '/var/log/evanescent.FAIL'	# path for FAIL log file
 LOGFORMAT = '%(asctime)s %(levelname)-8s %(name)-17s %(message)s'
-ICONIMAGE = 'evanescent.png'		# filename for `systray' icon
+ICONIMAGE = 'files/evanescent.png'	# filename for `systray' icon
 READSLEEP = 5				# minimum sleep time between messages
 SHAREDDIR = '/var/run/evanescent/'	# directory for shared evanescent/eva data
 STALETIME = 60				# time limit before widle or msg data considered stale
-
 # constant constants
 # (no need to change these)
 MSGSUBDIR = 'msg'			# sub directory in shareddir for passing messages

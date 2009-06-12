@@ -19,14 +19,15 @@
 """
 import os
 
-__all__ = ['idle']
+__all__ = ['idle', 'is_idle', 'timeleft']
 
 if os.name == 'nt': from _win32_idle import _idle
 elif os.name == 'posix':
 	from _x11_idle import _idle as __idle1
 	from _utmp_idle import _idle as __idle2
-	_idle = lambda: min(__idle1(), __idle2())
+	_idle = lambda: min(__idle1(), __idle2())	# combine
 else: raise ImportError("operating system not supported")
+
 
 def idle():
 	"""Returns the number of milliseconds that the machine has been idle.
@@ -34,6 +35,21 @@ def idle():
 	Windows. With this function, moving the mouse resets the counter.
 	This also looks at each readable tty. (using utmp on posix)"""
 	return _idle()
+
+
+def is_idle(threshold):
+	"""is the current user idle (eg: past-threshold) or not?
+	threshold is specified in seconds for logical usage."""
+	assert type(threshold) is int
+	return idle() > int(threshold*1000)
+
+
+def timeleft(threshold):
+	"""return the approximate number of seconds left before the user would
+	be expected to go idle, assuming no more input activity is seen."""
+	assert type(threshold) is int
+	return int((int(threshold*1000) - idle()) / 1000)
+
 
 if __name__ == '__main__':
 	print idle()

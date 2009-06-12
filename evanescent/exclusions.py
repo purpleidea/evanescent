@@ -60,7 +60,7 @@ class exclusions:
 		self.time_shift = int(time_shift)		# the time shift
 
 
-	def is_excluded(self):
+	def __is_excluded(self):
 		"""should i be excluded from shutdown?"""
 		# TODO: do any of the conditions below need to be enclosed
 		# in try/catch blocks? eg: getpass.getuser(), or others ??
@@ -77,11 +77,11 @@ class exclusions:
 					raise SyntaxError, self.E_NOTALIST
 
 			except yaml.scanner.ScannerError, e:
-				raise SyntaxError, self.E_YAMLSCAN
+				raise SyntaxError, self.E_YAMLSCAN % e
 
 		except IOError, e:
-			if e.errno == e.ENOENT:
-				raise IOError, self.E_FILEMISSING
+			if e.errno == errno.ENOENT:
+				raise IOError, self.E_FILEMISSING % self.yamlconf
 			else:
 				raise IOError, e
 
@@ -89,6 +89,9 @@ class exclusions:
 			try: f.close()
 			except: pass
 			f = None
+
+		# TODO: we could probably clean up this big loop
+		# and replace it with some more elegant code.
 
 		# loop through each set in the conf file
 		for i in data:
@@ -162,14 +165,30 @@ class exclusions:
 		return not(shutdown)
 
 
-	def is_fileok(self, message=False):
+	def is_excluded(self, result=False):
+		"""this function wraps the main is_excluded() function in a
+		try/except, and lets us choose what the result should be if
+		there is an error. if result == False, then return False on
+		error. if result == True, then return True on error. and if
+		result is None, then propagate out the original error."""
+
+		assert type(result) in [type(None), bool]
+		try:
+			return self.__is_excluded()
+		except BaseException, e:
+			if result is None:
+				raise e
+			else: return bool(result)
+
+
+	def is_fileok(self):
 		# TODO: in the future, we could run some specific parser script to check syntax
 		# the easy way is to see if it actually fails when we run it...
 		# the problem is that the is_excluded exits early when it knows it can, and sometimes
 		# not all the picky syntax has been checked yet...
 		"""is the .conf file present, parseable & properly formatted?"""
 		try:
-			self.is_excluded()
+			self.is_excluded(result=None)
 		except:
 			# TODO: should we log the specific error ?
 			return False
@@ -216,5 +235,5 @@ if __name__ == '__main__':
 	e = exclusions(yamlconf=yamlconf)
 	print 'yamlconf:\t%s' % yamlconf
 	print 'is_fileok():\t%s' % e.is_fileok()
-	print 'is_excluded():\t%s' % e.is_excluded()
+	print 'is_excluded():\t%s' % e.is_excluded(result=None)
 
