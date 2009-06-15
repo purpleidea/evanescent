@@ -32,7 +32,7 @@ import pynotify				# for notifications
 import gobject				# for timeout_add, etc...
 
 # backend, evanescent related
-import idle.idle as idle
+import evanescent.idle.idle as idle
 import evanescent.config as config
 import evanescent.exclusions as exclusions
 
@@ -75,7 +75,7 @@ class eva:
 
 		# menu:help
 		help = gtk.ImageMenuItem(gtk.STOCK_HELP)
-		#help.connect('activate', self.help_activate)
+		help.connect('activate', self.help_activate)
 		help.show()
 		self.menu.append(help)
 
@@ -205,6 +205,12 @@ class eva:
 			gobject.timeout_add(15*1000, self.icon.set_visible, False)
 
 
+	def help_activate(self, widget):
+		"""show the help info."""
+		# TODO: decide what to do here
+		self.log.debug('FIXME: show help')
+
+
 	def about_activate(self, widget):
 		"""show an about dialog."""
 		# TODO: customize this more
@@ -224,7 +230,8 @@ class eva:
 		self.about.set_comments('Evanescent/Eva machine idle detection and shutdown tool (server/client)')
 		self.about.set_website('http://www.cs.mcgill.ca/~james/code/')
 		self.about.set_website_label('http://www.cs.mcgill.ca/~james/code/')
-		self.about.set_logo(gtk.gdk.pixbuf_new_from_file(self.iconimage))	# make bigger!
+		# TODO: make icon bigger!
+		self.about.set_logo(gtk.gdk.pixbuf_new_from_file(self.iconimage))
 		self.about.run()
 		# TODO: is the below statement correct? i think it is. NEEDSINFO
 		# turns out if you call about.destroy from somewhere else, then

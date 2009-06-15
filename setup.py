@@ -11,7 +11,7 @@ NAME = 'evanescent'
 ext_modules = []
 if os.name == 'posix':
 	ext_modules.append(
-		distutils.core.Extension('idle._x11_idle', ['idle/_x11_idle.c'], libraries = ['Xss'])
+		distutils.core.Extension('evanescent.idle._x11_idle', ['evanescent/idle/_x11_idle.c'], libraries = ['Xss'])
 	)
 
 data_files = []
@@ -33,13 +33,13 @@ data_files.append( ('/etc/', ['files/evanescent.conf.yaml']) )
 distutils.core.setup(
 	name=NAME,
 	version='0.1',		# FIXME version
-	packages=['evanescent', 'idle'],
+	packages=['evanescent', 'evanescent.idle'],
 	package_dir={'evanescent':'evanescent'},
 	ext_modules=ext_modules,
 	# list of miscellaneous extra modules to include
 	py_modules=['yamlhelp'],
 	data_files=data_files,
 	# daemon and client scripts respectively
-	scripts=['evanescent.py', 'eva.py']
+	scripts=['eva.py']
 )
 

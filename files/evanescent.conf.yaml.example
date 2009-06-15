@@ -44,7 +44,7 @@
     mylogpath: '/var/log/evanescent.log'                        # path for local log file
     myerrpath: '/var/log/evanescent.FAIL'                       # path for FAIL log file
     logformat: '%(asctime)s %(levelname)-8s %(name)-17s %(message)s'
-    iconimage: 'evanescent.png'                                 # filename for `systray' icon
+    iconimage: '/usr/share/evanescent/evanescent.png'           # filename for `systray' icon
     readsleep: 5                                                # minimum sleep time between messages
     shareddir: '/var/run/evanescent/'                           # directory for shared evanescent/eva data
     staletime: 60                                               # time limit before widle or msg data considered stale
@@ -63,13 +63,13 @@
   note: this a comment
 
 - user: dude
-  time: [09:00, 17]
+  time: '[09:00, 17]'
   host: somehost
   note: >
         this is a very long note,
         that can run for multiple lines
         if you have a lot to say.
 
-- time: [11, 14:00:00]
+- time: '[11, 14:00:00]'
   user: bob
 
