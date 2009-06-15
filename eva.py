@@ -35,7 +35,7 @@ import gobject				# for timeout_add, etc...
 import idle.idle as idle
 import evanescent.config as config
 import evanescent.exclusions as exclusions
-print config.ICONIMAGE
+
 class eva:
 
 	# CONSTRUCTOR #########################################################
@@ -62,6 +62,7 @@ class eva:
 		# GTK #########################################################
 		# about dialog
 		self.about = None
+		gtk.about_dialog_set_url_hook(self.show_uri)
 
 		# icon
 		self.icon_set_visible_source_id = None	# source id for callback
@@ -209,17 +210,20 @@ class eva:
 		# TODO: customize this more
 
 		if self.about is not None:
-			# TODO: have it so that when you click about (and there
-			# is already a dialog open) that it just zaps you to the
-			# already open dialog, instead of creating another.)
+			self.about.present()	# show the user where it is
 			return False	# don't make another dialog below.
 
 		self.about = gtk.AboutDialog()
 		self.about.set_program_name(self.name)
-		self.about.set_version('0.1')
+		self.about.set_version('0.1')	# TODO: change this dynamically.
+		if len(self.get_authors()) > 0:
+			self.about.set_authors(self.get_authors())
+		if self.get_license() is not None:
+			self.about.set_license(self.get_license())
 		self.about.set_copyright('(c) James Shubin, McGill University')
 		self.about.set_comments('Evanescent/Eva machine idle detection and shutdown tool (server/client)')
-		self.about.set_website('http://www.cs.mcgill.ca/~james/')
+		self.about.set_website('http://www.cs.mcgill.ca/~james/code/')
+		self.about.set_website_label('http://www.cs.mcgill.ca/~james/code/')
 		self.about.set_logo(gtk.gdk.pixbuf_new_from_file(self.iconimage))	# make bigger!
 		self.about.run()
 		# TODO: is the below statement correct? i think it is. NEEDSINFO
@@ -232,10 +236,23 @@ class eva:
 		self.about = None
 
 
+	def show_uri(self, dialog, link):
+		"""open a uri."""
+		# FIXME: according to the docs at:
+		# http://www.pygtk.org/docs/pygtk/class-gtkmountoperation.html#function-gtk--show-uri
+		# the constant: gtk.gdk.CURRENT_TIME should exist but doesn't.
+		# find out how to get it and put it in the function below. maybe
+		# the latest version of pygtk will fix this. we should also be
+		# able to remove self.about.get_screen() with `None'.
+		self.log.debug('showing uri')
+		gtk.show_uri(self.about.get_screen(), link, 0)
+
+
 	def icon_popupmenu(self, icon, button, time):
 		"""handler for status icon right click"""
-		# TODO: check the below line of code is correct
-		self.menu.popup(None, None, gtk.status_icon_position_menu, button, time, self.icon)
+		# old style below:
+		#self.menu.popup(None, None, gtk.status_icon_position_menu, button, time, self.icon)
+		self.menu.popup(None, None, None, button, time)
 
 
 	def icon_activate(self, icon, event=None):
@@ -249,6 +266,7 @@ class eva:
 	def main_quit(self, obj):
 		"""make my own quit signal handler."""
 		# TODO: if there is a better way to do this, someone tell me!
+		self.log.debug('running quit')
 		self.notification_closed(now=True)	# close any leftovers
 		#if self.about is not None: self.about.destroy()
 		gtk.main_quit()
@@ -358,10 +376,36 @@ class eva:
 		# for now, always do this. HOWEVER:
 		# FIXME this fast, because it's annoying
 		self.msg(title='welcome to eva',
-		message='This is a tool that...',
+		message='this is a welcome message to inform the user about...',
 		urgency=pynotify.URGENCY_NORMAL,
 		timeout=pynotify.EXPIRES_NEVER)
 
+
+	def get_authors(self):
+		"""little function that pulls the authors from a text file."""
+		try:
+			f = open('AUTHORS', 'r')
+			authors = f.readlines()
+			# assume it's an author if there is an email
+			return [ x.strip() for x in authors if '@' in x ]
+		except IOError:
+			return []
+		finally:
+			f.close()
+			f = None
+
+
+	def get_license(self):
+		"""little function that pulls the license from a text file."""
+		try:
+			f = open('COPYING', 'r')
+			license = f.read()
+			return license
+		except IOError:
+			return None
+		finally:
+			f.close()
+			f = None
 
 
 	# WORKING LOOP ########################################################
@@ -396,6 +440,10 @@ class eva:
 					if self.delta > config.COUNTDOWN:
 
 						self.log.fatal('you are being logged off due to inactivity.')
+						self.msg(title='you are currently idle',
+						message='you are being logged off due to inactivity',
+						urgency=pynotify.URGENCY_CRITICAL,
+						timeout=pynotify.EXPIRES_NEVER)
 						#TODO: DO_LOGOFF()
 						return False
 
@@ -410,9 +458,10 @@ class eva:
 				# do warn
 				else:
 					self.warned = datetime.datetime.today()
+					timeleft = config.COUNTDOWN - self.delta
 					self.log.warn('you are currently idle. rectify this or your session will be automatically logged off.')
 					self.msg(title='You are currently idle',
-					message='your session will be logged off in about %d seconds (and counting) if you continue to be idle.' % (config.COUNTDOWN - self.delta) + os.linesep + 'press a key or move your mouse to cancel the impending logoff.',
+					message='your session will be logged off in about %d seconds (and counting) if you continue to be idle.' % (timeleft) + os.linesep + 'press a key or move your mouse to cancel the impending logoff.',
 					urgency=pynotify.URGENCY_CRITICAL,
 					timeout=pynotify.EXPIRES_NEVER)
 
@@ -421,7 +470,7 @@ class eva:
 					# wake up in time before countdown is up
 					# a faster sleep updates the countdown
 					# counter faster, but wastes more cpu.
-					sleep = min(config.COUNTDOWN, config.FASTSLEEP)
+					sleep = min(timeleft, config.FASTSLEEP)
 
 
 			# not idle
@@ -429,7 +478,7 @@ class eva:
 				self.log.info('user is not idle.')
 				if self.warned:
 					self.log.info('log off canceled, not idle anymore.')
-					self.msg(message='log off canceled, not idle anymore',
+					self.msg(message='log off canceled, you\'re not idle anymore',
 					title=None,
 					urgency=pynotify.URGENCY_LOW,
 					timeout=pynotify.EXPIRES_DEFAULT)
@@ -441,8 +490,11 @@ class eva:
 		else:
 			self.log.info('you are currently excluded from idle-logoff.')
 			if self.warned:
-				self.log.info('log off canceled, you\'re currently excluded.')
-				# TODO: SHOW_CURRENTLY_EXCLUDED_MESSAGE
+				self.log.info('log off canceled, you\'ve just been excluded.')
+				self.msg(message='log off canceled, you\'ve just been excluded.',
+				title=None,
+				urgency=pynotify.URGENCY_LOW,
+				timeout=pynotify.EXPIRES_DEFAULT)
 				self.warned = False
 
 			#sleep = config.SLEEPTIME	# CHANGED IN FAVOUR OF:
