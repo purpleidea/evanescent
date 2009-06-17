@@ -218,7 +218,7 @@ class evanescent:
 
 		# handler for global logging server
 		# TODO: find a way to change the facility to 'evanescent' or rather: the self.name variable
-		self.logh['SysLogHandler'] = logging.handlers.SysLogHandler(config.LOGSERVER, logging.handlers.SysLogHandler.LOG_LOCAL7)
+		self.logh['SysLogHandler'] = logging.handlers.SysLogHandler(tuple(config.LOGSERVER), logging.handlers.SysLogHandler.LOG_LOCAL7)
 		self.logh['SysLogHandler'].setFormatter(formatter)
 		self.log.addHandler(self.logh['SysLogHandler'])
 

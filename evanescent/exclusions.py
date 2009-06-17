@@ -42,13 +42,16 @@ IPV6 = 'ipv6'
 MACA = 'maca'		# mac address
 
 # special
-CONF = 'conf'		# for config options
 NOTE = 'note'		# for adding comments
+
+# other
+EXCLUSIONS = 'exclusions'	# exclusions key
 
 class exclusions:
 
 	# TODO: translate these
-	E_NOTALIST = 'top level yaml exclusions file struct should be a list'
+	E_NOTALIST = 'yaml was expecting a list'
+	E_NOTADICT = 'top level yaml exclusions file struct should be a dict'
 	E_YAMLSCAN = 'yaml parser failed with: %s'
 	E_FILEMISSING = 'file `%s\' doesn\'t exist.'
 
@@ -73,6 +76,16 @@ class exclusions:
 			f = open(self.yamlconf)
 			try:
 				data = yaml.load(f)
+				if type(data) is not dict:
+					raise SyntaxError, self.E_NOTADICT
+
+				# look for exclusions key
+				if not EXCLUSIONS in data:
+					data = []
+				else:
+					data = data[EXCLUSIONS]
+
+				# we should have a list
 				if type(data) is not list:
 					raise SyntaxError, self.E_NOTALIST
 
@@ -151,9 +164,6 @@ class exclusions:
 					# the exclusions function should ignore any comments.
 					pass
 
-				elif j == CONF:
-					# the exclusions function should ignore configuration file options
-					pass
 				else:
 					raise SyntaxError, 'identifier: `%s\' not supported' % j
 

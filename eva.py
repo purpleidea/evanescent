@@ -155,7 +155,7 @@ class eva:
 
 		# handler for global logging server
 		# TODO: find a way to change the facility to 'evanescent' or rather: the self.name variable
-		self.logh['SysLogHandler'] = logging.handlers.SysLogHandler(config.LOGSERVER, logging.handlers.SysLogHandler.LOG_LOCAL7)
+		self.logh['SysLogHandler'] = logging.handlers.SysLogHandler(tuple(config.LOGSERVER), logging.handlers.SysLogHandler.LOG_LOCAL7)
 		self.logh['SysLogHandler'].setFormatter(formatter)
 		self.log.addHandler(self.logh['SysLogHandler'])
 
@@ -270,12 +270,12 @@ class eva:
 			self.win.present()
 
 
-	def main_quit(self, obj):
+	def main_quit(self, obj=None):
 		"""make my own quit signal handler."""
 		# TODO: if there is a better way to do this, someone tell me!
 		self.log.debug('running quit')
 		self.notification_closed(now=True)	# close any leftovers
-		#if self.about is not None: self.about.destroy()
+		if self.about is not None: self.about.destroy()
 		gtk.main_quit()
 
 
@@ -366,7 +366,7 @@ class eva:
 
 	# MISCELLANEOUS ########################################################
 
-	def info(self):
+	def welcome_info(self):
 		"""send a notification to the user that informs them that they
 		could get logged off if idle. check in their $HOME/.evanescent
 		to see if they have chosen to ignore this warning."""
@@ -443,6 +443,7 @@ class eva:
 					# how long have we been warned for ?
 					timedelta = datetime.datetime.today() - self.warned
 					self.delta = int(math.ceil(timedelta.seconds + (timedelta.days*24*60*60) + (timedelta.microseconds*(1/1000000))))
+					timeleft = config.COUNTDOWN - self.delta
 					# if warning time is up!
 					if self.delta > config.COUNTDOWN:
 
@@ -455,20 +456,23 @@ class eva:
 						return False
 
 					else:
-						# change the +0 to +1 if you run
-						# on a pentium three-zillion cpu
-						# and it can do lots of loops in
-						# a fraction of a second. the +0
-						# is slightly more accurate math
-						sleep = self.delta+0
+						# update the timeleft message
+						# or not depending on option.
+						if config.UPDATEMSG:
+							# update the message
+							self.msg(title='You are currently idle',
+							message='your session will be logged off in about %d seconds (and counting) if you continue to be idle.' % (timeleft) + os.linesep + 'press a key or move your mouse to cancel the impending logoff.',
+							urgency=pynotify.URGENCY_CRITICAL,
+							timeout=pynotify.EXPIRES_NEVER)
+
+						sleep = min(timeleft, config.FASTSLEEP)
 
 				# do warn
 				else:
 					self.warned = datetime.datetime.today()
-					timeleft = config.COUNTDOWN - self.delta
 					self.log.warn('you are currently idle. rectify this or your session will be automatically logged off.')
 					self.msg(title='You are currently idle',
-					message='your session will be logged off in about %d seconds (and counting) if you continue to be idle.' % (timeleft) + os.linesep + 'press a key or move your mouse to cancel the impending logoff.',
+					message='your session will be logged off in about %d seconds (and counting) if you continue to be idle.' % (config.COUNTDOWN) + os.linesep + 'press a key or move your mouse to cancel the impending logoff.',
 					urgency=pynotify.URGENCY_CRITICAL,
 					timeout=pynotify.EXPIRES_NEVER)
 
@@ -477,7 +481,7 @@ class eva:
 					# wake up in time before countdown is up
 					# a faster sleep updates the countdown
 					# counter faster, but wastes more cpu.
-					sleep = min(timeleft, config.FASTSLEEP)
+					sleep = min(config.COUNTDOWN, config.FASTSLEEP)
 
 
 			# not idle
@@ -546,7 +550,7 @@ class eva:
 			sys.exit(1)
 
 		# run informational welcome message script.
-		gobject.idle_add(self.info)
+		gobject.idle_add(self.welcome_info)
 
 		# start it off in one second from now.
 		self.source_id = gobject.timeout_add(1*1000, self.loop)
@@ -582,24 +586,5 @@ def default_cb(n, action):
 	n.close()
 	gtk.main_quit()
 
-
-def watcher(one, two, iconobj):
-
-	#n.set_timeout(pynotify.EXPIRES_NEVER)
-	#n.connect('closed', self.handle_closed) # run some code when closed signal gets called??????
-	#def handle_closed(self,n):
-	#	n.close()
-	#	gtk.main_quit()
-
-	n.set_timeout(10000) # 10 seconds	# self destruct message in 10 seconds
-
-	if not n.show():
-		print "Failed to send notification"
-
-	# we can do this to update an existing pynotification
-	#n.update("New Summary", "New Message")
-	#n.show() ...
-
-	# if we return False then it won't be called anymore.
-	return True
 """
+
