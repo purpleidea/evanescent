@@ -1,0 +1,20 @@
+[Desktop Entry]
+# see: http://standards.freedesktop.org/autostart-spec/autostart-spec-latest.html
+# and: http://standards.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html
+# FIXME: french translations
+# TODO: add translations
+Encoding=UTF-8
+Name=Evanescent
+GenericName=Idle Detector
+GenericName[fr]=Détecteur D'activité
+Comment=Detect idle activity
+Comment[fr]=Détecteur de manque d'activité
+Type=Application
+Exec=eva.py
+Terminal=false
+Icon=/usr/share/evanescent/evanescent.svg
+# http://standards.freedesktop.org/menu-spec/latest/apa.html
+Categories=Utility;
+# http://standards.freedesktop.org/menu-spec/latest/apb.html
+OnlyShowIn=GNOME;KDE;XFCE;
+

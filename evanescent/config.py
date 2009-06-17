@@ -126,6 +126,7 @@ class config:
 
 
 	def _check(self, value, expect, debug=None):
+		# NOTE: this function is quality.
 		"""recursively match `value' against the datatype in expect."""
 		# TODO: add raising / tracing so we can find the specific error.
 		d = (debug is None and self.debug) or debug
@@ -198,15 +199,14 @@ class config:
 		"""do it all for a regular import."""
 		d = (debug is None and self.debug) or debug
 		parse = self.parse()
+		if d: print 'parse: %s' % parse
 		clean = self.clean()
+		if d: print 'clean: %s' % clean
 		default = self.default()
+		if d: print 'default: %s' % default
 		check = self.check()
-		if d:
-			print 'parse: %s' % parse
-			print 'clean: %s' % clean
-			print 'default: %s' % default
-			print 'check: %s' % check
-			print 'make:'
+		if d: print 'check: %s' % check
+		if d: print 'make:'
 		self.make()
 
 
@@ -220,9 +220,11 @@ default_config = {
 	'COUNTDOWN': 5*60,			# five minute countdown before shutdown
 	'THECONFIG': '/etc/evanescent.conf.yaml',	# the config file
 	'LOGSERVER': ['logmaster', 514],			# syslog server
+	'LOGFORMAT': '%(asctime)s %(levelname)-8s %(name)-17s %(message)s',
+	'MYLOGPATH': '/var/log/evanescent.log',			# path for local log file
 	'UPDATEMSG': True,					# update the impending logoff msg every fastsleep or not
 	'ICONIMAGE': '/usr/share/evanescent/evanescent.png',	# filename for `systray' icon
-	'LOGFORMAT': '%(asctime)s %(levelname)-8s %(name)-17s %(message)s',
+
 
 	#FIXME: this option might get removed and replaced by smart polling; see: get_exclusions_changed_time
 	'SLEEPTIME': 10*60				# poll/check computer every 10 minutes
@@ -232,6 +234,7 @@ default_config = {
 if os.name == 'nt':
 	default_config['THECONFIG'] = 'c:\WINDOWS\evanescent.conf.yaml'
 	default_config['ICONIMAGE'] = '?'	# FIXME
+	MYLOGPATH = 'c:\WINDOWS\system32\config\evanescent.log'
 
 
 expected_types = {
@@ -243,9 +246,10 @@ expected_types = {
 	'COUNTDOWN': int,
 	'THECONFIG': str,
 	'LOGSERVER': [str, int],
+	'LOGFORMAT': str,
+	'MYLOGPATH': str,
 	'UPDATEMSG': bool,
 	'ICONIMAGE': str,
-	'LOGFORMAT': str,
 
 	#FIXME: this option might get removed and replaced by smart polling; see: get_exclusions_changed_time
 	'SLEEPTIME': int
@@ -280,7 +284,6 @@ TDCOMMAND = 'shutdown -P now bye!'	# take-down command to run
 
 
 DAEMONPID = '/var/run/evanescent.pid'	# pid file for daemon
-MYLOGPATH = '/var/log/evanescent.log'	# path for local log file
 MYERRPATH = '/var/log/evanescent.FAIL'	# path for FAIL log file
 
 ICONIMAGE = 'files/evanescent.svg'	# filename for `systray' icon

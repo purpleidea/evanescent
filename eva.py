@@ -33,6 +33,7 @@ import gobject				# for timeout_add, etc...
 
 # backend, evanescent related
 import evanescent.idle.idle as idle
+import evanescent.logout.logout as logout
 import evanescent.config as config
 import evanescent.exclusions as exclusions
 
@@ -213,8 +214,6 @@ class eva:
 
 	def about_activate(self, widget):
 		"""show an about dialog."""
-		# TODO: customize this more
-
 		if self.about is not None:
 			self.about.present()	# show the user where it is
 			return False	# don't make another dialog below.
@@ -226,10 +225,13 @@ class eva:
 			self.about.set_authors(self.get_authors())
 		if self.get_license() is not None:
 			self.about.set_license(self.get_license())
-		self.about.set_copyright('(c) James Shubin, McGill University')
+		year = datetime.datetime.now().year
+		# FIXME: add real copyright symbol
+		self.about.set_copyright('Copyright (c) 2008-%d James Shubin, McGill University' % year)
 		self.about.set_comments('Evanescent/Eva machine idle detection and shutdown tool (server/client)')
-		self.about.set_website('http://www.cs.mcgill.ca/~james/code/')
-		self.about.set_website_label('http://www.cs.mcgill.ca/~james/code/')
+		url = 'http://www.cs.mcgill.ca/~james/code/'
+		self.about.set_website(url)
+		self.about.set_website_label(url)
 		# TODO: make icon bigger!
 		self.about.set_logo(gtk.gdk.pixbuf_new_from_file(self.iconimage))
 		self.about.run()
@@ -250,7 +252,7 @@ class eva:
 		# the constant: gtk.gdk.CURRENT_TIME should exist but doesn't.
 		# find out how to get it and put it in the function below. maybe
 		# the latest version of pygtk will fix this. we should also be
-		# able to remove self.about.get_screen() with `None'.
+		# able to remove self.about.get_screen() and replace with: None.
 		self.log.debug('showing uri')
 		gtk.show_uri(self.about.get_screen(), link, 0)
 
@@ -433,7 +435,7 @@ class eva:
 
 		# if not excluded
 		if not result:
-			self.log.warn('you are currently NOT excluded from idle-logoff.')
+			self.log.warn('you are currently NOT excluded from idle-logout.')
 
 			if idle.is_idle(config.IDLELIMIT):
 
@@ -452,7 +454,8 @@ class eva:
 						message='you are being logged off due to inactivity',
 						urgency=pynotify.URGENCY_CRITICAL,
 						timeout=pynotify.EXPIRES_NEVER)
-						#TODO: DO_LOGOFF()
+						# do the actual logout
+						logout.logout()
 						return False
 
 					else:
@@ -461,7 +464,7 @@ class eva:
 						if config.UPDATEMSG:
 							# update the message
 							self.msg(title='You are currently idle',
-							message='your session will be logged off in about %d seconds (and counting) if you continue to be idle.' % (timeleft) + os.linesep + 'press a key or move your mouse to cancel the impending logoff.',
+							message='your session will be logged off in about %d seconds (and counting) if you continue to be idle.' % (timeleft) + os.linesep + 'press a key or move your mouse to cancel the impending logout.',
 							urgency=pynotify.URGENCY_CRITICAL,
 							timeout=pynotify.EXPIRES_NEVER)
 
@@ -472,7 +475,7 @@ class eva:
 					self.warned = datetime.datetime.today()
 					self.log.warn('you are currently idle. rectify this or your session will be automatically logged off.')
 					self.msg(title='You are currently idle',
-					message='your session will be logged off in about %d seconds (and counting) if you continue to be idle.' % (config.COUNTDOWN) + os.linesep + 'press a key or move your mouse to cancel the impending logoff.',
+					message='your session will be logged off in about %d seconds (and counting) if you continue to be idle.' % (config.COUNTDOWN) + os.linesep + 'press a key or move your mouse to cancel the impending logout.',
 					urgency=pynotify.URGENCY_CRITICAL,
 					timeout=pynotify.EXPIRES_NEVER)
 
@@ -499,7 +502,7 @@ class eva:
 
 		# is excluded
 		else:
-			self.log.info('you are currently excluded from idle-logoff.')
+			self.log.info('you are currently excluded from idle-logout.')
 			if self.warned:
 				self.log.info('log off canceled, you\'ve just been excluded.')
 				self.msg(message='log off canceled, you\'ve just been excluded.',

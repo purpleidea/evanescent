@@ -164,3 +164,7 @@ class dt:
 		# TODO:
 		raise NotImplementedError
 
+
+if __name__ == '__main__':
+	print 'TODO: run some test cases or do something useful here.'
+
