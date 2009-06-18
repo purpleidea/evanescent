@@ -1,7 +1,7 @@
 [Desktop Entry]
 # see: http://standards.freedesktop.org/autostart-spec/autostart-spec-latest.html
 # and: http://standards.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html
-# FIXME: french translations
+# TODO: fix french translations that i did.
 # TODO: add translations
 Encoding=UTF-8
 Name=Evanescent

@@ -117,7 +117,7 @@ static PyObject *idle(PyObject *self, PyObject *args) {
 
 }
 
-// FIXME: add the relevant code so that the python equivalent of:
+// TODO: add the relevant code so that the python equivalent of:
 // __all__ = ['_idle']
 // works when you use this compiled module.
 PyMethodDef x11_idle_methods[] = {

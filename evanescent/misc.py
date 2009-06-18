@@ -45,7 +45,7 @@ def do_nologin(message=None):
 	displays message if they try."""
 
 	if os.name == 'posix':
-		# FIXME: you need permission to change/create /etc/nologin,
+		# TODO: you need permission to change/create /etc/nologin,
 		# so this script should check if it has permission first,
 		# and then return true or false based on whether it succeeds
 		# or not.
@@ -54,7 +54,7 @@ def do_nologin(message=None):
 		else:
 			os.system("touch /etc/nologin")
 
-	# FIXME: fix this to return True/False based on if it worked or not.
+	# TODO: fix this to return True/False based on if it worked or not.
 	return True
 
 

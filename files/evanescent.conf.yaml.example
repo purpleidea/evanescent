@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# FIXME: i should probably make this into a better example file
+# TODO: i should probably make this into a better example file
 
 #########
 # NOTES #
@@ -39,7 +39,7 @@ config:
     updatemsg: True                                             # update the impending logoff msg every fastsleep or not
     logformat: '%(asctime)s %(levelname)-8s %(name)-17s %(message)s'
     iconimage: '/usr/share/evanescent/evanescent.png'           # filename for `systray' icon
-    #FIXME: this option might get removed and replaced by smart polling; see: get_exclusions_changed_time
+    #TODO: this option might get removed and replaced by smart polling; see: get_exclusions_changed_time
     sleeptime: 600                                              # poll/check computer every 10 minutes
 
 ##############

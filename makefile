@@ -77,12 +77,12 @@ force: ;
 
 
 # how do i fix this so that the pwd's aren't the same and you get persistence in makefiles?
-FIXME:
+TODO:
 	pwd
 	cd windows
 	pwd
 
-FIXME2:
+TODO2:
 	pwd; cd windows; pwd
 
 # unix2dos file ending conversion

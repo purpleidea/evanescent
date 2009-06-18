@@ -26,17 +26,31 @@ def cprm():
 	"""remove the earlier copied file."""
 	os.remove('files/evanescent.conf.yaml')
 atexit.register(cprm)
-# FIXME: it would make more sense if distutils could rename a file, this way we
+# TODO: it would make more sense if distutils could rename a file, this way we
 # wouldn't have to change the name of the file around.
 data_files.append( ('/etc/', ['files/evanescent.conf.yaml']) )
 # see: http://standards.freedesktop.org/autostart-spec/autostart-spec-latest.html
 # and: http://standards.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html
 data_files.append( ('/etc/xdg/autostart/', ['files/evanescent.desktop']) )
 
+def get_version():
+	"""little function that pulls the version from a text file."""
+	# TODO: put these utility functions into a separate module
+	# NOTE: this is copied from the code in eva.py
+	try:
+		f = open('VERSION', 'r')
+		return f.read()
+	except IOError:
+		return '0.0'
+	finally:
+		f.close()
+		f = None
+
+
 # setup
 distutils.core.setup(
 	name=NAME,
-	version='0.1',		# FIXME version
+	version=get_version()
 	packages=['evanescent', 'evanescent.idle', 'evanescent.logout'],
 	package_dir={'evanescent':'evanescent'},
 	ext_modules=ext_modules,

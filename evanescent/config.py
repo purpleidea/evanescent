@@ -23,6 +23,12 @@ import yamlhelp
 
 
 # TODO: clean up this file and in the future add pycurl
+# TODO/FIXME: maybe we should be rewriting the whole config parser module.
+# make it depend on a better yamlhelp module. the idea should be that yaml_load
+# opens up the yaml file. you play around with the data stored somewhere. and
+# then you yaml_save and it gets stuck back into the file. no error raising or
+# any mess...
+
 #BOOTSTRAP could be a useful config file name
 #import atexit
 #atexit.register(del_conf)
@@ -82,6 +88,32 @@ class config:
 
 		self.config = data
 		return result
+
+
+	def store(self, data, key='config', debug=None):
+		"""store the self.config back into file. this only writes the
+		'config' dictionary key and overwrites anything else. don't use
+		this for writing to the main config. this function should be
+		replaced. see the TODO/FIXME comment at the top of this file."""
+
+		d = (debug is None and self.debug) or debug
+
+		if type(data) is not dict:
+			data = {}
+
+		data = dict([ (k.upper(),value) for k,value in data.items() if value is not None ])
+
+		data = {key:data}
+
+		conf = yamlhelp.yamlhelp(filename=self.filename)
+		# TODO: replace the yamlhelp lib with a more clever yamlhelp lib
+		try:
+			conf.put_yaml(data)
+		except:
+			# it could raise a few different errors. who cares.
+			return False
+
+		return True
 
 
 	def clean(self, debug=None):
@@ -195,7 +227,7 @@ class config:
 		return True
 
 
-	def run(self, debug=None):
+	def run(self, make=False, debug=None):
 		"""do it all for a regular import."""
 		d = (debug is None and self.debug) or debug
 		parse = self.parse()
@@ -206,8 +238,12 @@ class config:
 		if d: print 'default: %s' % default
 		check = self.check()
 		if d: print 'check: %s' % check
-		if d: print 'make:'
-		self.make()
+		if make:
+			if d: print 'make:'
+			self.make()
+		else:
+			if d: print 'config: %s' % self.config
+			return self.config
 
 
 default_config = {
@@ -226,7 +262,7 @@ default_config = {
 	'ICONIMAGE': '/usr/share/evanescent/evanescent.png',	# filename for `systray' icon
 
 
-	#FIXME: this option might get removed and replaced by smart polling; see: get_exclusions_changed_time
+	#TODO: this option might get removed and replaced by smart polling; see: get_exclusions_changed_time
 	'SLEEPTIME': 10*60				# poll/check computer every 10 minutes
 
 }
@@ -251,7 +287,7 @@ expected_types = {
 	'UPDATEMSG': bool,
 	'ICONIMAGE': str,
 
-	#FIXME: this option might get removed and replaced by smart polling; see: get_exclusions_changed_time
+	#TODO: this option might get removed and replaced by smart polling; see: get_exclusions_changed_time
 	'SLEEPTIME': int
 }
 
@@ -261,7 +297,7 @@ obj = config(filename='/home/james/code/evanescent/files/evanescent.conf.yaml.ex
 if __name__ == '__main__':
 	obj.debug = True
 
-obj.run()
+obj.run(make=True)
 
 
 
@@ -349,7 +385,7 @@ if DEBUGMODE:				# make our debugging go faster
 	INITSLEEP = 2*60		# 2 min
 	WORDYMODE = True
 
-# so that... hmmm FIXME: i forget, haha.
+# so that... hmmm TODO: i forget, haha.
 assert not((FASTSLEEP != 0) and (COUNTDOWN != 0) and FASTSLEEP >= COUNTDOWN), 'FASTSLEEP value should be smaller than COUNTDOWN'
 
 # so that messages don't go stale before they get a chance to be read

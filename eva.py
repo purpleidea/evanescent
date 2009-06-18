@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# FIXME: fix all FIXME's for a version release. TODO's are warnings. FIXME's are release stoppers.
 """
     Evanescent machine idle detection and shutdown tool.
     Copyright (C) 2008  James Shubin, McGill University
@@ -20,6 +19,7 @@
 """
 
 """this is the evanescent client that runs in the machines session"""
+# TODO: add _() for gettext
 
 import os					# for path manipulations
 import datetime					# for time delta calculations
@@ -29,7 +29,6 @@ import logging, logging.handlers		# for syslog stuff
 # frontend, gui related
 import gtk					# for status icon
 import pynotify					# for notifications
-
 import gobject					# for timeout_add, etc...
 
 # backend, evanescent related
@@ -212,8 +211,9 @@ class eva:
 
 	def help_activate(self, widget):
 		"""show the help info."""
-		# TODO: decide what to do here
-		self.log.debug('FIXME: show help')
+		# TODO: run better help in the future
+		self.log.debug('showing help')
+		self.show_uri(self.menu, 'http://www.cs.mcgill.ca/~james/help/eva/')
 
 
 	def about_activate(self, widget):
@@ -257,8 +257,8 @@ class eva:
 		# find out how to get it and put it in the function below. maybe
 		# the latest version of pygtk will fix this. we should also be
 		# able to remove self.about.get_screen() and replace with: None.
-		self.log.debug('showing uri')
-		gtk.show_uri(self.about.get_screen(), link, 0)
+		self.log.debug('showing uri: %s' % link)
+		gtk.show_uri(dialog.get_screen(), link, 0)
 
 
 	def icon_popupmenu(self, icon, button, time):
@@ -391,19 +391,29 @@ class eva:
 		home = os.getenv('USERPROFILE', False) or os.getenv('HOME')
 		self.log.debug('user\'s home directory is: %s' % str(home))
 
-		"""
-		if not; in $HOME/.evanescent: -> ignore=True
-			self.msg(title='welcome to eva',
-			message='This is a tool that...',
+		filename = os.path.join(home, '.eva.conf.yaml')
+		defaults = {'WELCOMEME': True}
+		expected = {'WELCOMEME': bool}
+		conf = config.config(
+			filename=filename, defaults=defaults, expected=expected
+		)
+		data = conf.run(make=False)
+
+		if data['WELCOMEME']:
+			self.msg(title='welcome to eva', message='eva is a ' \
+			'client program that notifies you when your session ' \
+			'is idle. it can automatically log you out, lock your '\
+			'screen or perform some custom action like pausing '\
+			'your music.' + (2 * os.linesep) + 'once you dismiss '\
+			'this message, it won\'t pop up to bother you anymore.',
 			urgency=pynotify.URGENCY_NORMAL,
 			timeout=pynotify.EXPIRES_NEVER)
-		"""
-		# for now, always do this. HOWEVER:
-		# FIXME this fast, because it's annoying
-		self.msg(title='welcome to eva',
-		message='this is a welcome message to inform the user about...',
-		urgency=pynotify.URGENCY_NORMAL,
-		timeout=pynotify.EXPIRES_NEVER)
+
+			# turn off future welcome messages
+			data['WELCOMEME'] = False
+			conf.store(data)
+		else:
+			self.log.debug('skipping welcome message')
 
 
 	def get_authors(self):
@@ -434,6 +444,7 @@ class eva:
 
 	def get_version(self):
 		"""little function that pulls the version from a text file."""
+		# TODO: put these utility functions into a separate module
 		try:
 			f = open('VERSION', 'r')
 			return f.read()
@@ -552,12 +563,15 @@ class eva:
 		return False
 
 	def get_exclusions_changed_time(self):
-		# FIXME: make this ideally check the next time the exclusions are
+		# TODO: make this ideally check the next time the exclusions are
 		# liable to include the user (by parsing and looking at date/time
 		# if possible. if this is too hard (which it could be) then sleep
 		# for some constant amount of time shown below. also, add a watch
 		# on the exclusions file, and if it changes, then wake up and see
 		# if the exclusions are now enough to let someone get logged off!
+		# TODO: the later part of this can maybe be done with pyinotify.
+		# TODO: i could potentially consult an algorithmist to see if it
+		# is worth it to write the former part of the above description.
 		return config.SLEEPTIME
 
 
