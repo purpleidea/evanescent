@@ -233,7 +233,7 @@ if __name__ == '__main__':
 	def usage():
 		"""print a simple usage message and exit."""
 		print 'usage: %s [yamlconf] | [-h | --help]' % sys.argv[0]
-		sys.exit(0)
+		sys.exit()
 
 	if len(sys.argv) == 2:
 		if sys.argv[1] in ['-h', '--help']:

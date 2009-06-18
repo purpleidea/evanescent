@@ -105,7 +105,7 @@ class evanescent:
 		it logs all its errors to the main log. it also runs sys.exit() when needed."""
 
 		# should evanescent be disabled, and exit right away?
-		if not(config.STARTMEUP): sys.exit(0)
+		if not(config.STARTMEUP): sys.exit()
 
 		# setup the logging handles
 		self.logging()
@@ -334,7 +334,7 @@ class evanescent:
 						misc.do_broadcast('machine is going down now', {'users': extract['users'], 'line': extract['line']})
 						misc.do_shutdown()	# kills the system
 						# FIXME: if the tdcommand is something like suspend, then we have a problem when the machine wakes up.
-						sys.exit(0)
+						sys.exit()
 
 					else:
 						# TODO: maybe we check for users pressing cancel here?

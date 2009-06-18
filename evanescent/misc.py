@@ -19,9 +19,26 @@
 """
 
 import os
-import time
-import config
-import yamlhelp
+import getpass
+
+__all__ = ['console_msg', 'do_nologin', 'uptime']
+
+def console_msg(message, line=None):
+	"""send a simple console message out."""
+
+	# TODO: sanitize message string for injection attacks and weird characters?
+	message = str(message)
+	who = getpass.getuser()
+
+	if os.name == 'posix':
+		if line is not None:
+			os.system("echo '%s' | write %s %s &>/dev/null" % (message, who, line))
+		else:
+			os.system("echo '%s' | write %s &>/dev/null" % (message, who))
+
+	elif os.name == 'nt':
+		os.popen('net send %s %s' % (who, message))
+
 
 def do_nologin(message=None):
 	"""stops new logins from happening,
@@ -41,64 +58,6 @@ def do_nologin(message=None):
 	return True
 
 
-def do_broadcast(message, who={'users': []}):
-	"""broadcasts a message to all the cli/gtk clients."""
-	#FIXME: in the future we can have this be a more powerful library...
-	# it could use libnotify... and do fancy talking to gtk
-	# it could use write
-	# it could specify just a user or multiple users...
-	# it could specify particular lines (eg: terminals, like: tty7, or pts/0)
-	# it could do a combination of the above
-
-	if not(who.has_key('users')): return False
-	if who.has_key('line') and len(who['users']) != len(who['line']): raise AssertionError
-	# TODO: sanitize message string for injection attacks and weird characters?
-	message = str(message)
-	if type(who['users']) == type([]):
-		for i in range(len(who['users'])):
-
-			# send a message to all clients through text file
-			# ipc. using a text file to pass messages is both
-			# simple and compatible in both windows and unix.
-
-			f = yamlhelp.yamlhelp(os.path.join(config.SHAREDDIR, config.MSGSUBDIR, who['users'][i]))
-			try:
-				# make a new message id... have it be slightly larger than the last.
-				result = f.get_yaml()
-				if not(type(result) == type([])) or (len(result) < 1): raise IOError
-				new_id = max([ x['id'] for x in result ]) + 1
-
-			except IOError:
-				new_id = 1
-
-			yaml_msg = [ {'id': new_id, 'tsync': time.time(), 'msg': message} ]
-			# append a message to the text file message queue
-			f.put_yaml(yaml_msg, mode='a')
-
-			if os.name == 'posix':
-				if who.has_key('line'):
-					os.system("echo '%s' | write %s %s &>/dev/null" % (message, who['users'][i], who['line'][i]))
-				else:
-					os.system("echo '%s' | write %s &>/dev/null" % (message, who['users'][i]))
-
-			elif os.name == 'nt':
-				os.popen('net send %s %s' % (who['users'][i], message))
-
-	return True
-
-
-def do_shutdown():
-	"""takes down the system in some manner."""
-	# here are a list of allowed take-down commands to run.
-	# TODO: add more valid take-down commands to this list
-	if os.name == 'posix':
-		allowed = ['shutdown -P now bye!', 'pm-suspend', 'pm-hibernate', 'pm-suspend-hybrid']
-	elif os.name == 'nt':
-		allowed = ['shutdown.exe -s -t 00 -c "bye!"']
-
-	if config.TDCOMMAND in allowed: os.system(config.TDCOMMAND)
-
-
 def uptime():
 	"""returns the uptime of the system in seconds"""
 	# TODO: add dependency checking for the win32api module
@@ -107,6 +66,7 @@ def uptime():
 		import win32api
 		return int(win32api.GetTickCount()/1000)
 
+	f = None
 	sec = -1
 	try:
 		f = open('/proc/uptime')
@@ -122,4 +82,24 @@ def uptime():
 
 	return sec
 
+
+if __name__ == '__main__':
+	import sys
+	l = len(sys.argv)
+	if l > 1 and sys.argv[1] in __all__:
+
+		if sys.argv[1] == 'uptime' and l == 2:
+			print uptime()
+			sys.exit()
+
+		elif sys.argv[1] == 'do_nologin' and l in [2, 3]:
+			if l == 2: do_nologin()
+			else: do_nologin(sys.argv[2])
+			sys.exit()
+
+		elif sys.argv[1] == 'console_msg' and l == 3:
+			console_msg(sys.argv[2])
+			sys.exit()
+
+	print 'usage: %s uptime | do_nologin [message] | console_msg <message>' % sys.argv[0]
 

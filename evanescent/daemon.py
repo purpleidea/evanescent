@@ -124,7 +124,7 @@ class daemon:
 		self.log('trying first fork', logging.DEBUG)
 		try:
 			pid = os.fork()
-			if pid > 0: sys.exit(0) # exit first parent
+			if pid > 0: sys.exit() # exit first parent
 		except OSError, e:
 			message = 'fork #1 failed: (%d) %s' % (e.errno, e.strerror)
 			self.log(message, logging.FATAL)
@@ -139,7 +139,7 @@ class daemon:
 		self.log('trying second fork', logging.DEBUG)
 		try:
 			pid = os.fork()
-			if pid > 0: sys.exit(0) # exit second parent
+			if pid > 0: sys.exit() # exit second parent
 		except OSError, e:
 			message = 'fork #2 failed: (%d) %s' % (e.errno, e.strerror)
 			self.log(message, logging.FATAL)
@@ -242,7 +242,7 @@ class daemon:
 
 				if action == 'stop':
 					if error: sys.exit(1)
-					else: sys.exit(0)
+					else: sys.exit()
 
 				elif action == 'restart':
 					# now setup to do the start below...

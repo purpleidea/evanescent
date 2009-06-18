@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# FIXME: fix all FIXME's for a version release. TODO's are warnings. FIXME's are release stoppers.
 """
     Evanescent machine idle detection and shutdown tool.
     Copyright (C) 2008  James Shubin, McGill University
@@ -20,22 +21,23 @@
 
 """this is the evanescent client that runs in the machines session"""
 
-import os				# for path manipulations
-import datetime				# for time delta calculations
-import math				# for math.ceil
-import logging, logging.handlers	# for syslog stuff
+import os					# for path manipulations
+import datetime					# for time delta calculations
+import math					# for math.ceil
+import logging, logging.handlers		# for syslog stuff
 
 # frontend, gui related
-import gtk				# for status icon
-import pynotify				# for notifications
+import gtk					# for status icon
+import pynotify					# for notifications
 
-import gobject				# for timeout_add, etc...
+import gobject					# for timeout_add, etc...
 
 # backend, evanescent related
-import evanescent.idle.idle as idle
-import evanescent.logout.logout as logout
-import evanescent.config as config
-import evanescent.exclusions as exclusions
+import evanescent.idle.idle as idle		# idle package
+import evanescent.logout.logout as logout	# logout package
+import evanescent.config as config		# config module
+import evanescent.exclusions as exclusions	# exclusions module
+import evanescent.misc as misc			# misc functions module
 
 class eva:
 
@@ -97,6 +99,8 @@ class eva:
 
 		# PYNOTIFY ####################################################
 
+		self.pynotify = True	# is pynotify active? assume yes for now
+
 		# build a uri
 		self.uri = "file://" + os.path.join(os.path.abspath(os.getcwd()), self.iconimage)
 		self.log.debug('icon uri: %s' % self.uri)
@@ -115,13 +119,13 @@ class eva:
 		# signal handle for notification closed
 		self.n.connect('closed', self.notification_closed)
 
-		# FIXME: what does this do ?
-		#self.n.set_category("device")
+		#self.n.set_category("device")	# what does this do ?
+		# from: libnotify/notification.c: Sets the category of this
+		# notification. This can be used by the notification server to
+		# filter or display the data in a certain way.
 
-		# set the urgency
-		#self.n.set_urgency(pynotify.URGENCY_LOW)
+		# set the default urgency
 		self.n.set_urgency(pynotify.URGENCY_NORMAL)
-		#self.n.set_urgency(pynotify.URGENCY_CRITICAL)
 
 		# add some relevant buttons
 		# TODO: decide on which ones to use if any
@@ -220,13 +224,13 @@ class eva:
 
 		self.about = gtk.AboutDialog()
 		self.about.set_program_name(self.name)
-		self.about.set_version('0.1')	# TODO: change this dynamically.
+		self.about.set_version(self.get_version())
 		if len(self.get_authors()) > 0:
 			self.about.set_authors(self.get_authors())
 		if self.get_license() is not None:
 			self.about.set_license(self.get_license())
 		year = datetime.datetime.now().year
-		# FIXME: add real copyright symbol
+		# TODO: add real copyright symbol
 		self.about.set_copyright('Copyright (c) 2008-%d James Shubin, McGill University' % year)
 		self.about.set_comments('Evanescent/Eva machine idle detection and shutdown tool (server/client)')
 		url = 'http://www.cs.mcgill.ca/~james/code/'
@@ -247,7 +251,7 @@ class eva:
 
 	def show_uri(self, dialog, link):
 		"""open a uri."""
-		# FIXME: according to the docs at:
+		# TODO: according to the docs at:
 		# http://www.pygtk.org/docs/pygtk/class-gtkmountoperation.html#function-gtk--show-uri
 		# the constant: gtk.gdk.CURRENT_TIME should exist but doesn't.
 		# find out how to get it and put it in the function below. maybe
@@ -286,9 +290,9 @@ class eva:
 	def msg(self, message, title=None, urgency=None, timeout=None, WORKAROUND=True, WORKAROUND2=True):
 		"""more general message wrapper around `write' and pynotify."""
 
-		# FIXME: workaround for attach_to_status_icon placement bug
+		# TODO: workaround for attach_to_status_icon placement bug
 		# http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=456610
-		if WORKAROUND:
+		if self.pynotify and WORKAROUND:
 			# Why does this work? because we need to let control go
 			# back into the gtk main loop, and hang out a little bit
 			# so that the position data from icon.set_visible() gets
@@ -306,15 +310,25 @@ class eva:
 		if title is None:
 			if len(message) == 0:
 				self.log.error('can\'t send an empty message.')
+				return
 
 			# and do switch
 			title = message
-			message = None # OR '' ?
+			message = None
+
 		elif type(title) is str:
 			if len(title) == 0:
 				self.log.error('can\'t send an empty message.')
+				return
 
-		# FIXME: workaround for libnotify resize bug
+		# if pynotify is off
+		if not self.pynotify:
+			# fall back to sending a console message
+			if message is None: misc.console_msg('%s' % title)
+			else: misc.console_msg('%s: %s' % (title, message))
+			return
+
+		# TODO: workaround for libnotify resize bug
 		# if we update a message with lots of text, with one that has
 		# very little text, the dialog doesn't shrink and the user sees
 		# one that is mostly empy, taking up lots of space. if we close
@@ -323,7 +337,7 @@ class eva:
 		if WORKAROUND2: self.n.close()
 
 		# remove the icon get hidden timeout
-		if self.icon_set_visible_source_id is int:
+		if type(self.icon_set_visible_source_id) is int:
 			gobject.source_remove(self.icon_set_visible_source_id)
 			self.icon_set_visible_source_id = None
 
@@ -360,11 +374,13 @@ class eva:
 			self.icon.set_visible(False)
 			self.log.error('pynotify failed to send a message.')
 
-		# TODO: send messages with a `write' module as well. (eg: os.system('write <message>'))
-		# <write.send> ... ?
+			# fall back to sending a console message
+			if message is None: misc.console_msg('%s' % title)
+			else: misc.console_msg('%s: %s' % (title, message))
 
-		# FIXME: workaround needed for broken libnotify/pynotify
+		# TODO: workaround needed for broken libnotify/pynotify
 		if WORKAROUND: return False
+
 
 	# MISCELLANEOUS ########################################################
 
@@ -408,14 +424,24 @@ class eva:
 		"""little function that pulls the license from a text file."""
 		try:
 			f = open('COPYING', 'r')
-			license = f.read()
-			return license
+			return f.read()
 		except IOError:
 			return None
 		finally:
 			f.close()
 			f = None
 
+
+	def get_version(self):
+		"""little function that pulls the version from a text file."""
+		try:
+			f = open('VERSION', 'r')
+			return f.read()
+		except IOError:
+			return '0.0'
+		finally:
+			f.close()
+			f = None
 
 	# WORKING LOOP ########################################################
 	def loop(self):
@@ -546,11 +572,11 @@ class eva:
 		# on the motion-notify-event of a gtkwidget object which we
 		# won't have access to. (there is just the icon and pynotify)
 
-
-		# make the notify work
+		# try to turn on pynotify
 		if not pynotify.init(self.name):
-			# FIXME: fall back to a different messaging alternative.
-			sys.exit(1)
+			# fall back to a different messaging alternative.
+			self.pynotify = False	# disable pynotify
+			misc.console_msg('the main notifications system is not available. notifications will be sent to the console.')
 
 		# run informational welcome message script.
 		gobject.idle_add(self.welcome_info)
