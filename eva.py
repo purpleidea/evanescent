@@ -450,7 +450,7 @@ class eva:
 		"""little function that pulls the license from a text file."""
 		try:
 			f = open(os.path.join(config.SHAREDDIR, 'COPYING'), 'r')
-			return f.read()
+			return f.read().strip()
 		except IOError:
 			return None
 		finally:
@@ -464,7 +464,7 @@ class eva:
 		# TODO: put these utility functions into a separate module
 		try:
 			f = open(os.path.join(config.SHAREDDIR, 'VERSION'), 'r')
-			return f.read()
+			return f.read().strip()
 		except IOError:
 			return '0.0'
 		finally:

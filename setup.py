@@ -43,7 +43,7 @@ def get_version():
 	# NOTE: this is copied from the code in eva.py
 	try:
 		f = open('VERSION', 'r')
-		return f.read()
+		return f.read().strip()
 	except IOError:
 		return '0.0'
 	finally:
