@@ -65,31 +65,6 @@ class config:
 		self.config = {}
 
 
-	def parse(self, key='config', debug=None):
-		"""parse a yaml config file and return the conf dictionary."""
-		d = (debug is None and self.debug) or debug
-		result = True
-		conf = yamlhelp.yamlhelp(filename=self.filename)
-		try:
-			data = conf.get_yaml()
-		except IOError:
-			# filename probably didn't exist
-			result = False
-			data = None
-
-		# simple checks...
-		if type(data) is dict and key in data:
-			data = data[key]
-		else:
-			data = {}
-
-		# convert all keys to uppercase and remove null values
-		data = dict([ (key.upper(),value) for key,value in data.items() if value is not None ])
-
-		self.config = data
-		return result
-
-
 	def store(self, data, key='config', debug=None):
 		"""store the self.config back into file. this only writes the
 		'config' dictionary key and overwrites anything else. don't use
@@ -116,6 +91,31 @@ class config:
 		return True
 
 
+	def parse(self, key='config', debug=None):
+		"""parse a yaml config file and return the conf dictionary."""
+		d = (debug is None and self.debug) or debug
+		result = True
+		conf = yamlhelp.yamlhelp(filename=self.filename)
+		try:
+			data = conf.get_yaml()
+		except IOError:
+			# filename probably didn't exist
+			result = False
+			data = None
+
+		# simple checks...
+		if type(data) is dict and key in data:
+			data = data[key]
+		else:
+			data = {}
+
+		# convert all keys to uppercase and remove null values
+		data = dict([ (key.upper(),value) for key,value in data.items() if value is not None ])
+
+		self.config = data
+		return result
+
+
 	def clean(self, debug=None):
 		"""remove any values that shouldn't be present."""
 		d = (debug is None and self.debug) or debug
@@ -128,7 +128,8 @@ class config:
 		# we must do this as a second loop, otherwise we get:
 		# RuntimeError: dictionary changed size during iteration
 		for x in badkeys:
-			result = false
+			result = False
+			if d: print 'badkey: %s' % x
 			del self.config[x]
 
 		return result
@@ -214,6 +215,21 @@ class config:
 		return True
 
 
+	def process(self, debug=None):
+		"""change certain values. eg: used for special debug flag."""		
+		d = (debug is None and self.debug) or debug
+		if 'DEBUGMODE' in self.config and self.config['DEBUGMODE']:
+			self.config['WORDYMODE'] = True
+			self.config['IDLELIMIT'] = 30
+			self.config['COUNTDOWN'] = 45
+			self.config['INITSLEEP'] = 5*60
+			# if this fails, an above value is probably in error!
+			assert self.check(debug=True) == True, 'programming error!'
+			return False
+
+		return True
+
+
 	def make(self, debug=None):
 		"""turn the dictionary into top level values."""
 		d = (debug is None and self.debug) or debug
@@ -230,14 +246,20 @@ class config:
 	def run(self, make=False, debug=None):
 		"""do it all for a regular import."""
 		d = (debug is None and self.debug) or debug
+		def format(b):
+			if b: return 'ok'
+			else: return '!!'
+
 		parse = self.parse()
-		if d: print 'parse: %s' % parse
+		if d: print 'parse: %s' % format(parse)
 		clean = self.clean()
-		if d: print 'clean: %s' % clean
+		if d: print 'clean: %s' % format(clean)
 		default = self.default()
-		if d: print 'default: %s' % default
+		if d: print 'default: %s' % format(default)
 		check = self.check()
-		if d: print 'check: %s' % check
+		if d: print 'check: %s' % format(check)
+		process = self.process()
+		if d: print 'process: %s' % format(process)
 		if make:
 			if d: print 'make:'
 			self.make()
@@ -255,15 +277,15 @@ default_config = {
 	'IDLELIMIT': 60*60,			# 1 hour before you're idle
 	'FASTSLEEP': 5,				# how often do we poll after the user has been warned
 	'COUNTDOWN': 5*60,			# five minute countdown before shutdown
-	'THECONFIG': '/etc/evanescent.conf.yaml',	# the config file
+	'THECONFIG': '/etc/evanescent.conf.yaml',		# the config file
 	'LOGSERVER': ['logmaster', 514],			# syslog server
 	'LOGFORMAT': '%(asctime)s %(levelname)-8s %(name)-17s %(message)s',
 	'MYLOGPATH': '/var/log/evanescent.log',			# path for local log file
 	'MYERRPATH': '/var/log/evanescent.FAIL',		# path for FAIL log file
 	'UPDATEMSG': True,					# update the impending logoff msg every fastsleep or not
-	'ICONIMAGE': '/usr/share/evanescent/evanescent.png',	# filename for `systray' icon
+	'SHAREDDIR': '/usr/share/evanescent/',			# path to /usr/share/evanescent/
 	'DAEMONPID': '/var/run/evanescent.pid',			# pid file for daemon
-	'INITSLEEP': 900,					# initial sleep
+	'INITSLEEP': 900,					# initial sleep (15 min)
 
 	#TODO: this option might get removed and replaced by smart polling; see: get_exclusions_changed_time
 	'SLEEPTIME': 10*60				# poll/check computer every 10 minutes
@@ -272,8 +294,8 @@ default_config = {
 
 if os.name == 'nt':
 	default_config['THECONFIG'] = 'c:\WINDOWS\evanescent.conf.yaml'
-	default_config['ICONIMAGE'] = '?'	# FIXME
-	MYLOGPATH = 'c:\WINDOWS\system32\config\evanescent.log'
+	default_config['SHAREDDIR'] = '?'	# FIXME
+	default_config['MYLOGPATH'] = 'c:\WINDOWS\system32\config\evanescent.log'
 
 
 expected_types = {
@@ -290,7 +312,7 @@ expected_types = {
 	'MYLOGPATH': str,
 	'MYERRPATH': str,
 	'UPDATEMSG': bool,
-	'ICONIMAGE': str,
+	'SHAREDDIR': str,
 	'DAEMONPID': str,
 	'INITSLEEP': int,
 
@@ -298,8 +320,10 @@ expected_types = {
 	'SLEEPTIME': int
 }
 
-
-obj = config(filename='/home/james/code/evanescent/files/evanescent.conf.yaml.example', defaults=default_config, expected=expected_types)
+# FIXME: it *always* looks at this file and *not* at what is specified in it.
+# fine for now, but we need to bootstrap the configure file in the future. do
+# this when we work on the downloaded pycurl business.
+obj = config(filename='/etc/evanescent.conf.yaml', defaults=default_config, expected=expected_types)
 
 if __name__ == '__main__':
 	obj.debug = True

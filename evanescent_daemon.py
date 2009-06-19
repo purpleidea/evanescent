@@ -64,8 +64,7 @@ class evanescent_daemon:
 		"""constructor for the evanescent_daemon class."""
 
 		# MISC ########################################################
-		self.name = os.path.splitext(__file__)[0]
-		if self.name[0:2] == './': self.name = self.name[2:]
+		self.name = 'evanescent'
 
 		# LOGGING #####################################################
 		self.log = None	# main logger

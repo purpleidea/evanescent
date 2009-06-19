@@ -41,18 +41,16 @@ import evanescent.misc as misc			# misc functions module
 class eva:
 
 	# CONSTRUCTOR #########################################################
-	def __init__(self, iconimage=config.ICONIMAGE):
+	def __init__(self):
 		"""constructor for the eva class."""
 
 		# MISC ########################################################
 		self.name = 'eva'		# for use as a name identifier
-		# TODO: is this okay on windows, etc...?
-		self.name = os.path.splitext(__file__)[0]
-		if self.name[0:2] == './': self.name = self.name[2:]
 
 		self.warned = False		# warned datetime value
 		self.delta = 0			# time delta for warn
-		self.iconimage = str(iconimage)	# store iconimage
+		# iconimage path
+		self.iconimage = os.path.join(config.SHAREDDIR, 'evanescent.png')
 
 		# LOGGING #####################################################
 		self.log = None			# main logger
@@ -105,8 +103,8 @@ class eva:
 		self.pynotify = True	# is pynotify active? assume yes for now
 
 		# build a uri
-		self.uri = "file://" + os.path.join(os.path.abspath(os.getcwd()), self.iconimage)
-		self.log.debug('icon uri: %s' % self.uri)
+		self.uri = "file://" + self.iconimage
+		self.log.debug('iconimage uri: %s' % self.uri)
 
 		# make a dummy notification but never show() it. this is so that
 		# we can easily use the n.update() function to replace messages.
@@ -186,6 +184,17 @@ class eva:
 			# are you root, or do you need to be?
 			self.log.warn('unable to open `%s\' for use as a log file.' % config.MYLOGPATH)
 			if self.logh.has_key('RotatingFileHandler'): del self.logh['RotatingFileHandler']
+			try:
+				# TODO: refactor this getting home line into a separate function into misc.py or elsewhere
+				home = os.getenv('USERPROFILE', False) or os.getenv('HOME')
+				home = os.path.join(home, '.eva.log')
+				self.logh['RotatingFileHandler'] = logging.handlers.RotatingFileHandler(home, maxBytes=1024*100, backupCount=1)
+				self.logh['RotatingFileHandler'].setFormatter(formatter)
+				self.log.addHandler(self.logh['RotatingFileHandler'])
+
+			except IOError:
+				self.log.warn('unable to open `%s\' for use as a log file.' % home)
+				if self.logh.has_key('RotatingFileHandler'): del self.logh['RotatingFileHandler']
 
 		# handlers in x propagate down to everyone (y) in the x.y tree
 		#self.logs['evalog'] = logging.getLogger('%s.evalog' % self.name)
@@ -228,7 +237,8 @@ class eva:
 
 		self.about = gtk.AboutDialog()
 		self.about.set_program_name(self.name)
-		self.about.set_version(self.get_version())
+		if self.get_version() is not None:
+			self.about.set_version(self.get_version())
 		if len(self.get_authors()) > 0:
 			self.about.set_authors(self.get_authors())
 		if self.get_license() is not None:
@@ -394,6 +404,8 @@ class eva:
 		home = os.getenv('USERPROFILE', False) or os.getenv('HOME')
 		self.log.debug('user\'s home directory is: %s' % str(home))
 
+		# TODO: add an option that if true, *always* welcomes the user.
+		# useful for people who like to remember that eva is running (also good for debugging)
 		filename = os.path.join(home, '.eva.conf.yaml')
 		defaults = {'WELCOMEME': True}
 		expected = {'WELCOMEME': bool}
@@ -422,26 +434,28 @@ class eva:
 	def get_authors(self):
 		"""little function that pulls the authors from a text file."""
 		try:
-			f = open('AUTHORS', 'r')
+			f = open(os.path.join(config.SHAREDDIR, 'AUTHORS'), 'r')
 			authors = f.readlines()
 			# assume it's an author if there is an email
 			return [ x.strip() for x in authors if '@' in x ]
 		except IOError:
 			return []
 		finally:
-			f.close()
+			try: f.close()
+			except: pass
 			f = None
 
 
 	def get_license(self):
 		"""little function that pulls the license from a text file."""
 		try:
-			f = open('COPYING', 'r')
+			f = open(os.path.join(config.SHAREDDIR, 'COPYING'), 'r')
 			return f.read()
 		except IOError:
 			return None
 		finally:
-			f.close()
+			try: f.close()
+			except: pass
 			f = None
 
 
@@ -449,13 +463,15 @@ class eva:
 		"""little function that pulls the version from a text file."""
 		# TODO: put these utility functions into a separate module
 		try:
-			f = open('VERSION', 'r')
+			f = open(os.path.join(config.SHAREDDIR, 'VERSION'), 'r')
 			return f.read()
 		except IOError:
 			return '0.0'
 		finally:
-			f.close()
+			try: f.close()
+			except: pass
 			f = None
+
 
 	# WORKING LOOP ########################################################
 	def loop(self):
@@ -586,8 +602,12 @@ class eva:
 	def main(self):
 		"""main to run for the class."""
 
+		if config.DEBUGMODE: self.log.debug('debugmode: on')
+
 		# should evanescent be disabled, and exit right away?
-		if not(config.STARTMEUP): sys.exit()
+		if not(config.STARTMEUP):
+			self.log.debug('shouldn\'t start, now exiting.')
+			sys.exit()
 
 		# TODO: attach a signal for mouse movement to some function
 		# which updates the "your machine is idle" dialog whenever it

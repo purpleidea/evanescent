@@ -38,7 +38,7 @@ elif os.name == 'posix':
 
 	def shutdown():
 		"""shutdown the system now."""
-		os.system('shutdown -P now')
+		os.system('shutdown -P now shutdown by evanescent')
 
 else: raise ImportError("operating system not supported")
 

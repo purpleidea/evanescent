@@ -32,13 +32,11 @@ config:
     debugmode: False                                            # debug mode
     wordymode: True                                             # talk a lot (implied if debugmode is on)
     idlelimit: 3600                                             # 1 hour before you're idle
-    fastsleep: 60                                               # how often do we poll after the user has been warned
     countdown: 300                                              # five minute countdown before shutdown
     theconfig: '/etc/evanescent.conf.yaml'                      # the config file
     logserver: [logmaster, 514]                                 # syslog server
     updatemsg: True                                             # update the impending logoff msg every fastsleep or not
     logformat: '%(asctime)s %(levelname)-8s %(name)-17s %(message)s'
-    iconimage: '/usr/share/evanescent/evanescent.png'           # filename for `systray' icon
     #TODO: this option might get removed and replaced by smart polling; see: get_exclusions_changed_time
     sleeptime: 600                                              # poll/check computer every 10 minutes
 
