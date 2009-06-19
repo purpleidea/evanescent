@@ -28,7 +28,7 @@ import win32ts
 import socket
 import operator
 
-__all__ = ['listusers', 'logoff', 'logmeoff', 'shutdown']
+__all__ = ['lsusers', 'logoff', 'logmeoff', 'shutdown']
 
 def _add_enum_constants(enum_constants):
 	global state2name
@@ -82,7 +82,7 @@ class SessionInfo(tuple):
 	username = property(operator.itemgetter(2))
 
 
-def listusers():
+def lsusers():
 	"""list the users on the machine."""
 	server = WTSServer(socket.gethostname())
 	results = []

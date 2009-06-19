@@ -46,6 +46,10 @@ class eva:
 
 		# MISC ########################################################
 		self.name = 'eva'		# for use as a name identifier
+		# TODO: is this okay on windows, etc...?
+		self.name = os.path.splitext(__file__)[0]
+		if self.name[0:2] == './': self.name = self.name[2:]
+
 		self.warned = False		# warned datetime value
 		self.delta = 0			# time delta for warn
 		self.iconimage = str(iconimage)	# store iconimage
@@ -286,7 +290,6 @@ class eva:
 
 
 	# MESSAGING ###########################################################
-
 	def msg(self, message, title=None, urgency=None, timeout=None, WORKAROUND=True, WORKAROUND2=True):
 		"""more general message wrapper around `write' and pynotify."""
 
@@ -462,13 +465,15 @@ class eva:
 		sleep = idle.timeleft(config.IDLELIMIT)	# sleep time in seconds
 
 		e = exclusions.exclusions(yamlconf=config.THECONFIG)
-		# do the check, and it it passes get the good value.
+		# do the check, and if it passes get the good value.
 		result = e.is_fileok()
 		if result: result = e.is_excluded()
 		# otherwise it's false anyways! not excluded!
 		else:
 			self.log.warn('problem with config file.')
 			self.log.warn('assuming no exclusions.')
+
+		e = None			# clean up the object
 
 		# if not excluded
 		if not result:
@@ -516,6 +521,9 @@ class eva:
 					urgency=pynotify.URGENCY_CRITICAL,
 					timeout=pynotify.EXPIRES_NEVER)
 
+					# TODO: play a sound or some sort of
+					# audio notification like voice or beep
+
 					# sleep less often (to see if someone
 					# taps a mouse) but make sure that we
 					# wake up in time before countdown is up
@@ -551,8 +559,6 @@ class eva:
 			#sleep = config.SLEEPTIME	# CHANGED IN FAVOUR OF:
 			sleep = max(idle.timeleft(config.IDLELIMIT), self.get_exclusions_changed_time())
 
-		e = None			# clean up the object
-
 		sleep = max(1, sleep)		# sleep for at least one second
 		self.log.info('going to sleep for %d seconds.' % sleep)
 
@@ -561,6 +567,7 @@ class eva:
 
 		# this loop ends, and we wait for the above rescheduled event
 		return False
+
 
 	def get_exclusions_changed_time(self):
 		# TODO: make this ideally check the next time the exclusions are
@@ -578,6 +585,10 @@ class eva:
 	# MAIN ################################################################
 	def main(self):
 		"""main to run for the class."""
+
+		# should evanescent be disabled, and exit right away?
+		if not(config.STARTMEUP): sys.exit()
+
 		# TODO: attach a signal for mouse movement to some function
 		# which updates the "your machine is idle" dialog whenever it
 		# is called. i think this is possible because of this link:
@@ -595,7 +606,7 @@ class eva:
 		# run informational welcome message script.
 		gobject.idle_add(self.welcome_info)
 
-		# start it off in one second from now.
+		# start off our initial event source in one second from now.
 		self.source_id = gobject.timeout_add(1*1000, self.loop)
 
 		# run the main loop

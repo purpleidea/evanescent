@@ -250,6 +250,7 @@ default_config = {
 
 	'DEBUGMODE': False,			# debug mode
 	'WORDYMODE': True,			# talk a lot (implied if debugmode is on)
+	'STARTMEUP': True,
 	# TODO: does it make sense to rename this to: THRESHOLD
 	'IDLELIMIT': 60*60,			# 1 hour before you're idle
 	'FASTSLEEP': 5,				# how often do we poll after the user has been warned
@@ -258,9 +259,11 @@ default_config = {
 	'LOGSERVER': ['logmaster', 514],			# syslog server
 	'LOGFORMAT': '%(asctime)s %(levelname)-8s %(name)-17s %(message)s',
 	'MYLOGPATH': '/var/log/evanescent.log',			# path for local log file
+	'MYERRPATH': '/var/log/evanescent.FAIL',		# path for FAIL log file
 	'UPDATEMSG': True,					# update the impending logoff msg every fastsleep or not
 	'ICONIMAGE': '/usr/share/evanescent/evanescent.png',	# filename for `systray' icon
-
+	'DAEMONPID': '/var/run/evanescent.pid',			# pid file for daemon
+	'INITSLEEP': 900,					# initial sleep
 
 	#TODO: this option might get removed and replaced by smart polling; see: get_exclusions_changed_time
 	'SLEEPTIME': 10*60				# poll/check computer every 10 minutes
@@ -276,6 +279,7 @@ if os.name == 'nt':
 expected_types = {
 	'DEBUGMODE': bool,
 	'WORDYMODE': bool,
+	'STARTMEUP': bool,
 	# TODO: does it make sense to rename this to: THRESHOLD
 	'IDLELIMIT': int,
 	'FASTSLEEP': int,
@@ -284,8 +288,11 @@ expected_types = {
 	'LOGSERVER': [str, int],
 	'LOGFORMAT': str,
 	'MYLOGPATH': str,
+	'MYERRPATH': str,
 	'UPDATEMSG': bool,
 	'ICONIMAGE': str,
+	'DAEMONPID': str,
+	'INITSLEEP': int,
 
 	#TODO: this option might get removed and replaced by smart polling; see: get_exclusions_changed_time
 	'SLEEPTIME': int

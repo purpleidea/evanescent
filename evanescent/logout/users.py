@@ -19,35 +19,42 @@
 """
 import os
 
-__all__ = ['logout', 'shutdown']
+__all__ = ['ls', 'exist']
 
 if os.name == 'nt':
-	from _wts import logmeoff as logout
-	from _wts import shutdown as shutdown
+	from _wts import lsusers as __lsusers
+	def ls():
+		"""return the list of users on the machine."""
+		# TODO: should we filter by session?
+		# FIXME: should we exclude blank usernames? what do they mean?
+		return [ x.username for x in __lsusers() if x.username != '']
 
 elif os.name == 'posix':
+	import utmp
+	import UTMPCONST			# for utmp constants
 
-	def logout():
-		"""logout the current user's X session."""
-		# TODO: there is probably a better / cleaner way to do this.
-		# NOTE: On GNOME, this is best done by sending a log-out message
-		# to GDM via the /var/run/gdm_socket Unix domain socket. On X11
-		# without GNOME, this can be done by asking the background
-		# process to send SIGINT to the user's x-session-manager.
-		os.system('killall --signal SIGINT x-session-manager')
-
-	def shutdown():
-		"""shutdown the system now."""
-		os.system('shutdown -P now')
+	def ls():
+		"""return the list of users on the machine."""
+		f = UTMPCONST.USER_PROCESS	# filter for
+		u = utmp.UtmpRecord()		# iterator
+		users = [ x.ut_user for x in u if x.ut_type == f ]
+		u.endutent()			# close the utmp file!
+		return users
 
 else: raise ImportError("operating system not supported")
+
+
+def exist():
+	"""is there at least one person using the machine?"""
+	return len(ls()) > 0
+
 
 if __name__ == '__main__':
 	import sys
 	if len(sys.argv) == 2 and sys.argv[1] in __all__:
 
-		if sys.argv[1] == 'shutdown': shutdown()
-		elif sys.argv[1] == 'logout': logout()
+		if sys.argv[1] == 'ls': print ls()
+		elif sys.argv[1] == 'exist': print exist()
 
-	else: print 'usage: %s logout | shutdown' % sys.argv[0]
+	else: print 'usage: %s ls | exist' % sys.argv[0]
 

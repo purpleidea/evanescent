@@ -16,4 +16,5 @@ stop on runlevel 5
 stop on runlevel 6
 
 # FIXME: path
-exec /usr/local/pkgs/evanescent/evanescent.py start
+exec evanescent_daemon.py start
+
