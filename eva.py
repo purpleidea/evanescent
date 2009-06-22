@@ -22,6 +22,7 @@
 # TODO: add _() for gettext
 
 import os					# for path manipulations
+import sys					# for sys.exit
 import datetime					# for time delta calculations
 import math					# for math.ceil
 import logging, logging.handlers		# for syslog stuff
@@ -237,19 +238,20 @@ class eva:
 
 		self.about = gtk.AboutDialog()
 		self.about.set_program_name(self.name)
-		if self.get_version() is not None:
-			self.about.set_version(self.get_version())
-		if len(self.get_authors()) > 0:
-			self.about.set_authors(self.get_authors())
-		if self.get_license() is not None:
-			self.about.set_license(self.get_license())
+		version = misc.get_version(config.SHAREDDIR)
+		if version is not None: self.about.set_version(version)
+		authors = misc.get_authors(config.SHAREDDIR)
+		if len(authors) > 0: self.about.set_authors(authors)
+		license = misc.get_license(config.SHAREDDIR)
+		if license is not None: self.about.set_license(license)
 		year = datetime.datetime.now().year
 		# TODO: add real copyright symbol
-		self.about.set_copyright('Copyright (c) 2008-%d James Shubin, McGill University' % year)
+		copyright = \
+		'Copyright (c) 2008-%d James Shubin, McGill University' % year
+		self.about.set_copyright(copyright)
 		self.about.set_comments('Evanescent/Eva machine idle detection and shutdown tool (server/client)')
-		url = 'http://www.cs.mcgill.ca/~james/code/'
-		self.about.set_website(url)
-		self.about.set_website_label(url)
+		self.about.set_website('http://www.cs.mcgill.ca/~james/code/')
+		self.about.set_website_label('Evanescent Website')
 		# TODO: make icon bigger!
 		self.about.set_logo(gtk.gdk.pixbuf_new_from_file(self.iconimage))
 		self.about.run()
@@ -429,48 +431,6 @@ class eva:
 			conf.store(data)
 		else:
 			self.log.debug('skipping welcome message')
-
-
-	def get_authors(self):
-		"""little function that pulls the authors from a text file."""
-		try:
-			f = open(os.path.join(config.SHAREDDIR, 'AUTHORS'), 'r')
-			authors = f.readlines()
-			# assume it's an author if there is an email
-			return [ x.strip() for x in authors if '@' in x ]
-		except IOError:
-			return []
-		finally:
-			try: f.close()
-			except: pass
-			f = None
-
-
-	def get_license(self):
-		"""little function that pulls the license from a text file."""
-		try:
-			f = open(os.path.join(config.SHAREDDIR, 'COPYING'), 'r')
-			return f.read().strip()
-		except IOError:
-			return None
-		finally:
-			try: f.close()
-			except: pass
-			f = None
-
-
-	def get_version(self):
-		"""little function that pulls the version from a text file."""
-		# TODO: put these utility functions into a separate module
-		try:
-			f = open(os.path.join(config.SHAREDDIR, 'VERSION'), 'r')
-			return f.read().strip()
-		except IOError:
-			return '0.0'
-		finally:
-			try: f.close()
-			except: pass
-			f = None
 
 
 	# WORKING LOOP ########################################################

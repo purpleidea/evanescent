@@ -83,6 +83,50 @@ def uptime():
 	return sec
 
 
+def get_authors(wd=None):
+	"""little function that pulls the authors from a text file."""
+	if wd is None: wd = os.getcwd()
+	try:
+		f = open(os.path.join(wd, 'AUTHORS'), 'r')
+		authors = f.readlines()
+		# assume it's an author if there is an email
+		return [ x.strip() for x in authors if '@' in x ]
+	except IOError:
+		return []
+	finally:
+		try: f.close()
+		except: pass
+		f = None
+
+
+def get_license(wd=None):
+	"""little function that pulls the license from a text file."""
+	if wd is None: wd = os.getcwd()
+	try:
+		f = open(os.path.join(wd, 'COPYING'), 'r')
+		return f.read().strip()
+	except IOError:
+		return None
+	finally:
+		try: f.close()
+		except: pass
+		f = None
+
+
+def get_version(wd=None):
+	"""little function that pulls the version from a text file."""
+	if wd is None: wd = os.getcwd()
+	try:
+		f = open(os.path.join(wd, 'VERSION'), 'r')
+		return f.read().strip()
+	except IOError:
+		return '0.0'
+	finally:
+		try: f.close()
+		except: pass
+		f = None
+
+
 if __name__ == '__main__':
 	import sys
 	l = len(sys.argv)

@@ -1,9 +1,10 @@
 #!/usr/bin/python
 
-import distutils.core	#from distutils.core import setup, Extension
+import distutils.core		#from distutils.core import setup, Extension
 import os
-import shutil		# for copying a file
-import atexit		# for deleting the copied file
+import shutil			# for copying a file
+import atexit			# for deleting the copied file
+import evanescent.misc as misc	# for get_version
 
 NAME = 'evanescent'
 
@@ -37,25 +38,11 @@ data_files.append( ('/etc/', ['files/evanescent.conf.yaml']) )
 data_files.append( ('/etc/xdg/autostart/', ['files/evanescent.desktop']) )
 data_files.append( ('/etc/event.d/', ['files/evanescent.upstart']) )
 
-def get_version():
-	"""little function that pulls the version from a text file."""
-	# TODO: put these utility functions into a separate module
-	# NOTE: this is copied from the code in eva.py
-	try:
-		f = open('VERSION', 'r')
-		return f.read().strip()
-	except IOError:
-		return '0.0'
-	finally:
-		try: f.close()
-		except: pass
-		f = None
-
 
 # setup
 distutils.core.setup(
 	name=NAME,
-	version=get_version(),
+	version=misc.get_version(),
 	packages=['evanescent', 'evanescent.idle', 'evanescent.logout'],
 	package_dir={'evanescent':'evanescent'},
 	ext_modules=ext_modules,
