@@ -21,8 +21,13 @@
 all:
 	ls -lah
 
+
 # clean up any mess that can be generated
 clean: force
+
+	# let distutils try to clean up first
+	python setup.py clean
+
 	# remove any python mess
 	rm -f *.pyc
 
@@ -32,43 +37,45 @@ clean: force
 	# remove the tar archive
 	rm evanescent.tar.bz2 2> /dev/null || true
 
-	# remove the files in clean
-	for f in `cat clean`; do rm $$f; done
-
-	# remove the `clean' file
-	rm clean 2> /dev/null || true
+	# remove distutils mess
+	rm -r build/ 2> /dev/null || true
+	rm -r dist/ 2> /dev/null || true
 
 
-revno:
-	# make a version file
-	echo -n 'VERSION ' > VERSION
+install:
+	# this runs distutils for the install
+	sudo python setup.py install
 
-	# use the bzr numbering for unique identification of packages
-	bzr revno >> VERSION
+
+uninstall:
+
+	# remove what distutils installs
+	rm -r /usr/lib/python2.5/site-packages/evanescent/
+	rm -r /usr/share/evanescent/
+	rm /usr/bin/evanescent_daemon.py
+	rm /usr/bin/eva.py
+	rm /usr/lib/python2.5/site-packages/yamlhelp.py
+	rm /usr/lib/python2.5/site-packages/yamlhelp.pyc
+	rm /etc/event.d/evanescent.upstart
+	rm /etc/xdg/autostart/evanescent.desktop
+
+	# these two get created by evanescent, don't remove them unless purge
+	#rm /home/james/.eva.conf.yaml
+	#rm /home/james/.eva.log
 
 
 # make a package for distribution
-tar: clean revno encode
+tar: clean
 
 	cd .. && tar --exclude=old --exclude=play --exclude=.swp --exclude=.bzr --bzip2 -cf evanescent.tar.bz2 evanescent/
 	mv ../evanescent.tar.bz2 .
 
 
 # make a package for windows...
-windows: encode
+windows:
 	# the client needs a windowless version
-	cp eva.py eva.pyw
+	#cp eva.py eva.pyw
 	echo 'figure out py2exe and do it...'
-
-
-encode: clean
-	# empty the clean file
-	echo -n '' > clean
-	# find out which files need encoding and loop through them
-	# then encode each one, saving the outputted filename
-	# next, move that file to the main directory
-	# then save each generated filename in a `clean' file for later deletion
-	cd 'windows/' ; for x in `./../encoded.py`; do y=`./../encode.sh "$$x"`; mv $$y '../' ; echo `basename $$y` >> ../clean; done
 
 
 # this target does nothing, and can be used as a dependency when we always want

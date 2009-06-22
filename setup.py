@@ -23,11 +23,11 @@ data_files.append( ('share/%s' % NAME, ['AUTHORS']) )
 data_files.append( ('share/%s' % NAME, ['VERSION']) )
 
 # add the .yaml config file
-if os.name == 'posix': shutil.copyfile('files/evanescent.conf.yaml.example', 'files/evanescent.conf.yaml')
-elif os.name == 'nt': shutil.copyfile('files/evanescent.conf.yaml.wexample', 'files/evanescent.conf.yaml')
+if os.name == 'posix': shutil.copyfile('/home/james/code/evanescent/files/evanescent.conf.yaml.example', '/home/james/code/evanescent/files/evanescent.conf.yaml')
+elif os.name == 'nt': shutil.copyfile('/home/james/code/evanescent/files/evanescent.conf.yaml.wexample', '/home/james/code/evanescent/files/evanescent.conf.yaml')
 def cprm():
 	"""remove the earlier copied file."""
-	os.remove('files/evanescent.conf.yaml')
+	os.remove('/home/james/code/evanescent/files/evanescent.conf.yaml')
 atexit.register(cprm)
 # TODO: it would make more sense if distutils could rename a file, this way we
 # wouldn't have to change the name of the file around.
@@ -47,7 +47,8 @@ def get_version():
 	except IOError:
 		return '0.0'
 	finally:
-		f.close()
+		try: f.close()
+		except: pass
 		f = None
 
 
