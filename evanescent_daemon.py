@@ -55,7 +55,8 @@ import evanescent.logout.logout as logout	# logout in logout package
 import evanescent.logout.users as users		# users in logout package
 import evanescent.exclusions as exclusions	# exclusions module
 import evanescent.misc as misc			# miscellaneous such as uptime
-import logginghelp
+import logginghelp				# i wrote this one
+
 
 class evanescent_daemon:
 
@@ -109,6 +110,10 @@ class evanescent_daemon:
 				d.start_stop([sys.argv[0], 'stop'])
 			elif os.name == 'nt':
 				self.mainloop.run()
+
+		except daemon.DaemonError, e:
+			self.log.fatal('daemon error: %s' % e)
+			sys.exit(1)
 
 		except SystemExit:
 			pass

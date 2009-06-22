@@ -22,3 +22,10 @@ please send all comments, patches, thanks & insults to james@cs.mcgill.ca
 	clicks or mouse wheel.
 	A: http://www.jwz.org/xscreensaver/faq.html#mouse-idle
 
+	2. I want the eva client to run and log out users, but I don't want the
+	evanescent backend shutting down the machine.
+	A: add an exclusion for the `root' user. when exclusions are checked on
+	the client side, they won't match, but when the evanescent daemon runs
+	since it's running as user `root' you can now exclude by this rule.
+
+
