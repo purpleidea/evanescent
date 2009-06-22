@@ -2,9 +2,23 @@ i should probably make a decent README file.
 please send all comments, patches, thanks & insults to james@cs.mcgill.ca
 
 
-FAQ
+- on tabs vs. spaces:
+	i think that indenting with tabs is brilliant. tabs are a clever
+	character and replacing them with spaces is a big mistake. all of this
+	code uses 8 space tabs where possible, and as such please send patches
+	in this format.
 
-1. Evanescent activates when I'm not idle! It's not noticing my mouse clicks or mouse wheel.
-	http://www.jwz.org/xscreensaver/faq.html#mouse-idle
 
+- on max line length:
+	i attempt to keep code to 79 or 80 characters long, however, i won't
+	purposefully break a longer line if i think it makes the code less
+	readable. sometimes i edit in vim, but usually i use something like
+	gedit. i think that enforcing a legacy terminal width in 2009 is a
+	silly rule to obey.
+
+
+- faq:
+	1. Evanescent activates when I'm not idle! It's not noticing my mouse
+	clicks or mouse wheel.
+	A: http://www.jwz.org/xscreensaver/faq.html#mouse-idle
 

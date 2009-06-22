@@ -21,7 +21,7 @@
 import os
 import getpass
 
-__all__ = ['console_msg', 'do_nologin', 'uptime']
+__all__ = ['console_msg', 'do_nologin', 'uptime', 'get_authors', 'get_license', 'get_version', 'get_home']
 
 def console_msg(message, line=None):
 	"""send a simple console message out."""
@@ -127,6 +127,11 @@ def get_version(wd=None):
 		f = None
 
 
+def get_home():
+	"""returns the location of the users home directory."""
+	return os.getenv('USERPROFILE', False) or os.getenv('HOME')
+
+
 if __name__ == '__main__':
 	import sys
 	l = len(sys.argv)
@@ -145,5 +150,9 @@ if __name__ == '__main__':
 			console_msg(sys.argv[2])
 			sys.exit()
 
-	print 'usage: %s uptime | do_nologin [message] | console_msg <message>' % sys.argv[0]
+		elif sys.argv[1] in ['get_authors', 'get_license', 'get_version', 'get_home']:
+			print eval(sys.argv[1])()
+			sys.exit()
+
+	print 'usage: %s uptime | do_nologin [message] | console_msg <message> | get_authors | get_license | get_version | get_home' % sys.argv[0]
 

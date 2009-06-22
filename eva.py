@@ -187,9 +187,9 @@ class eva:
 			if self.logh.has_key('RotatingFileHandler'): del self.logh['RotatingFileHandler']
 			try:
 				# TODO: refactor this getting home line into a separate function into misc.py or elsewhere
-				home = os.getenv('USERPROFILE', False) or os.getenv('HOME')
-				home = os.path.join(home, '.eva.log')
-				self.logh['RotatingFileHandler'] = logging.handlers.RotatingFileHandler(home, maxBytes=1024*100, backupCount=1)
+				temp = misc.get_home()
+				temp = os.path.join(temp, '.eva.log')
+				self.logh['RotatingFileHandler'] = logging.handlers.RotatingFileHandler(temp, maxBytes=1024*100, backupCount=1)
 				self.logh['RotatingFileHandler'].setFormatter(formatter)
 				self.log.addHandler(self.logh['RotatingFileHandler'])
 
@@ -403,7 +403,7 @@ class eva:
 		"""send a notification to the user that informs them that they
 		could get logged off if idle. check in their $HOME/.evanescent
 		to see if they have chosen to ignore this warning."""
-		home = os.getenv('USERPROFILE', False) or os.getenv('HOME')
+		home = misc.get_home()
 		self.log.debug('user\'s home directory is: %s' % str(home))
 
 		# TODO: add an option that if true, *always* welcomes the user.
