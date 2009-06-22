@@ -25,7 +25,6 @@ import os					# for path manipulations
 import sys					# for sys.exit
 import datetime					# for time delta calculations
 import math					# for math.ceil
-import logging, logging.handlers		# for syslog stuff
 
 # frontend, gui related
 import gtk					# for status icon
@@ -38,6 +37,8 @@ import evanescent.logout.logout as logout	# logout package
 import evanescent.config as config		# config module
 import evanescent.exclusions as exclusions	# exclusions module
 import evanescent.misc as misc			# misc functions module
+
+import logginghelp				# my wrapper for logging
 
 class eva:
 
@@ -54,12 +55,11 @@ class eva:
 		self.iconimage = os.path.join(config.SHAREDDIR, 'evanescent.png')
 
 		# LOGGING #####################################################
-		self.log = None			# main logger
-		self.logh = {}			# log handles
-		self.logs = {}			# other log handles
+		obj = logginghelp.logginghelp(name=self.name, wordymode=config.WORDYMODE,
+		mylogpath=[config.MYLOGPATH, os.path.join(misc.get_home(), '.eva.log')],
+		logserver=config.LOGSERVER, logformat=config.LOGFORMAT)
 
-		# setup the logging handles
-		self.logging()
+		self.log = obj.get_log()	# main logger
 
 		# GOBJECT #####################################################
 		self.source_id = None		# timer id
@@ -96,7 +96,8 @@ class eva:
 		quit.show()
 		self.menu.append(quit)
 
-		self.icon.connect('activate', self.icon_activate)	# left
+		# TODO: should we have something happen? maybe an info bubble?
+		#self.icon.connect('activate', self.icon_activate)	# left
 		self.icon.connect('popup-menu', self.icon_popupmenu)	# right
 
 		# PYNOTIFY ####################################################
@@ -135,74 +136,6 @@ class eva:
 		#self.n.add_action("help", "Help", self.notification_help)
 		#self.n.add_action("logout", "Logout", self.notification_logout)
 		#self.n.add_action("postpone", "Postpone", self.notification_postpone)
-
-	# LOGGING #############################################################
-	def logging(self):
-		"""setup logging. this function doesn't return any value."""
-		# error logging levels:
-		#	* CRITICAL
-		#	* FATAL
-		#	* ERROR
-		#	* WARN
-		#	* INFO
-		#	* DEBUG
-
-		# have every log use this format
-		formatter = logging.Formatter(config.LOGFORMAT)
-
-		# name a log route & set a level
-		self.log = logging.getLogger(self.name)
-		if config.WORDYMODE: self.log.setLevel(logging.DEBUG)
-		else: self.log.setLevel(logging.WARN)
-
-		# handler for stderr
-		self.logh['StreamHandler'] = logging.StreamHandler()
-		self.logh['StreamHandler'].setFormatter(formatter)
-		self.log.addHandler(self.logh['StreamHandler'])
-
-		# handler for global logging server
-		# TODO: find a way to change the facility to 'evanescent' or rather: the self.name variable
-		self.logh['SysLogHandler'] = logging.handlers.SysLogHandler(tuple(config.LOGSERVER), logging.handlers.SysLogHandler.LOG_LOCAL7)
-		self.logh['SysLogHandler'].setFormatter(formatter)
-		self.log.addHandler(self.logh['SysLogHandler'])
-
-		# handler for windows event log
-		if os.name == 'nt':
-			self.logh['NTEventLogHandler'] = logging.handlers.NTEventLogHandler(self.name)
-			self.logh['NTEventLogHandler'].setFormatter(formatter)
-			self.log.addHandler(self.logh['NTEventLogHandler'])
-
-		# handler for local disk
-		# NOTE: using access() to check if a user is authorized to e.g. open a file before actually
-		# doing so using open() creates a security hole, because the user might exploit the short
-		# time interval between checking and opening the file to manipulate it. try and catch instead.
-		try:
-			self.logh['RotatingFileHandler'] = logging.handlers.RotatingFileHandler(config.MYLOGPATH, maxBytes=1024*100, backupCount=9)
-			self.logh['RotatingFileHandler'].setFormatter(formatter)
-			self.log.addHandler(self.logh['RotatingFileHandler'])
-		except IOError:
-			# you probably don't have the file permissions to open the file.
-			# are you root, or do you need to be?
-			self.log.warn('unable to open `%s\' for use as a log file.' % config.MYLOGPATH)
-			if self.logh.has_key('RotatingFileHandler'): del self.logh['RotatingFileHandler']
-			try:
-				# TODO: refactor this getting home line into a separate function into misc.py or elsewhere
-				temp = misc.get_home()
-				temp = os.path.join(temp, '.eva.log')
-				self.logh['RotatingFileHandler'] = logging.handlers.RotatingFileHandler(temp, maxBytes=1024*100, backupCount=1)
-				self.logh['RotatingFileHandler'].setFormatter(formatter)
-				self.log.addHandler(self.logh['RotatingFileHandler'])
-
-			except IOError:
-				self.log.warn('unable to open `%s\' for use as a log file.' % home)
-				if self.logh.has_key('RotatingFileHandler'): del self.logh['RotatingFileHandler']
-
-		# handlers in x propagate down to everyone (y) in the x.y tree
-		#self.logs['evalog'] = logging.getLogger('%s.evalog' % self.name)
-		#self.logs['OTHERL'] = logging.getLogger('%s.OTHERL' % self.name)
-
-		# send a hello message
-		self.log.debug('hello from %s' % self.name)
 
 
 	# HANDLERS ############################################################

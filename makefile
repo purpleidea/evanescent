@@ -56,6 +56,8 @@ uninstall:
 	rm /usr/bin/eva.py
 	rm /usr/lib/python2.5/site-packages/yamlhelp.py
 	rm /usr/lib/python2.5/site-packages/yamlhelp.pyc
+	rm /usr/lib/python2.5/site-packages/logginghelp.py
+	rm /usr/lib/python2.5/site-packages/logginghelp.pyc
 	rm /etc/event.d/evanescent.upstart
 	rm /etc/xdg/autostart/evanescent.desktop
 

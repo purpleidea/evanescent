@@ -47,7 +47,7 @@ distutils.core.setup(
 	package_dir={'evanescent':'evanescent'},
 	ext_modules=ext_modules,
 	# list of miscellaneous extra modules to include
-	py_modules=['yamlhelp'],
+	py_modules=['yamlhelp', 'logginghelp'],
 	data_files=data_files,
 	# daemon and client scripts respectively
 	scripts=['eva.py', 'evanescent_daemon.py']

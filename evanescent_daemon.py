@@ -47,7 +47,6 @@
 
 import os					# for posix/nt detection
 import sys					# for sys.exit()
-import logging, logging.handlers		# for syslog stuff
 import gobject					# for mainloop
 import errno					# for standard errno system symbols
 import evanescent.daemon as daemon		# i wrote this one
@@ -56,6 +55,7 @@ import evanescent.logout.logout as logout	# logout in logout package
 import evanescent.logout.users as users		# users in logout package
 import evanescent.exclusions as exclusions	# exclusions module
 import evanescent.misc as misc			# miscellaneous such as uptime
+import logginghelp
 
 class evanescent_daemon:
 
@@ -67,76 +67,18 @@ class evanescent_daemon:
 		self.name = 'evanescent'
 
 		# LOGGING #####################################################
-		self.log = None	# main logger
-		self.logh = {}	# log handles
-		self.logs = {}	# other log handles
+		obj = logginghelp.logginghelp(name=self.name, wordymode=config.WORDYMODE,
+		mylogpath=[config.MYLOGPATH, os.path.join(misc.get_home(), '.eva.log')],
+		logserver=config.LOGSERVER, logformat=config.LOGFORMAT)
 
-		# setup the logging handles
-		self.logging()
+		self.log = obj.get_log()	# main logger
+		self.logs = {}			# other log handles
+		self.logs['daemon'] = obj.get_log('daemon')
+		self.logs['dialog'] = obj.get_log('dialog')
 
 		# GOBJECT #####################################################
 		self.mainloop = None		# mainloop object
 		self.source_id = None		# timer id
-
-
-	# LOGGING #############################################################
-	def logging(self):
-		"""setup logging. this function doesn't return any value."""
-		# error logging levels:
-		#	* CRITICAL
-		#	* FATAL
-		#	* ERROR
-		#	* WARN
-		#	* INFO
-		#	* DEBUG
-
-		# have every log use this format
-		formatter = logging.Formatter(config.LOGFORMAT)
-
-		# name a log route & set a level
-		self.log = logging.getLogger(self.name)
-		if config.WORDYMODE: self.log.setLevel(logging.DEBUG)
-		else: self.log.setLevel(logging.WARN)
-
-		# handler for stderr
-		self.logh['StreamHandler'] = logging.StreamHandler()
-		self.logh['StreamHandler'].setFormatter(formatter)
-		self.log.addHandler(self.logh['StreamHandler'])
-
-		# handler for global logging server
-		# TODO: find a way to change the facility to 'evanescent' or rather: the self.name variable
-		self.logh['SysLogHandler'] = logging.handlers.SysLogHandler(tuple(config.LOGSERVER), logging.handlers.SysLogHandler.LOG_LOCAL7)
-		self.logh['SysLogHandler'].setFormatter(formatter)
-		self.log.addHandler(self.logh['SysLogHandler'])
-
-		# handler for windows event log
-		if os.name == 'nt':
-			self.logh['NTEventLogHandler'] = logging.handlers.NTEventLogHandler(self.name)
-			self.logh['NTEventLogHandler'].setFormatter(formatter)
-			self.log.addHandler(self.logh['NTEventLogHandler'])
-
-		# handler for local disk
-		# NOTE: using access() to check if a user is authorized to e.g. open a file before actually
-		# doing so using open() creates a security hole, because the user might exploit the short
-		# time interval between checking and opening the file to manipulate it. try and catch instead.
-		try:
-			self.logh['RotatingFileHandler'] = logging.handlers.RotatingFileHandler(config.MYLOGPATH, maxBytes=1024*100, backupCount=9)
-			self.logh['RotatingFileHandler'].setFormatter(formatter)
-			self.log.addHandler(self.logh['RotatingFileHandler'])
-		except IOError:
-			# you probably don't have the file permissions to open the file.
-			# are you root, or do you need to be?
-			self.log.warn('unable to open `%s\' for use as a log file.' % config.MYLOGPATH)
-			if self.logh.has_key('RotatingFileHandler'): del self.logh['RotatingFileHandler']
-
-		# handlers in x propagate down to everyone (y) in the x.y tree
-		self.logs['daemon'] = logging.getLogger('%s.daemon' % self.name)
-		self.logs['dialog'] = logging.getLogger('%s.dialog' % self.name)
-		#self.logs['signal'] = logging.getLogger('%s.signal' % self.name)
-		#self.logs['evalog'] = logging.getLogger('%s.evalog' % self.name)
-
-		# send a hello message
-		self.log.debug('hello from %s' % self.name)
 
 
 	# MAIN ################################################################
