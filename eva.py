@@ -70,10 +70,10 @@ class eva:
 		gtk.about_dialog_set_url_hook(self.show_uri)
 
 		# icon
-		self.icon_set_visible_source_id = None	# source id for callback
+		self.icon_source_id = None		# source id for callback
 		self.icon = gtk.StatusIcon()
-		self.icon.set_visible(False)		# hide it
 		self.icon.set_from_file(self.iconimage)
+		self.icon_visibility(False)		# hide it
 
 		# build a menu
 		self.menu = gtk.Menu()
@@ -150,10 +150,8 @@ class eva:
 		self.icon.set_blinking(False)	# stop the blinking if any.
 		self.n.close()
 		# hide the tray icon now, or in say 15 seconds
-		if bool(now): self.icon.set_visible(False)
-		else:
-			self.icon_set_visible_source_id = \
-			gobject.timeout_add(15*1000, self.icon.set_visible, False)
+		if bool(now): self.icon_visibility(0, False)
+		else: self.icon_visibility(15, False)
 
 
 	def help_activate(self, widget):
@@ -212,6 +210,7 @@ class eva:
 
 	def icon_popupmenu(self, icon, button, time):
 		"""handler for status icon right click"""
+		self.icon_visibility(60)	# reschedule icon to hide in 60
 		# old style below:
 		#self.menu.popup(None, None, gtk.status_icon_position_menu, button, time, self.icon)
 		self.menu.popup(None, None, None, button, time)
@@ -247,7 +246,7 @@ class eva:
 			# updated (presumably) so that subsequent calls to the
 			# attach_to_status_icon() function get better placement
 			# data. :(
-			self.icon.set_visible(True)	# show this now!
+			self.icon_visibility(True)		# show this now!
 			gobject.timeout_add(1000, self.msg, message, title, urgency, timeout, False)
 			return
 
@@ -285,9 +284,7 @@ class eva:
 		if WORKAROUND2: self.n.close()
 
 		# remove the icon get hidden timeout
-		if type(self.icon_set_visible_source_id) is int:
-			gobject.source_remove(self.icon_set_visible_source_id)
-			self.icon_set_visible_source_id = None
+		self.icon_visibility(None)
 
 		# make the message
 		self.n.update(title, message, self.uri)
@@ -301,7 +298,7 @@ class eva:
 		elif timeout is None: self.n.set_timeout(pynotify.EXPIRES_NEVER)
 		elif type(timeout) is int: self.n.set_timeout(timeout)
 
-		self.icon.set_visible(True)	# show the tray icon
+		self.icon_visibility(True)	# show the tray icon
 
 		if self.n.show():		# this fails if icon not visible
 
@@ -319,7 +316,7 @@ class eva:
 
 		else:
 			# hide the tray icon if the notification fails
-			self.icon.set_visible(False)
+			self.icon_visibility(False)
 			self.log.error('pynotify failed to send a message.')
 
 			# fall back to sending a console message
@@ -364,6 +361,35 @@ class eva:
 			conf.store(data)
 		else:
 			self.log.debug('skipping welcome message')
+
+
+	def icon_visibility(self, seconds=0, visibility=False):
+		"""set the icon visibility. this helper function automatically
+		schedules the timing for the set_visible call. if you call this
+		with just one parameter: None, then it cancels the timeout. if
+		you call it with one parameter: a bool, then it sets that
+		visibility right now. and if you call it with two parameters:
+		seconds, and visibility, then it sets a timeout to set the
+		requested visibility in that many seconds. 0 seconds means now.
+		anytime you run the function it will clear any existing timeout
+		and it might add a new one."""
+		# remove any pending icon: `set_visible' timeouts
+		if type(self.icon_source_id) is int:
+			gobject.source_remove(self.icon_source_id)
+			self.icon_source_id = None
+
+		# if the function is called with just a bool, then set that
+		# right away.
+		if type(seconds) is bool:
+			visibility = seconds
+			seconds = 0
+
+		# do it now
+		if seconds == 0: self.icon.set_visible(visibility)
+		elif seconds > 0:
+			# schedule a new one
+			self.icon_source_id = \
+			gobject.timeout_add(seconds*1000, self.icon.set_visible, visibility)
 
 
 	# WORKING LOOP ########################################################
