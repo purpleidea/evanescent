@@ -34,3 +34,26 @@ it runs as... see the faq for a better explanation)
 
 9) add _() for gettext, get the gettext infrastructure cooking
 
+
+10) fix the icon size business.
+
+
+11) play a sound on idle
+
+
+12) dependency checking:
+package: libxss-dev
+package: yaml, pynotify
+
+
+13) if config file is empty... evanescent_daemon fails
+
+
+14) setup.py script has hardcoded directories.
+
+
+15) logout() function needs love
+
+
+16) setup.py needs some love
+

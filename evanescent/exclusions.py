@@ -76,7 +76,10 @@ class exclusions:
 			f = open(self.yamlconf)
 			try:
 				data = yaml.load(f)
-				if type(data) is not dict:
+
+				# allow empty files
+				if data is None: data = {}
+				elif type(data) is not dict:
 					raise SyntaxError, self.E_NOTADICT
 
 				# look for exclusions key
@@ -85,8 +88,9 @@ class exclusions:
 				else:
 					data = data[EXCLUSIONS]
 
-				# we should have a list
-				if type(data) is not list:
+				# we should have a list, but allow no exclusions
+				if data is None: data = []
+				elif type(data) is not list:
 					raise SyntaxError, self.E_NOTALIST
 
 			except yaml.scanner.ScannerError, e:

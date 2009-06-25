@@ -69,7 +69,7 @@ uninstall:
 # make a package for distribution
 tar: clean
 
-	cd .. && tar --exclude=old --exclude=play --exclude=.swp --exclude=.bzr --bzip2 -cf evanescent.tar.bz2 evanescent/
+	cd .. && tar --exclude=old --exclude=play --exclude=.swp --exclude=.bzr --exclude=tar --exclude=packages --bzip2 -cf evanescent.tar.bz2 evanescent/
 	mv ../evanescent.tar.bz2 .
 
 

@@ -51,8 +51,11 @@ class eva:
 
 		self.warned = False		# warned datetime value
 		self.delta = 0			# time delta for warn
-		# iconimage path
-		self.iconimage = os.path.join(config.SHAREDDIR, 'evanescent.png')
+
+		# icon pixbuf
+		self.iconfile = os.path.join(config.SHAREDDIR, 'evanescent.png')
+		#self.pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(self.iconfile, width?, height?)
+		self.pixbuf = gtk.gdk.pixbuf_new_from_file(self.iconfile)
 
 		# LOGGING #####################################################
 		obj = logginghelp.logginghelp(name=self.name, wordymode=config.WORDYMODE,
@@ -72,7 +75,7 @@ class eva:
 		# icon
 		self.icon_source_id = None		# source id for callback
 		self.icon = gtk.StatusIcon()
-		self.icon.set_from_file(self.iconimage)
+		self.icon.set_from_pixbuf(self.pixbuf)
 		self.icon_visibility(False)		# hide it
 
 		# build a menu
@@ -104,13 +107,18 @@ class eva:
 
 		self.pynotify = True	# is pynotify active? assume yes for now
 
-		# build a uri
-		self.uri = "file://" + self.iconimage
-		self.log.debug('iconimage uri: %s' % self.uri)
+		# try to turn on pynotify
+		if not pynotify.init(self.name):
+			# fall back to a different messaging alternative.
+			self.pynotify = False	# disable pynotify
+			misc.console_msg('the main notifications system is not available. notifications will be sent to the console.')
 
 		# make a dummy notification but never show() it. this is so that
 		# we can easily use the n.update() function to replace messages.
-		self.n = pynotify.Notification(' ', '', self.uri)
+		self.n = pynotify.Notification(' ', '')
+
+		# set the icon
+		self.n.set_icon_from_pixbuf(self.pixbuf)
 
 		# position the notification so that it points to the `tray' icon
 		self.n.attach_to_status_icon(self.icon)
@@ -183,8 +191,9 @@ class eva:
 		self.about.set_comments('Evanescent/Eva machine idle detection and shutdown tool (server/client)')
 		self.about.set_website('http://www.cs.mcgill.ca/~james/code/')
 		self.about.set_website_label('Evanescent Website')
-		# TODO: make icon bigger!
-		self.about.set_logo(gtk.gdk.pixbuf_new_from_file(self.iconimage))
+		self.about.set_logo(self.pixbuf)
+		# TODO: remove this line when our icon isn't so ugly
+		self.about.set_logo(gtk.gdk.pixbuf_new_from_file_at_size(os.path.join(config.SHAREDDIR, 'evanescent.svg'), 32, 32))
 		self.about.run()
 		# TODO: is the below statement correct? i think it is. NEEDSINFO
 		# turns out if you call about.destroy from somewhere else, then
@@ -287,7 +296,7 @@ class eva:
 		self.icon_visibility(None)
 
 		# make the message
-		self.n.update(title, message, self.uri)
+		self.n.update(title, message)
 
 		# set the urgency
 		if urgency in [pynotify.URGENCY_LOW, pynotify.URGENCY_NORMAL, pynotify.URGENCY_CRITICAL]:
@@ -466,7 +475,6 @@ class eva:
 					# counter faster, but wastes more cpu.
 					sleep = min(config.COUNTDOWN, config.FASTSLEEP)
 
-
 			# not idle
 			else:
 				self.log.info('user is not idle.')
@@ -535,12 +543,6 @@ class eva:
 		# UPDATE: actually it might not be possible because it relies
 		# on the motion-notify-event of a gtkwidget object which we
 		# won't have access to. (there is just the icon and pynotify)
-
-		# try to turn on pynotify
-		if not pynotify.init(self.name):
-			# fall back to a different messaging alternative.
-			self.pynotify = False	# disable pynotify
-			misc.console_msg('the main notifications system is not available. notifications will be sent to the console.')
 
 		# run informational welcome message script.
 		gobject.idle_add(self.welcome_info)
