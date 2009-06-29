@@ -35,7 +35,7 @@ def _idle(update_ttys=False):
 	update the idle times of the other tty's to prevent any sudden jumps
 	in values from this function, should a recent terminal be closed."""
 
-	idle = float('+inf')	# i hope this doesn't cause too many problems
+	idle = None
 	user = getpass.getuser()
 	u = utmp.UtmpRecord()	# iterator
 	tty = {}		# dictionary of stats
@@ -50,6 +50,7 @@ def _idle(update_ttys=False):
 				z = None
 
 			if z is not None:
+				if idle is None: idle = z
 				idle = min(idle, z)
 	# possible values from utmp, and formatting data:
 	# '%-10s %-5s %10s %-10s %-25s %-15s %-10s %-10s %-10s %-10s %-10s'
@@ -68,24 +69,24 @@ def _idle(update_ttys=False):
 	# python os.utime and change them to match the least idle tty. if this
 	# is what you want, then you must choose so explicitly, and accept all
 	# of the consequences. (whatever they may be!) only ATIME is modified.
-	if bool(update_ttys):
+	if update_ttys:
+		if idle is None: add = 0
+		else: add = idle
 		for (key, value) in tty.items():
 		# set the ATIME to now + however long the shortest /dev/ has
 		# been idle for. this is similar to using unix `touch, minus
 		# the extra idle offset we add on so as not to reset it all.
 			try:
 				os.utime('/dev/'+key,
-				(time.time()+idle, value[stat.ST_MTIME]))
+				(time.time()+add, value[stat.ST_MTIME]))
 			except OSError, e:
 				if e.errno == errno.EPERM:
 					pass
 				else: raise e
 
-	try:
-		return int(idle*1000)
-	except OverflowError:
-		# if utmp is empty and we're left with: float('+inf')
-		return None
+	# if utmp is empty
+	if idle is None: return None
+	else: return int(idle*1000)
 
 
 if __name__ == '__main__':

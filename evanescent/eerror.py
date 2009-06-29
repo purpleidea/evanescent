@@ -28,8 +28,8 @@ class EError(Exception):
 		return repr(self.value)
 
 
-class DecodeError(EError):
-	"""custom exception class for decode.py related errors."""
+class YamlSyntaxError(EError):
+	"""custom exception class for exclusions.py related errors."""
 
 	def __init__(self, value):
 		self.value = value

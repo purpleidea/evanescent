@@ -36,10 +36,9 @@ elif os.name == 'posix':
 		# process to send SIGINT to the user's x-session-manager.
 
 		s = session()
-		# FIXME: write this code... make it work... test it.
+		# TODO: rewrite this code... make it work nicely
 		if s == 'gnome': os.system('gnome-session-save --logout-dialog')
-		else: os.system('killall --signal SIGINT x-session-manager')
-		#os.system('killall --signal SIGINT gnome-session')
+		else: os.system('killall --user %s --exact x-session-manager' % os.getlogin())
 
 
 	def shutdown():

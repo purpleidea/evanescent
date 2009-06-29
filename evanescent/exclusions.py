@@ -25,6 +25,7 @@ import socket		# for gethostname() and getfqdn()
 import getpass		# for getuser()
 import os		# for geteuid() and getegid()
 import errno		# for standard errno system symbols
+import eerror		# evanescent custom errors
 import dt		# i wrote this one-- for time/date range parsing
 
 # constants
@@ -80,7 +81,7 @@ class exclusions:
 				# allow empty files
 				if data is None: data = {}
 				elif type(data) is not dict:
-					raise SyntaxError, self.E_NOTADICT
+					raise eerror.YamlSyntaxError, self.E_NOTADICT
 
 				# look for exclusions key
 				if not EXCLUSIONS in data:
@@ -91,10 +92,10 @@ class exclusions:
 				# we should have a list, but allow no exclusions
 				if data is None: data = []
 				elif type(data) is not list:
-					raise SyntaxError, self.E_NOTALIST
+					raise eerror.YamlSyntaxError, self.E_NOTALIST
 
 			except yaml.scanner.ScannerError, e:
-				raise SyntaxError, self.E_YAMLSCAN % e
+				raise eerror.YamlSyntaxError, self.E_YAMLSCAN % e
 
 		except IOError, e:
 			if e.errno == errno.ENOENT:
@@ -169,7 +170,7 @@ class exclusions:
 					pass
 
 				else:
-					raise SyntaxError, 'identifier: `%s\' not supported' % j
+					raise eerror.YamlSyntaxError, 'identifier: `%s\' not supported' % j
 
 			# if we have a valid row, then the exclusion should happen since the rows are OR-ed together
 			if row:
@@ -187,12 +188,20 @@ class exclusions:
 		result is None, then propagate out the original error."""
 
 		assert type(result) in [type(None), bool]
+		skip = False
 		try:
-			return self.__is_excluded()
-		except BaseException, e:
-			if result is None:
-				raise e
-			else: return bool(result)
+			temp = self.__is_excluded()
+			skip = True
+			return temp
+		except eerror.YamlSyntaxError, e:
+			pass
+		except IOError, e:
+			pass
+		finally:
+			if not skip:
+				if result is None:
+					raise e
+				else: return result
 
 
 	def is_fileok(self):
@@ -203,8 +212,9 @@ class exclusions:
 		"""is the .conf file present, parseable & properly formatted?"""
 		try:
 			self.is_excluded(result=None)
-		except:
-			# TODO: should we log the specific error ?
+		except eerror.YamlSyntaxError:
+			return False
+		except IOError:
 			return False
 
 		return True

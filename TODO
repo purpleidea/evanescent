@@ -38,7 +38,7 @@ it runs as... see the faq for a better explanation)
 10) fix the icon size business.
 
 
-11) play a sound on idle
+11) play a sound on idle (libcanberra?)
 
 
 12) dependency checking:
@@ -46,14 +46,14 @@ package: libxss-dev
 package: yaml, pynotify
 
 
-13) if config file is empty... evanescent_daemon fails
+13) setup.py script has hardcoded directories.
 
 
-14) setup.py script has hardcoded directories.
+14) logout() function needs love
 
 
-15) logout() function needs love
+15) setup.py needs some love
 
 
-16) setup.py needs some love
+16) add dbus support for sending useful messages such as: 'wake up from sleep and recheck exclusions!' or 'go idle now' etc...
 
