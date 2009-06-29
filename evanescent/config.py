@@ -121,16 +121,13 @@ class config:
 		d = (debug is None and self.debug) or debug
 		result = True
 		badkeys = []
-		for key in self.config:
-			if not key in self.defaults:
-				badkeys.append(key)
-
-		# we must do this as a second loop, otherwise we get:
+		# remember to add the keys() method on otherwise you get:
 		# RuntimeError: dictionary changed size during iteration
-		for x in badkeys:
-			result = False
-			if d: print 'badkey: %s' % x
-			del self.config[x]
+		for key in self.config.keys():
+			if not key in self.defaults:
+				result = False
+				if d: print 'badkey: %s' % x
+				del self.config[x]
 
 		return result
 
