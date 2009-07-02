@@ -57,3 +57,9 @@ package: yaml, pynotify
 
 16) add dbus support for sending useful messages such as: 'wake up from sleep and recheck exclusions!' or 'go idle now' etc...
 
+
+17) evanescent_daemon should maybe run as user daemon or eva or some other user account to give it less priviledges.
+
+
+18) add support for gconf (eg: to replace yaml or add an additional parser, or perhaps in particular for the users config and not the daemon's)
+

@@ -26,19 +26,21 @@ import sys					# for sys.exit
 import datetime					# for time delta calculations
 import math					# for math.ceil
 
-# frontend, gui related
 import gtk					# for status icon
 import pynotify					# for notifications
 import gobject					# for timeout_add, etc...
+import dbus					# for message passing
+import dbus.mainloop.glib
 
-# backend, evanescent related
 import evanescent.idle.idle as idle		# idle package
 import evanescent.logout.logout as logout	# logout package
 import evanescent.config as config		# config module
 import evanescent.exclusions as exclusions	# exclusions module
 import evanescent.misc as misc			# misc functions module
+import evanescent.edbus as edbus		# evanescent dbus classes
 
 import logginghelp				# my wrapper for logging
+
 
 class eva:
 
@@ -66,6 +68,9 @@ class eva:
 
 		# GOBJECT #####################################################
 		self.source_id = None		# timer id
+
+		# DBUS ########################################################
+		self.session_bus = None		# dbus system bus handle
 
 		# GTK #########################################################
 		# about dialog
@@ -543,6 +548,14 @@ class eva:
 		# UPDATE: actually it might not be possible because it relies
 		# on the motion-notify-event of a gtkwidget object which we
 		# won't have access to. (there is just the icon and pynotify)
+
+		# make dbus happy
+		dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+
+		self.session_bus = dbus.SessionBus()		# make the bus
+		bus_name = dbus.service.BusName(edbus._service, bus=self.session_bus)
+
+		edbus.Eva(self, bus_name, edbus._path)		# register dbus
 
 		# run informational welcome message script.
 		gobject.idle_add(self.welcome_info)
