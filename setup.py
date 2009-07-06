@@ -63,6 +63,6 @@ distutils.core.setup(
 	# the data files
 	data_files=data_files,
 	# client and daemon scripts respectively
-	scripts=['eva.py', 'evanescent_daemon.py']
+	scripts=['evanescent-client.py', 'evanescent-daemon.py', 'evanescent-remote.py']
 )
 
