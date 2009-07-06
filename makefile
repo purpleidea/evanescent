@@ -61,7 +61,7 @@ uninstall:
 	rm /usr/lib/python2.5/site-packages/logginghelp.pyc
 	rm /etc/event.d/evanescent.upstart
 	rm /etc/xdg/autostart/evanescent.desktop
-	rm /usr/share/dbus-1/services/ca.mcgill.cs.dazzle.evanescent.eva.service
+	rm /usr/share/dbus-1/services/ca.mcgill.cs.dazzle.evanescent.client.service
 
 	# these two get created by evanescent, don't remove them unless purge
 	#rm /home/james/.eva.conf.yaml

@@ -32,7 +32,7 @@ if os.name == 'posix':
 	data_files.append(('/etc/xdg/autostart/', ['files/evanescent.desktop']))
 	data_files.append(('/etc/event.d/', ['files/evanescent.upstart']))
 
-	data_files.append(('/usr/share/dbus-1/services/', ['files/ca.mcgill.cs.dazzle.evanescent.eva.service']))
+	data_files.append(('/usr/share/dbus-1/services/', ['files/ca.mcgill.cs.dazzle.evanescent.client.service']))
 
 
 # add the .yaml config file

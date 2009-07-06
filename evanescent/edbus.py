@@ -23,9 +23,9 @@ import dbus.service
 
 __all__ = ['_service', '_interface', '_path', 'Eva', 'DemoException']
 
-_service = 'ca.mcgill.cs.dazzle.evanescent.eva'
+_service = 'ca.mcgill.cs.dazzle.evanescent.client'
 _interface = _service + '.Interface'
-_path = '/Eva'
+_path = '/Client'
 
 class DemoException(dbus.DBusException):
 	_dbus_error_name = _service + '.DemoException'
