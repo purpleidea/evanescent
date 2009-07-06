@@ -15,6 +15,5 @@ stop on runlevel 4
 stop on runlevel 5
 stop on runlevel 6
 
-# FIXME: path
-exec evanescent_daemon.py start
+exec evanescent-daemon.py start
 

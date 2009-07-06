@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-    Evanescent machine idle detection and shutdown tool.
+    Evanescent machine idle detection and shutdown tool daemon.
     Copyright (C) 2008  James Shubin, McGill University
     Written for McGill University by James Shubin <purpleidea@gmail.com>
 
@@ -62,7 +62,7 @@ class evanescent_daemon:
 
 	# CONSTRUCTOR #########################################################
 	def __init__(self, name=None, start=None):
-		"""constructor for the evanescent_daemon class."""
+		"""constructor for the evanescent-daemon class."""
 
 		# MISC ########################################################
 		self.name = 'evanescent'
@@ -134,7 +134,7 @@ class evanescent_daemon:
 
 	# WORKING LOOP ########################################################
 	def loop(self):
-		"""this is the main loop for evanescent_daemon."""
+		"""this is the main loop for evanescent-daemon."""
 
 		self.logs['dialog'].debug('entering local loop()')
 		sleep = config.SLEEPTIME

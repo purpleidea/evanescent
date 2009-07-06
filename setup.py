@@ -32,8 +32,7 @@ if os.name == 'posix':
 	data_files.append(('/etc/xdg/autostart/', ['files/evanescent.desktop']))
 	data_files.append(('/etc/event.d/', ['files/evanescent.upstart']))
 
-
-
+	data_files.append(('/usr/share/dbus-1/services/', ['files/ca.mcgill.cs.dazzle.evanescent.eva.service']))
 
 
 # add the .yaml config file
@@ -49,11 +48,7 @@ if os.name == 'posix':
 #data_files.append( ('/etc/', ['files/evanescent.conf.yaml']) )
 
 if os.name == 'posix': data_files.append( ('/etc/', ['files/evanescent.conf.yaml.example']) )
-elif os.name == 'nt': data_files.append( ('/etc/', ['files/evanescent.conf.yaml.wexample']) )#does this need changing from /etc to ?
-
-
-
-
+elif os.name == 'nt': data_files.append( ('/etc/', ['files/evanescent.conf.yaml.wexample']) )#change from /etc to ?
 
 
 # SETUP #######################################################################

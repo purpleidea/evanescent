@@ -52,14 +52,16 @@ uninstall:
 	# remove what distutils installs
 	rm -r /usr/lib/python2.5/site-packages/evanescent/
 	rm -r /usr/share/evanescent/
-	rm /usr/bin/evanescent_daemon.py
-	rm /usr/bin/eva.py
+	rm /usr/bin/evanescent-daemon.py
+	rm /usr/bin/evanescent-remote.py
+	rm /usr/bin/evanescent-client.py
 	rm /usr/lib/python2.5/site-packages/yamlhelp.py
 	rm /usr/lib/python2.5/site-packages/yamlhelp.pyc
 	rm /usr/lib/python2.5/site-packages/logginghelp.py
 	rm /usr/lib/python2.5/site-packages/logginghelp.pyc
 	rm /etc/event.d/evanescent.upstart
 	rm /etc/xdg/autostart/evanescent.desktop
+	rm /usr/share/dbus-1/services/ca.mcgill.cs.dazzle.evanescent.eva.service
 
 	# these two get created by evanescent, don't remove them unless purge
 	#rm /home/james/.eva.conf.yaml

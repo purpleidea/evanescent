@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-    Evanescent machine idle detection and shutdown tool.
+    Evanescent machine idle detection and shutdown tool client.
     Copyright (C) 2008  James Shubin, McGill University
     Written for McGill University by James Shubin <purpleidea@gmail.com>
 
@@ -54,6 +54,9 @@ class eva:
 		self.warned = False		# warned datetime value
 		self.delta = 0			# time delta for warn
 
+		self.force_idle = None		# force idle or not
+		self.force_excluded = None	# force excluded or not
+
 		# icon pixbuf
 		self.iconfile = os.path.join(config.SHAREDDIR, 'evanescent.png')
 		#self.pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(self.iconfile, width?, height?)
@@ -67,7 +70,7 @@ class eva:
 		self.log = obj.get_log()	# main logger
 
 		# GOBJECT #####################################################
-		self.source_id = None		# timer id
+		self.source_id = None		# loop timer id
 
 		# DBUS ########################################################
 		self.session_bus = None		# dbus system bus handle
@@ -406,29 +409,71 @@ class eva:
 			gobject.timeout_add(seconds*1000, self.icon.set_visible, visibility)
 
 
+	def poke(self):
+		"""abort any current sleeping and re-run."""
+		# kill any current sleeping loop
+		# (we know it *must* be sleeping, because a gobject mainloop
+		# is single threaded and for this code to run, it has to get
+		# out of that function and thus is waiting for new timeout.)
+		self.log.info('running poke')
+		if type(self.source_id) is int:
+			gobject.source_remove(self.source_id)
+
+		# add a new timeout so this gets called again
+		self.source_id = gobject.timeout_add(1*1000, self.loop)
+
+
+	def is_idle(self):
+		"""wrapper aroung idle.is_idle function. includes support for
+		the force_idle flag."""
+		if self.force_idle is None:
+			return idle.is_idle(config.IDLELIMIT)
+		else: return self.force_idle		# boolean
+
+
+	def timeleft(self):
+		"""wrapper aroung idle.timeleft function. includes support for
+		the force_idle flag."""
+		if self.force_idle is None:
+			# sleep time in seconds
+			return idle.timeleft(config.IDLELIMIT)
+		elif self.force_idle:
+			return 0
+		else:
+			return config.IDLELIMIT
+
+
+	def is_excluded(self):
+		"""wrapper aroung exclusions.is_excluded function. includes
+		support for the force_excluded flag."""
+		if self.force_excluded is None:
+			e = exclusions.exclusions(yamlconf=config.THECONFIG)
+			# do the check, and if it passes get the good value.
+			result = e.is_fileok()
+			if result: result = e.is_excluded()
+			# otherwise it's false anyways! not excluded!
+			else:
+				self.log.warn('problem with config file.')
+				self.log.warn('assuming no exclusions.')
+
+			e = None			# clean up the object
+			return result
+		else:
+			return self.force_excluded	# boolean
+
+
 	# WORKING LOOP ########################################################
 	def loop(self):
 		"""main loop for eva that runs the business logic, etc..."""
 
 		self.log.debug('entering local loop()')
-		sleep = idle.timeleft(config.IDLELIMIT)	# sleep time in seconds
-
-		e = exclusions.exclusions(yamlconf=config.THECONFIG)
-		# do the check, and if it passes get the good value.
-		result = e.is_fileok()
-		if result: result = e.is_excluded()
-		# otherwise it's false anyways! not excluded!
-		else:
-			self.log.warn('problem with config file.')
-			self.log.warn('assuming no exclusions.')
-
-		e = None			# clean up the object
+		sleep = self.timeleft()
 
 		# if not excluded
-		if not result:
-			self.log.warn('you are currently NOT excluded from idle-logout.')
+		if not self.is_excluded():
+			self.log.warn('you are currently NOT excluded.')
 
-			if idle.is_idle(config.IDLELIMIT):
+			if self.is_idle():
 
 				self.log.info('user is currently idle.')
 				if self.warned:
@@ -491,11 +536,11 @@ class eva:
 					timeout=pynotify.EXPIRES_DEFAULT)
 					self.warned = False
 
-				sleep = idle.timeleft(config.IDLELIMIT)
+				sleep = self.timeleft()
 
 		# is excluded
 		else:
-			self.log.info('you are currently excluded from idle-logout.')
+			self.log.info('you are currently excluded.')
 			if self.warned:
 				self.log.info('log off canceled, you\'ve just been excluded.')
 				self.msg(message='log off canceled, you\'ve just been excluded.',
@@ -505,7 +550,7 @@ class eva:
 				self.warned = False
 
 			#sleep = config.SLEEPTIME	# CHANGED IN FAVOUR OF:
-			sleep = max(idle.timeleft(config.IDLELIMIT), self.get_exclusions_changed_time())
+			sleep = max(self.timeleft(), self.get_exclusions_changed_time())
 
 		sleep = max(1, sleep)		# sleep for at least one second
 		self.log.info('going to sleep for %d seconds.' % sleep)
@@ -555,6 +600,7 @@ class eva:
 		self.session_bus = dbus.SessionBus()		# make the bus
 		bus_name = dbus.service.BusName(edbus._service, bus=self.session_bus)
 
+		# we pass the self variable to the class as a ref (shown below)
 		edbus.Eva(self, bus_name, edbus._path)		# register dbus
 
 		# run informational welcome message script.
