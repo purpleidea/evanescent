@@ -55,11 +55,11 @@ package: yaml, pynotify
 15) setup.py needs some love
 
 
-16) add dbus support for sending useful messages such as: 'wake up from sleep and recheck exclusions!' or 'go idle now' etc...
+16) evanescent-daemon should maybe run as user daemon or eva or some other user account to give it less priviledges.
 
 
-17) evanescent_daemon should maybe run as user daemon or eva or some other user account to give it less priviledges.
+17) add support for gconf (eg: to replace yaml or add an additional parser, or perhaps in particular for the users config and not the daemon's)
 
 
-18) add support for gconf (eg: to replace yaml or add an additional parser, or perhaps in particular for the users config and not the daemon's)
+18) build VERSION file automatically using pattern: 0.2-<revno>, maybe 0.2 could be tag name? start tagging branches?
 

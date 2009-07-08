@@ -410,7 +410,7 @@ class eva:
 
 
 	def poke(self):
-		"""abort any current sleeping and re-run."""
+		"""abort any current sleeping loop and re-run."""
 		# kill any current sleeping loop
 		# (we know it *must* be sleeping, because a gobject mainloop
 		# is single threaded and for this code to run, it has to get

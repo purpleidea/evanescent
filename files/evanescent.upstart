@@ -1,9 +1,9 @@
 # evanescent
 #
-# This service is started on boot up so that the machine can shutdown
-# itself when it goes idle.
+# This service is started on boot up so that the machine can shutdown itself
+# when no users are present.
 
-description	"shutdown on idle daemon"
+description	"shutdown on empty machine daemon"
 author		"James <purpleidea@gmail.com>"
 
 start on runlevel 2
@@ -15,5 +15,5 @@ stop on runlevel 4
 stop on runlevel 5
 stop on runlevel 6
 
-exec evanescent-daemon.py start
+exec /usr/bin/evanescent-daemon.py start
 

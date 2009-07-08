@@ -41,8 +41,7 @@ def console_msg(message, line=None):
 
 
 def do_nologin(message=None):
-	"""stops new logins from happening,
-	displays message if they try."""
+	"""stops new logins from happening, displays message if they try."""
 
 	if os.name == 'posix':
 		# TODO: you need permission to change/create /etc/nologin,

@@ -136,7 +136,7 @@ class evanescent_daemon:
 	def loop(self):
 		"""this is the main loop for evanescent-daemon."""
 
-		self.logs['dialog'].debug('entering local loop()')
+		self.logs['dialog'].debug('entering local loop')
 		sleep = config.SLEEPTIME
 
 		# from the time when a machine comes up, give users a chance of
@@ -166,13 +166,18 @@ class evanescent_daemon:
 
 			# if not excluded
 			if not result:
-				self.log.warn('you are currently NOT excluded from idle-logout.')
-
+				self.log.warn('machine currently NOT excluded from shutdown.')
+				misc.do_nologin('machine being shutdown by evanescent')
 				self.log.fatal('machine is being shutdown due to inactivity.')
 				# do the actual shutdown
 				logout.shutdown()
 				self.mainloop.quit()
 				return False
+
+		else:
+			# log that we see users and which ones they are
+			self.logs['dialog'].info('users are present on machine.')
+			self.logs['dialog'].debug('users: %s' % ', '.join(users.ls()))
 
 		sleep = max(1, sleep)		# sleep for at least one second
 		self.log.info('going to sleep for %d seconds.' % sleep)
