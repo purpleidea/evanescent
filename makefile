@@ -17,6 +17,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+# version and revision of the program
+VERSION := $(shell cat VERSION)
+
+
 # if someone runs make randomly
 all:
 	ls -lah
@@ -50,29 +54,36 @@ install:
 uninstall:
 
 	# remove what distutils installs
-	rm -r /usr/lib/python2.5/site-packages/evanescent/
-	rm -r /usr/share/evanescent/
-	rm /usr/bin/evanescent-daemon.py
-	rm /usr/bin/evanescent-remote.py
-	rm /usr/bin/evanescent-client.py
-	rm /usr/lib/python2.5/site-packages/yamlhelp.py
-	rm /usr/lib/python2.5/site-packages/yamlhelp.pyc
-	rm /usr/lib/python2.5/site-packages/logginghelp.py
-	rm /usr/lib/python2.5/site-packages/logginghelp.pyc
-	rm /etc/event.d/evanescent.upstart
-	rm /etc/xdg/autostart/evanescent.desktop
-	rm /usr/share/dbus-1/services/ca.mcgill.cs.dazzle.evanescent.client.service
+	rm -r /usr/lib/python2.5/site-packages/evanescent/ 2> /dev/null || true
+	rm -r /usr/share/evanescent/ 2> /dev/null || true
+	rm /usr/bin/evanescent-daemon.py 2> /dev/null || true
+	rm /usr/bin/evanescent-remote.py 2> /dev/null || true
+	rm /usr/bin/evanescent-client.py 2> /dev/null || true
+	rm /usr/lib/python2.5/site-packages/yamlhelp.py 2> /dev/null || true
+	rm /usr/lib/python2.5/site-packages/yamlhelp.pyc 2> /dev/null || true
+	rm /usr/lib/python2.5/site-packages/logginghelp.py 2> /dev/null || true
+	rm /usr/lib/python2.5/site-packages/logginghelp.pyc 2> /dev/null || true
+	rm /etc/event.d/evanescent.upstart 2> /dev/null || true
+	rm /etc/xdg/autostart/evanescent.desktop 2> /dev/null || true
+	rm /usr/share/dbus-1/services/ca.mcgill.cs.dazzle.evanescent.client.service 2> /dev/null || true
+	rm /etc/evanescent.conf.yaml.example 2> /dev/null || true
+	# egg files:
+	rm /usr/lib/python2.5/site-packages/evanescent-* 2> /dev/null || true
 
-	# these two get created by evanescent, don't remove them unless purge
-	#rm /home/james/.eva.conf.yaml
-	#rm /home/james/.eva.log
+
+purge: uninstall
+	# these get created by evanescent, remove them on a purge
+	rm $(HOME)/.eva.conf.yaml 2> /dev/null || true
+	rm $(HOME)/.eva.log 2> /dev/null || true
+	rm /var/log/evanescent.log 2> /dev/null || true
+	rm /etc/evanescent.conf.yaml 2> /dev/null || true
 
 
 # make a package for distribution
 tar: clean
 
 	cd .. && tar --exclude=old --exclude=play --exclude=.swp --exclude=.bzr --exclude=tar --exclude=packages --bzip2 -cf evanescent.tar.bz2 evanescent/
-	mv ../evanescent.tar.bz2 .
+	mv ../evanescent.tar.bz2 ./tar/evanescent-$(VERSION).tar.bz2
 
 
 # make a package for windows...
@@ -87,14 +98,16 @@ windows:
 force: ;
 
 
-# how do i fix this so that the pwd's aren't the same and you get persistence in makefiles?
+# how do i fix this so that the pwd's are the same and you get persistence in makefiles?
 TODO:
 	pwd
 	cd windows
 	pwd
 
+
 TODO2:
 	pwd; cd windows; pwd
+
 
 # unix2dos file ending conversion
 # perl -pe 's/\r\n|\n|\r/\r\n/g' inputfile > outputfile
