@@ -131,7 +131,7 @@ class daemon:
 			raise DaemonError(message)
 
 		# decouple from parent environment
-		os.chdir("/")
+		os.chdir('/')
 		os.umask(0)
 		os.setsid()
 

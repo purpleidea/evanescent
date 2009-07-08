@@ -121,7 +121,7 @@ class evanescent_daemon:
 		except:
 			# special logfile for if something bad happens
 			import traceback
-			self.log.fatal('fatal exception:\n%s' % traceback.format_exc())
+			self.log.fatal('fatal exception:' + os.linesep + '%s' % traceback.format_exc())
 			try:
 				traceback.print_exc(file=open(config.MYERRPATH, 'w+'))
 
