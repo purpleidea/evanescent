@@ -49,7 +49,7 @@ package: yaml, pynotify
 13) setup.py script has hardcoded directories.
 
 
-14) logout() function needs love
+14) logout.py needs a bit more love (just got some dbus up in there)
 
 
 15) setup.py needs some love
@@ -61,5 +61,21 @@ package: yaml, pynotify
 17) add support for gconf (eg: to replace yaml or add an additional parser, or perhaps in particular for the users config and not the daemon's)
 
 
-18) build VERSION file automatically using pattern: 0.2-<revno>, maybe 0.2 could be tag name? start tagging branches?
+18) countdown could update at more automatic times. eg: logarithmic? so when
+you're at 5 minutes, update the time every 30 seconds. when you're at one minute
+update every 15? and when you're at 15 update every 5, and when you're at 5, 
+update every 1
+
+1 *5 -> 5 *6 -> 30 *5 -> 2m30s *6 -> 15m
+
+
+| time calculation | time | interval |
++------------------+------+----------+
+|1*5=5             | < 5s | 1 second |
+|_*6=30            | <30s | 5 secs   |
+|_*5=150(2m30)     | <2m30| 
+                   | >15m |
+
+
+
 

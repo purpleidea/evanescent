@@ -84,6 +84,9 @@ class eva:
 		self.icon_source_id = None		# source id for callback
 		self.icon = gtk.StatusIcon()
 		self.icon.set_from_pixbuf(self.pixbuf)
+		self.icon_locks = []			# list of keys to unlock
+							# the icon hide ability,
+							# allowing it to vanish.
 		self.icon_visibility(False)		# hide it
 
 		# build a menu
@@ -196,7 +199,7 @@ class eva:
 		copyright = \
 		'Copyright (c) 2008-%d James Shubin, McGill University' % year
 		self.about.set_copyright(copyright)
-		self.about.set_comments('Evanescent/Eva machine idle detection and shutdown tool (server/client)')
+		self.about.set_comments('Evanescent machine idle detection and shutdown tool (client)')
 		self.about.set_website('http://www.cs.mcgill.ca/~james/code/')
 		self.about.set_website_label('Evanescent Website')
 		self.about.set_logo(self.pixbuf)
@@ -380,6 +383,34 @@ class eva:
 			self.log.debug('skipping welcome message')
 
 
+	def unlock_icon(self, key):
+		"""removes a lock from the list of icon visibility locks. it
+		will then schedule an icon hide if the lock list is empty.
+		otherwise we wait for a later unlock signal as the hide."""
+
+		result = self.icon_locks.get(key, 0)
+
+		self.icon_locks = dict([ (key,value) for key,value in self.icon_locks.items() if ? ])
+
+		# remove key from self.icon_locks
+		# TODO: <...>
+
+		if len(self.icon_locks) == 0:
+			self.icon_visibility(seconds=15, visibility=False)
+
+
+	def lock_icon(self, key, time=0):
+		"""adds a lock to the list of icon visibility locks. this
+		requires a unique key for the identification of which lock we
+		own."""
+		# add the new lock with time as the value. if the key already
+		# exists, then set the time to be the max of the two times.
+		result = self.icon_locks.setdefault(key, time)
+		self.icon_locks[key] = max(time, result)
+
+		self.icon_visibility(seconds=0, visibility=True)	# show
+
+
 	def icon_visibility(self, seconds=0, visibility=False):
 		"""set the icon visibility. this helper function automatically
 		schedules the timing for the set_visible call. if you call this
@@ -402,11 +433,25 @@ class eva:
 			seconds = 0
 
 		# do it now
-		if seconds == 0: self.icon.set_visible(visibility)
+		if seconds == 0:
+			if visibility:
+				if type(key) is not None:
+					self.icon_locks.append(key)
+				# show
+				self.icon.set_visible(visibility)
+
+			else:		# hide
+				if len(self.icon_locks) > 0:
+					pass
+				else:
+					self.icon.set_visible(visibility)
+
+			return False
+
+		# or schedule it for later (recursively)
 		elif seconds > 0:
-			# schedule a new one
 			self.icon_source_id = \
-			gobject.timeout_add(seconds*1000, self.icon.set_visible, visibility)
+			gobject.timeout_add(seconds*1000, self.icon_visibility, 0, visibility, key)
 
 
 	def poke(self):
@@ -491,7 +536,7 @@ class eva:
 						urgency=pynotify.URGENCY_CRITICAL,
 						timeout=pynotify.EXPIRES_NEVER)
 						# do the actual logout
-						logout.logout()
+						logout.logmeout()
 						return False
 
 					else:

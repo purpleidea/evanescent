@@ -19,33 +19,35 @@
 """
 import os
 
-__all__ = ['logout', 'shutdown', 'session']
+__all__ = ['logmeout', 'shutdown', 'session']
 
 if os.name == 'nt':
-	from _wts import logmeoff as logout
+	from _wts import logmeoff as logmeout
 	from _wts import shutdown as shutdown
 
 elif os.name == 'posix':
 
-	def logout():
-		"""logout the current user's X session."""
-		# TODO: there is probably a better / cleaner way to do this.
-		# NOTE: On GNOME, this is best done by sending a log-out message
-		# to GDM via the /var/run/gdm_socket Unix domain socket. On X11
-		# without GNOME, this can be done by asking the background
-		# process to send SIGINT to the user's x-session-manager.
+	s = session()
+	if s == 'gnome': from _gnome import logmeout
+	elif s == 'kde': from _kde4 import logmeout
+	else:
+		def logout():
+			"""logout the current user's X session."""
+			# TODO: there is probably a better / cleaner way to do this.
+			# NOTE: On GNOME, this is best done by sending a log-out message
+			# to GDM via the /var/run/gdm_socket Unix domain socket. On X11
+			# without GNOME, this can be done by asking the background
+			# process to send SIGINT to the user's x-session-manager.
 
-		s = session()
-		# TODO: rewrite this code... make it work nicely
-		if s == 'gnome': os.system('gnome-session-save --logout-dialog')
-		else: os.system('killall --user %s --exact x-session-manager' % os.getlogin())
+			# TODO: rewrite this code... make it work nicely
+			os.system('killall --user %s --exact x-session-manager' % os.getlogin())
 
 
 	def shutdown():
 		"""shutdown the system now."""
 		os.system('shutdown -P now shutdown by evanescent')
 
-else: raise ImportError("operating system not supported")
+else: raise ImportError('operating system not supported')
 
 
 def session():
@@ -66,8 +68,8 @@ if __name__ == '__main__':
 	if len(sys.argv) == 2 and sys.argv[1] in __all__:
 
 		if sys.argv[1] == 'shutdown': shutdown()
-		elif sys.argv[1] == 'logout': logout()
+		elif sys.argv[1] == 'logmeout': logmeout()
 		elif sys.argv[1] == 'session': session()
 
-	else: print 'usage: %s logout | shutdown | session' % sys.argv[0]
+	else: print 'usage: %s logmeout | shutdown | session' % sys.argv[0]
 
