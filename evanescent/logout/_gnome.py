@@ -21,12 +21,12 @@ import dbus
 
 __all__ = ['logmeout']
 
-def logmeout():
+def logmeout(mode=0):
 	"""sends a logout command through dbus to the session. this function
 	works for gnome 2.0, and returns immediately. (it does not block)"""
 	# OLD but equivalent: os.system('gnome-session-save --logout-dialog')
 
-	# TODO: can the uint32 0 be changed to do something better or different?
+	# DOCS: http://www.gnome.org/~mccann/gnome-session/docs/gnome-session.html#org.gnome.SessionManager.Logout
 	"""trace from dbus-monitor:
 	method call sender=:1.543 -> dest=org.gnome.SessionManager path=/org/gnome/SessionManager; interface=org.gnome.SessionManager; member=Logout
 	uint32 0
@@ -36,11 +36,11 @@ def logmeout():
 		remote_object = bus.get_object('org.gnome.SessionManager', '/org/gnome/SessionManager')
 
 		# specify the dbus_interface in each call
-		remote_object.Logout(0, dbus_interface='org.gnome.SessionManager')
+		remote_object.Logout(mode, dbus_interface='org.gnome.SessionManager')
 
 		# or create an Interface wrapper for the remote object
 		#iface = dbus.Interface(remote_object, 'org.gnome.SessionManager')
-		#iface.Logout(0)
+		#iface.Logout(mode)
 
 		# introspection is automatically supported
 		#print remote_object.Introspect(dbus_interface='org.freedesktop.DBus.Introspectable')

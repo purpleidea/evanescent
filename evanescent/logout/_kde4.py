@@ -25,7 +25,13 @@ def logmeout():
 	"""sends a logout command through dbus to the session. this function
 	works for kde 4.0, and returns after the dialog ends. (it blocks)"""
 
-	# TODO: can the int32 's be changed to do something better or different?
+	# DOCS: http://www.purinchu.net/wp/2009/06/12/oh-fun/ (the best so far)
+	# Btw, the conclusion to the tale was: qdbus org.kde.ksmserver /KSMServer org.kde.KSMServerInterface.logout 0 0 0
+	# The three parameters were annoying for me to lookup so here it is:
+	# The real signature: KSMServerInterface::logout( KWorkSpace::ShutdownConfirm, KWorkSpace::ShutdownType, KWorkSpace::ShutdownMode ).
+	# The parameters are essentially the same as in KWorkSpace::canShutdown(), and the values are defined on that API page as well.
+	# One thing to note is that the final 0 (shutdown mode) is actually useless since we’re not requesting that a shutdown happen, only a logout.
+	# If we were requesting a shutdown, the shutdown mode is what selects whether to force a shutdown/reboot even if other people were also logged in, for instance.
 	"""dbus-monitor:
 	method call sender=:1.12 -> dest=org.kde.ksmserver path=/KSMServer; interface=org.kde.KSMServerInterface; member=logout
 	int32 -1
