@@ -52,7 +52,7 @@ else: raise ImportError('operating system not supported')
 
 def session():
 	"""returns the name of the currently running window manager/desktop."""
-	# this was adapter from:
+	# this was adapted from:
 	# http://gitweb.compiz-fusion.org/?p=fusion/misc/compiz-manager;a=blob;f=compiz-manager
 	# FIXME: write this code... make it work... test it.
 	# TODO: is there a better way to implement this ?
