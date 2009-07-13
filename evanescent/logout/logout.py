@@ -21,6 +21,19 @@ import os
 
 __all__ = ['logmeout', 'shutdown', 'session']
 
+def session():
+	"""returns the name of the currently running window manager/desktop."""
+	# this was adapted from:
+	# http://gitweb.compiz-fusion.org/?p=fusion/misc/compiz-manager;a=blob;f=compiz-manager
+	# FIXME: write this code... make it work... test it.
+	# TODO: is there a better way to implement this ?
+	if os.name == 'nt': return 'windows'
+	elif os.getenv('KDE_FULL_SESSION') == 'true': return 'kde'
+	elif os.getenv('GNOME_DESKTOP_SESSION_ID') != '': return 'gnome'
+	#elif #BASH: if xprop -root _DT_SAVE_MODE | grep ' = \"xfce4\"$' >/dev/null 2>&1; then XFCE
+	else: return ''
+
+
 if os.name == 'nt':
 	from _wts import logmeoff as logmeout
 	from _wts import shutdown as shutdown
@@ -48,19 +61,6 @@ elif os.name == 'posix':
 		os.system('shutdown -P now shutdown by evanescent')
 
 else: raise ImportError('operating system not supported')
-
-
-def session():
-	"""returns the name of the currently running window manager/desktop."""
-	# this was adapted from:
-	# http://gitweb.compiz-fusion.org/?p=fusion/misc/compiz-manager;a=blob;f=compiz-manager
-	# FIXME: write this code... make it work... test it.
-	# TODO: is there a better way to implement this ?
-	if os.name == 'nt': return 'windows'
-	elif os.getenv('KDE_FULL_SESSION') == 'true': return 'kde'
-	elif os.getenv('GNOME_DESKTOP_SESSION_ID') != '': return 'gnome'
-	#elif #BASH: if xprop -root _DT_SAVE_MODE | grep ' = \"xfce4\"$' >/dev/null 2>&1; then XFCE
-	else: return ''
 
 
 if __name__ == '__main__':

@@ -87,7 +87,7 @@ class eva:
 		self.icon_locks = []			# list of keys to unlock
 							# the icon hide ability,
 							# allowing it to vanish.
-		self.icon_visibility(False)		# hide it
+		self.unlock_icon(delay=0)		# hide it now
 
 		# build a menu
 		self.menu = gtk.Menu()
@@ -109,6 +109,7 @@ class eva:
 		quit.connect('activate', self.main_quit)
 		quit.show()
 		self.menu.append(quit)
+		self.menu.connect('deactivate', self.menu_deactivate)	# menu close
 
 		# TODO: should we have something happen? maybe an info bubble?
 		#self.icon.connect('activate', self.icon_activate)	# left
@@ -158,7 +159,7 @@ class eva:
 
 
 	# HANDLERS ############################################################
-	def notification_closed(self, n=None, now=False):
+	def notification_closed(self, n=None):
 		"""handler for pynotify dialog closed."""
 		# TODO: in example code, i've seen others execute the close()
 		# method of the dialog, on the closed event handler. don't know
@@ -168,9 +169,6 @@ class eva:
 		if n is None: n = self.n	# defaults, so anyone can call
 		self.icon.set_blinking(False)	# stop the blinking if any.
 		self.n.close()
-		# hide the tray icon now, or in say 15 seconds
-		if bool(now): self.icon_visibility(0, False)
-		else: self.icon_visibility(15, False)
 
 
 	def help_activate(self, widget):
@@ -186,6 +184,7 @@ class eva:
 			self.about.present()	# show the user where it is
 			return False	# don't make another dialog below.
 
+		self.lock_icon('aboutdialog')
 		self.about = gtk.AboutDialog()
 		self.about.set_program_name(self.name)
 		version = misc.get_version(config.SHAREDDIR)
@@ -206,6 +205,7 @@ class eva:
 		# TODO: remove this line when our icon isn't so ugly
 		self.about.set_logo(gtk.gdk.pixbuf_new_from_file_at_size(os.path.join(config.SHAREDDIR, 'evanescent.svg'), 32, 32))
 		self.about.run()
+		self.unlock_icon('aboutdialog')
 		# TODO: is the below statement correct? i think it is. NEEDSINFO
 		# turns out if you call about.destroy from somewhere else, then
 		# somehow it causes the about.run() function to unwait and move
@@ -228,12 +228,19 @@ class eva:
 		gtk.show_uri(dialog.get_screen(), link, 0)
 
 
-	def icon_popupmenu(self, icon, button, time):
+	def icon_popupmenu(self, status_icon, button, activate_time):
 		"""handler for status icon right click"""
-		self.icon_visibility(60)	# reschedule icon to hide in 60
+		# TODO: add a 60 second lock instead (make timed lock function)
+		self.lock_icon('popupmenu')
 		# old style below:
-		#self.menu.popup(None, None, gtk.status_icon_position_menu, button, time, self.icon)
-		self.menu.popup(None, None, None, button, time)
+		#self.menu.popup(None, None, gtk.status_icon_position_menu, button, activate_time, self.icon)
+		self.menu.popup(None, None, None, button, activate_time)
+
+
+	def menu_deactivate(self, menu=None):	# TODO: does this accept parameters?
+		"""run when popup menu is closed."""
+		self.log.debug('running menu_deactivate')
+		self.unlock_icon('popupmenu')	# hide the icon (or allow it to)
 
 
 	def icon_activate(self, icon, event=None):
@@ -248,7 +255,14 @@ class eva:
 		"""make my own quit signal handler."""
 		# TODO: if there is a better way to do this, someone tell me!
 		self.log.debug('running quit')
-		self.notification_closed(now=True)	# close any leftovers
+
+		self.notification_closed()	# close any leftovers
+
+		# on a quit, run all the unlock keys
+		for x in self.icon_locks:
+			if callable(x):
+				x()
+
 		if self.about is not None: self.about.destroy()
 		gtk.main_quit()
 
@@ -266,7 +280,9 @@ class eva:
 			# updated (presumably) so that subsequent calls to the
 			# attach_to_status_icon() function get better placement
 			# data. :(
-			self.icon_visibility(True)		# show this now!
+								# show this now!
+			self.lock_icon(self.notification_closed)
+
 			gobject.timeout_add(1000, self.msg, message, title, urgency, timeout, False)
 			return
 
@@ -304,7 +320,8 @@ class eva:
 		if WORKAROUND2: self.n.close()
 
 		# remove the icon get hidden timeout
-		self.icon_visibility(None)
+		# don't have to anymore since we have locking on the display
+		#self.icon_visibility(None)
 
 		# make the message
 		self.n.update(title, message)
@@ -318,7 +335,7 @@ class eva:
 		elif timeout is None: self.n.set_timeout(pynotify.EXPIRES_NEVER)
 		elif type(timeout) is int: self.n.set_timeout(timeout)
 
-		self.icon_visibility(True)	# show the tray icon
+		self.lock_icon(self.notification_closed)	# show the icon
 
 		if self.n.show():		# this fails if icon not visible
 
@@ -336,7 +353,7 @@ class eva:
 
 		else:
 			# hide the tray icon if the notification fails
-			self.icon_visibility(False)
+			self.unlock_icon(self.notification_closed)
 			self.log.error('pynotify failed to send a message.')
 
 			# fall back to sending a console message
@@ -383,32 +400,42 @@ class eva:
 			self.log.debug('skipping welcome message')
 
 
-	def unlock_icon(self, key):
+	def unlock_icon(self, key=None, delay=-1):
 		"""removes a lock from the list of icon visibility locks. it
 		will then schedule an icon hide if the lock list is empty.
 		otherwise we wait for a later unlock signal as the hide."""
 
-		result = self.icon_locks.get(key, 0)
+		if key is None: self.log.debug('hiding icon soon (if no lock)')
+		else: self.log.debug('removing lock: %s' % key)
 
-		self.icon_locks = dict([ (key,value) for key,value in self.icon_locks.items() if ? ])
-
-		# remove key from self.icon_locks
-		# TODO: <...>
+		if key is not None and key in self.icon_locks:
+			self.icon_locks.remove(key)
 
 		if len(self.icon_locks) == 0:
-			self.icon_visibility(seconds=15, visibility=False)
+			# TODO: have the seconds amount become a CONFIG.constant
+			# when there are no locks left, schedule a remove
+			if delay < 0:
+				self.icon_visibility(seconds=15, visibility=False)
+			else:
+				self.icon_visibility(seconds=int(delay), visibility=False)
+
+			return True
+		else:
+			return False
 
 
-	def lock_icon(self, key, time=0):
+	def lock_icon(self, key=None):
 		"""adds a lock to the list of icon visibility locks. this
 		requires a unique key for the identification of which lock we
 		own."""
-		# add the new lock with time as the value. if the key already
-		# exists, then set the time to be the max of the two times.
-		result = self.icon_locks.setdefault(key, time)
-		self.icon_locks[key] = max(time, result)
+		if key is None: self.log.debug('showing icon (no lock)')
+		else: self.log.debug('adding lock: %s' % key)
 
-		self.icon_visibility(seconds=0, visibility=True)	# show
+		if key is not None and key not in self.icon_locks:
+			self.icon_locks.append(key)
+
+		# and then show it now
+		self.icon_visibility(seconds=0, visibility=True)
 
 
 	def icon_visibility(self, seconds=0, visibility=False):
@@ -435,10 +462,12 @@ class eva:
 		# do it now
 		if seconds == 0:
 			if visibility:
-				if type(key) is not None:
-					self.icon_locks.append(key)
 				# show
 				self.icon.set_visible(visibility)
+				# if it goes on, schedule a time for it to go off
+				# TODO: have the seconds amount become a CONFIG.constant
+				self.icon_source_id = \
+				gobject.timeout_add(15*1000, self.icon_visibility, 0, False)
 
 			else:		# hide
 				if len(self.icon_locks) > 0:
@@ -451,7 +480,7 @@ class eva:
 		# or schedule it for later (recursively)
 		elif seconds > 0:
 			self.icon_source_id = \
-			gobject.timeout_add(seconds*1000, self.icon_visibility, 0, visibility, key)
+			gobject.timeout_add(seconds*1000, self.icon_visibility, 0, visibility)
 
 
 	def poke(self):
