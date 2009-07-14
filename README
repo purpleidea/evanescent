@@ -20,7 +20,10 @@ please send all comments, patches, thanks & insults to james@cs.mcgill.ca
 - faq:
 	1. Evanescent activates when I'm not idle! It's not noticing my mouse
 	clicks or mouse wheel.
-	A: http://www.jwz.org/xscreensaver/faq.html#mouse-idle
+	A: see: http://www.jwz.org/xscreensaver/faq.html#mouse-idle
+	note that i haven't actually seen this as a problem, since usually you
+	need to be completely idle for 1 hour+, however it is here as a good
+	reference.
 
 	2. I want the eva client to run and log out users, but I don't want the
 	evanescent backend shutting down the machine.
@@ -28,4 +31,8 @@ please send all comments, patches, thanks & insults to james@cs.mcgill.ca
 	the client side, they won't match, but when the evanescent daemon runs
 	since it's running as user `root' you can now exclude by this rule.
 
+	3. Can we add buttons to the pynotify dialogs?
+	A: No, in an effort to support a wide range of notification daemons and
+	strict usability requirements (ahem: https://wiki.ubuntu.com/NotifyOSD)
+	however, please send useful ideas/patches if you think otherwise.
 

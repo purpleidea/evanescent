@@ -1,13 +1,13 @@
 installing evanescent:
 
-on linux:
-
+- on linux:
 $ make install
 (this will run the distutils install target with sudo) 
-note: this will probably overwrite any exisiting /etc/evanescent.yaml.conf file
-that you have, so backup your old one beforehand.
+note: this *could* overwrite any exisiting /etc/evanescent.yaml.conf file that
+you have, so backup your old one beforehand please.
 
-on windows:
+
+- on windows:
 (this can be more involved, and is currently untested with version 0.2- this
 worked with version 0.1 if you want to try the old evanescent)
 1) you need to put the code in an appropriate folder.

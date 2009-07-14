@@ -1,67 +1,49 @@
-1) watch configuration file for changed exclusions through a FILE io watcher.
-if any changes are made, then kill the sleeping loop and make it run right away.
-look at comments in: def get_exclusions_changed_time()
+TODO:
+- these are sorted in terms of increasing likelihood to get done first
+- eg: the last item on the list is more likely to get finished, and removed
 
 
-2) add a way to add buttons via the msg function... our info dialog could then
-have help, don't bug me, or other useful buttons maybe? update: some notify
-daemons (newbuntu: 9.04) don't support this i believe. maybe avoid buttons if
-possible ?
+1) fix all the FIXME's/TODO's
 
 
-3) add some love to the config.py and associated managing of configurations.
+2) add support for gconf (eg: to replace yaml or add an additional parser, or
+perhaps in particular for the users config and not the daemon's)
 
 
-4) deb package
+3) add test cases! including check for license text, source formatting, etc...
 
 
-5) support for additional actions instead of logout?
-this should be stored in the .eva.conf.yaml file, and should be parsed by the
-evanescent-preferences program, similar in visual design to vino-preferences.
-do: apt-get source vino and have a look inside the capplet/ folder.
-
-
-6) option to have eva running, and to disable the shutdown backend. or viceversa
-note: to disable backend, just put an exclude on user `root' (or whatever user
-it runs as... see the faq for a better explanation)
-
-
-7) fix all the TODO's
-
-
-8) add test cases!
-
-
-9) add _() for gettext, get the gettext infrastructure cooking
-
-
-10) fix the icon size business.
-
-
-11) play a sound on idle (libcanberra?)
-
-
-12) dependency checking:
+4) dependency checking:
 package: libxss-dev
 package: yaml, pynotify
 
 
-13) setup.py script has hardcoded directories.
+5) option to have eva running, and to disable the shutdown backend or viceversa
+note: to disable backend, just put an exclude on user `root' (or whatever user
+it runs as... see the faq for a better explanation) However, this should be a
+hack solution since if we change the user the daemon runs as, then this setting
+gets scrapped. we want something more portable.
 
 
-14) logout.py needs a bit more love (just got some dbus up in there)
+6) evanescent-daemon should maybe run as user `daemon' or eva or some other user account to give it less priviledges.
 
 
-15) setup.py needs some love
+7) add _() for gettext, get the gettext infrastructure scripts going, cleanup messages
 
 
-16) evanescent-daemon should maybe run as user daemon or eva or some other user account to give it less priviledges.
+8) deb package
 
 
-17) add support for gconf (eg: to replace yaml or add an additional parser, or perhaps in particular for the users config and not the daemon's)
+9) setup.py needs some love
 
 
-18) countdown could update at more automatic times. eg: logarithmic? so when
+10) setup.py script has hardcoded directories.
+
+
+11) logout.py needs a bit more love (just got some dbus up in there)
+
+
+12) countdown could update at more automatic times. eg: logarithmic? so when
 you're at 5 minutes, update the time every 30 seconds. when you're at one minute
 update every 15? and when you're at 15 update every 5, and when you're at 5, 
 update every 1
@@ -77,7 +59,26 @@ update every 1
                    | >15m |
 
 
-19) ps: cool
-qdbus ca.mcgill.cs.dazzle.evanescent.client  /Client
+13) watch configuration file for changed exclusions through a FILE io watcher.
+if any changes are made, then kill the sleeping loop and make it run right away.
+look at comments in: def get_exclusions_changed_time()
 
+
+14) fix the icon size business.
+
+
+15) add some love to the config.py and associated managing of configurations.
+
+
+16) play a sound on idle (libcanberra?)
+
+
+17) support for additional actions instead of logout?
+this should be stored in the .eva.conf.yaml file, and should be parsed by the
+evanescent-preferences program, similar in visual design to vino-preferences.
+do: apt-get source vino and have a look inside the capplet/ folder.
+
+
+18) ps: cool
+qdbus ca.mcgill.cs.dazzle.evanescent.client  /Client
 
