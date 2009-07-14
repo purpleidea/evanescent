@@ -69,7 +69,7 @@ class evanescent_daemon:
 
 		# LOGGING #####################################################
 		obj = logginghelp.logginghelp(name=self.name, wordymode=config.WORDYMODE,
-		mylogpath=[config.MYLOGPATH, os.path.join(misc.get_home(), '.eva.log')],
+		mylogpath=[config.MYLOGPATH],
 		logserver=config.LOGSERVER, logformat=config.LOGFORMAT)
 
 		self.log = obj.get_log()	# main logger
