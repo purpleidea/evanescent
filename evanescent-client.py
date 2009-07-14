@@ -278,7 +278,7 @@ class eva:
 								# show this now!
 			self.lock_icon('notification')
 
-			gobject.timeout_add(1000, self.msg, message, title, urgency, timeout, False)
+			gobject.timeout_add_seconds(1, self.msg, message, title, urgency, timeout, False)
 			return
 
 		# initial checks, plus fix pynotify name conventions and reqs.
@@ -463,7 +463,7 @@ class eva:
 				self.icon.set_visible(visibility)
 				# if it goes on, schedule a time for it to go off
 				self.icon_source_id = \
-				gobject.timeout_add(config.HIDEDELAY*1000, self.icon_visibility, 0, False)
+				gobject.timeout_add_seconds(config.HIDEDELAY, self.icon_visibility, 0, False)
 
 			else:		# hide
 				if len(self.icon_locks) > 0:
@@ -476,7 +476,7 @@ class eva:
 		# or schedule it for later (recursively)
 		elif seconds > 0:
 			self.icon_source_id = \
-			gobject.timeout_add(seconds*1000, self.icon_visibility, 0, visibility)
+			gobject.timeout_add_seconds(seconds, self.icon_visibility, 0, visibility)
 
 
 	def poke(self):
@@ -490,7 +490,7 @@ class eva:
 			gobject.source_remove(self.source_id)
 
 		# add a new timeout so this gets called again
-		self.source_id = gobject.timeout_add(1*1000, self.loop)
+		self.source_id = gobject.timeout_add_seconds(1, self.loop)
 
 
 	def is_idle(self):
@@ -626,7 +626,7 @@ class eva:
 		self.log.info('going to sleep for %d seconds.' % sleep)
 
 		# add a new timeout so this gets called again
-		self.source_id = gobject.timeout_add(sleep*1000, self.loop)
+		self.source_id = gobject.timeout_add_seconds(sleep, self.loop)
 
 		# this loop ends, and we wait for the above rescheduled event
 		return False
@@ -677,7 +677,7 @@ class eva:
 		gobject.idle_add(self.welcome_info)
 
 		# start off our initial event source in one second from now.
-		self.source_id = gobject.timeout_add(1*1000, self.loop)
+		self.source_id = gobject.timeout_add_seconds(1, self.loop)
 
 		# run the main loop
 		gtk.main()

@@ -94,7 +94,7 @@ class evanescent_daemon:
 		self.mainloop = gobject.MainLoop()
 
 		# start off our initial event source in one second from now.
-		self.source_id = gobject.timeout_add(1*1000, self.loop)
+		self.source_id = gobject.timeout_add_seconds(1, self.loop)
 
 		# create daemon object
 		if os.name == 'posix':
@@ -183,7 +183,7 @@ class evanescent_daemon:
 		self.log.info('going to sleep for %d seconds.' % sleep)
 
 		# add a new timeout so this gets called again
-		self.source_id = gobject.timeout_add(sleep*1000, self.loop)
+		self.source_id = gobject.timeout_add_seconds(sleep, self.loop)
 
 		# this loop ends, and we wait for the above rescheduled event
 		return False
