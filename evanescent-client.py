@@ -166,9 +166,11 @@ class eva:
 		# if this makes any sense to do, but it doesn't seem to hurt at
 		# the moment. maybe someone can comment and suggest any changes
 		# or reasoning for this code. too bad the docs suck!
+		self.log.debug('running notification_closed handler')
 		if n is None: n = self.n	# defaults, so anyone can call
 		self.icon.set_blinking(False)	# stop the blinking if any.
 		self.n.close()
+		self.unlock_icon(self.notification_closed)
 
 
 	def help_activate(self, widget):
@@ -258,7 +260,11 @@ class eva:
 
 		self.notification_closed()	# close any leftovers
 
-		# on a quit, run all the unlock keys
+		# FIXME: does this make sense to have or not?
+		# (fixme because i want to use it or get it out of the code !)
+		# on a quit, run all the unlock keys. the keys can be specified
+		# so that they are functions to run, if for some reason we need
+		# to run something when a quit is suddenly triggered.
 		for x in self.icon_locks:
 			if callable(x):
 				x()
@@ -412,10 +418,9 @@ class eva:
 			self.icon_locks.remove(key)
 
 		if len(self.icon_locks) == 0:
-			# TODO: have the seconds amount become a CONFIG.constant
 			# when there are no locks left, schedule a remove
 			if delay < 0:
-				self.icon_visibility(seconds=15, visibility=False)
+				self.icon_visibility(seconds=config.HIDEDELAY, visibility=False)
 			else:
 				self.icon_visibility(seconds=int(delay), visibility=False)
 
@@ -428,11 +433,14 @@ class eva:
 		"""adds a lock to the list of icon visibility locks. this
 		requires a unique key for the identification of which lock we
 		own."""
-		if key is None: self.log.debug('showing icon (no lock)')
-		else: self.log.debug('adding lock: %s' % key)
+		if key is None:
+			self.log.debug('showing icon (no lock)')
+		elif key in self.icon_locks:
+			self.log.debug('lock (%s) exists!' % key)
 
 		if key is not None and key not in self.icon_locks:
 			self.icon_locks.append(key)
+			self.log.debug('adding lock: %s' % key)
 
 		# and then show it now
 		self.icon_visibility(seconds=0, visibility=True)
@@ -465,9 +473,8 @@ class eva:
 				# show
 				self.icon.set_visible(visibility)
 				# if it goes on, schedule a time for it to go off
-				# TODO: have the seconds amount become a CONFIG.constant
 				self.icon_source_id = \
-				gobject.timeout_add(15*1000, self.icon_visibility, 0, False)
+				gobject.timeout_add(config.HIDEDELAY*1000, self.icon_visibility, 0, False)
 
 			else:		# hide
 				if len(self.icon_locks) > 0:

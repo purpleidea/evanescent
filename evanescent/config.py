@@ -267,22 +267,23 @@ class config:
 
 default_config = {
 
-	'DEBUGMODE': False,			# debug mode
-	'WORDYMODE': True,			# talk a lot (implied if debugmode is on)
+	'DEBUGMODE': False,				# debug mode
+	'WORDYMODE': True,				# talk a lot (implied if debugmode is on)
 	'STARTMEUP': True,
 	# TODO: does it make sense to rename this to: THRESHOLD
-	'IDLELIMIT': 60*60,			# 1 hour before you're idle
-	'FASTSLEEP': 5,				# how often do we poll after the user has been warned
-	'COUNTDOWN': 5*60,			# five minute countdown before shutdown
-	'THECONFIG': '/etc/evanescent.conf.yaml',		# the config file
-	'LOGSERVER': ['logmaster', 514],			# syslog server
+	'IDLELIMIT': 60*60,				# 1 hour before you're idle
+	'FASTSLEEP': 5,					# how often do we poll after the user has been warned
+	'COUNTDOWN': 5*60,				# five minute countdown before shutdown
+	'THECONFIG': '/etc/evanescent.conf.yaml',	# the config file
+	'LOGSERVER': ['logmaster', 514],		# syslog server
 	'LOGFORMAT': '%(asctime)s %(levelname)-8s %(name)-17s %(message)s',
-	'MYLOGPATH': '/var/log/evanescent.log',			# path for local log file
-	'MYERRPATH': '/var/log/evanescent.FAIL',		# path for FAIL log file
-	'UPDATEMSG': True,					# update the impending logoff msg every fastsleep or not
-	'SHAREDDIR': '/usr/share/evanescent/',			# path to /usr/share/evanescent/
-	'DAEMONPID': '/var/run/evanescent.pid',			# pid file for daemon
-	'INITSLEEP': 900,					# initial sleep (15 min)
+	'MYLOGPATH': '/var/log/evanescent.log',		# path for local log file
+	'MYERRPATH': '/var/log/evanescent.FAIL',	# path for FAIL log file
+	'UPDATEMSG': True,				# update the impending logoff msg every fastsleep or not
+	'SHAREDDIR': '/usr/share/evanescent/',		# path to /usr/share/evanescent/
+	'DAEMONPID': '/var/run/evanescent.pid',		# pid file for daemon
+	'INITSLEEP': 900,				# initial sleep (15 min)
+	'HIDEDELAY': 15,				# number of seconds after last unlock/event till icon hides
 
 	#TODO: this option might get removed and replaced by smart polling; see: get_exclusions_changed_time
 	'SLEEPTIME': 10*60				# poll/check computer every 10 minutes
@@ -290,9 +291,12 @@ default_config = {
 }
 
 if os.name == 'nt':
+	# TODO: do these follow whatever the equivalent of a windows FHS would be.
 	default_config['THECONFIG'] = 'c:\WINDOWS\evanescent.conf.yaml'
-	default_config['SHAREDDIR'] = '?'	# FIXME
+	default_config['SHAREDDIR'] = 'c:\WINDOWS\system32\evanescent\\'
 	default_config['MYLOGPATH'] = 'c:\WINDOWS\system32\config\evanescent.log'
+	default_config['MYERRPATH'] = 'c:\WINDOWS\system32\config\evanescent.FAIL'
+	del default_config['DAEMONPID']
 
 
 expected_types = {
@@ -312,10 +316,15 @@ expected_types = {
 	'SHAREDDIR': str,
 	'DAEMONPID': str,
 	'INITSLEEP': int,
+	'HIDEDELAY': int,
 
 	#TODO: this option might get removed and replaced by smart polling; see: get_exclusions_changed_time
 	'SLEEPTIME': int
 }
+
+if os.name == 'nt':
+	del expected_types['DAEMONPID']
+
 
 # FIXME: it *always* looks at this file and *not* at what is specified in it.
 # fine for now, but we need to bootstrap the configure file in the future. do
@@ -337,32 +346,8 @@ obj.run(make=True)
 
 
 
-
 """
-# default constants
-STARTMEUP = True			# should evanescent run on this machine?
-
-
-INITSLEEP = 15*60			# initial sleep before idle on first startup of machine
-TDCOMMAND = 'shutdown -P now bye!'	# take-down command to run
-
-
-DAEMONPID = '/var/run/evanescent.pid'	# pid file for daemon
-MYERRPATH = '/var/log/evanescent.FAIL'	# path for FAIL log file
-
 ICONIMAGE = 'files/evanescent.svg'	# filename for `systray' icon
-
-SHAREDDIR = '/var/run/evanescent/'	# directory for shared evanescent/eva data
-
-
-if os.name == 'nt':
-	# TODO: verify these follow whatever the equivalent of a windows FHS would be.
-	TDCOMMAND = 'shutdown.exe -s -t 00 -c "bye!"'
-
-	DAEMONPID = None
-	MYLOGPATH = 'c:\WINDOWS\system32\config\evanescent.log'
-	MYERRPATH = 'c:\WINDOWS\system32\config\evanescent.FAIL'
-	SHAREDDIR = 'c:\WINDOWS\system32\evanescent\\'
 
 conf = yamlhelp.yamlhelp(filename=THECONFIG)
 try:
@@ -386,36 +371,10 @@ else: data = {}
 # convert all keys to uppercase and remove null values
 data = dict([ (key.upper(),value) for key,value in data.items() if not(value is None) ])
 
-# TODO: convert this block into a few clever lines and a loop
-if data.has_key('STARTMEUP'): STARTMEUP = bool(data['STARTMEUP'])
-if data.has_key('DEBUGMODE'): DEBUGMODE = bool(data['DEBUGMODE'])
-if data.has_key('WORDYMODE'): WORDYMODE = bool(data['WORDYMODE'])
-if data.has_key('IDLELIMIT'): IDLELIMIT =  int(data['IDLELIMIT'])
-if data.has_key('COUNTDOWN'): COUNTDOWN =  int(data['COUNTDOWN'])
-if data.has_key('SLEEPTIME'): SLEEPTIME =  int(data['SLEEPTIME'])
-if data.has_key('INITSLEEP'): INITSLEEP =  int(data['INITSLEEP'])
-if data.has_key('TDCOMMAND'): TDCOMMAND =  str(data['TDCOMMAND'])
-if data.has_key('THECONFIG'): THECONFIG =  str(data['THECONFIG'])
-if data.has_key('LOGSERVER'): LOGSERVER = (str(data['LOGSERVER'])[:str(data['LOGSERVER']).find(':')], int(str(data['LOGSERVER'])[str(data['LOGSERVER']).find(':')+1:]))
-if data.has_key('DAEMONPID'): DAEMONPID =  str(data['DAEMONPID'])
-if data.has_key('MYLOGPATH'): MYLOGPATH =  str(data['MYLOGPATH'])
-if data.has_key('MYERRPATH'): MYERRPATH =  str(data['MYERRPATH'])
-if data.has_key('LOGFORMAT'): LOGFORMAT =  str(data['LOGFORMAT'])
-if data.has_key('ICONIMAGE'): ICONIMAGE =  str(data['ICONIMAGE'])
-if data.has_key('READSLEEP'): READSLEEP =  int(data['READSLEEP'])
-if data.has_key('SHAREDDIR'): SHAREDDIR =  str(data['SHAREDDIR'])
-if data.has_key('STALETIME'): STALETIME =  int(data['STALETIME'])
-
-if DEBUGMODE:				# make our debugging go faster
-	IDLELIMIT = 30
-	COUNTDOWN = 45
-	FASTSLEEP = 10
-	INITSLEEP = 2*60		# 2 min
-	WORDYMODE = True
-
 # so that... hmmm TODO: i forget, haha.
 assert not((FASTSLEEP != 0) and (COUNTDOWN != 0) and FASTSLEEP >= COUNTDOWN), 'FASTSLEEP value should be smaller than COUNTDOWN'
 
 # so that messages don't go stale before they get a chance to be read
 assert READSLEEP+FASTSLEEP < STALETIME, 'READSLEEP+FASTSLEEP should be smaller than STALETIME'
 """
+
