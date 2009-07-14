@@ -67,18 +67,14 @@ look at comments in: def get_exclusions_changed_time()
 14) fix the icon size business.
 
 
-15) add some love to the config.py and associated managing of configurations.
-
-
-16) play a sound on idle (libcanberra?)
-
-
-17) support for additional actions instead of logout?
+15) support for additional actions instead of logout?
 this should be stored in the .eva.conf.yaml file, and should be parsed by the
 evanescent-preferences program, similar in visual design to vino-preferences.
 do: apt-get source vino and have a look inside the capplet/ folder.
 
 
-18) ps: cool
-qdbus ca.mcgill.cs.dazzle.evanescent.client  /Client
+16) add some love to the config.py and associated managing of configurations.
+
+
+17) play a sound on idle (libcanberra?)
 

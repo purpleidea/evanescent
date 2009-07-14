@@ -690,27 +690,7 @@ if __name__ == '__main__':
 	evaobj.main()
 
 
-"""
-import pygtk	# for pynotify cb actions?
-pygtk.require('2.0')
-
-def wow_cb(n, action):
-	#assert action == "wow"
-	print "You clicked WOW"
-	n.close()
-	gtk.main_quit()
-
-def help_cb(n, action):
-	assert action == "help"
-	print "You clicked Help"
-	n.close()
-	gtk.main_quit()
-
-def default_cb(n, action):
-	assert action == "default"
-	print "You clicked the default action"
-	n.close()
-	gtk.main_quit()
-
-"""
+# TODO: should this go anywhere?
+#import pygtk	# is this for pynotify cb actions?
+#pygtk.require('2.0')
 
