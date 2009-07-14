@@ -170,7 +170,7 @@ class eva:
 		if n is None: n = self.n	# defaults, so anyone can call
 		self.icon.set_blinking(False)	# stop the blinking if any.
 		self.n.close()
-		self.unlock_icon(self.notification_closed)
+		self.unlock_icon('notification')
 
 
 	def help_activate(self, widget):
@@ -255,20 +255,9 @@ class eva:
 
 	def main_quit(self, obj=None):
 		"""make my own quit signal handler."""
-		# TODO: if there is a better way to do this, someone tell me!
 		self.log.debug('running quit')
-
 		self.notification_closed()	# close any leftovers
-
-		# FIXME: does this make sense to have or not?
-		# (fixme because i want to use it or get it out of the code !)
-		# on a quit, run all the unlock keys. the keys can be specified
-		# so that they are functions to run, if for some reason we need
-		# to run something when a quit is suddenly triggered.
-		for x in self.icon_locks:
-			if callable(x):
-				x()
-
+		# TODO: if there is a better way to do this, someone tell me!
 		if self.about is not None: self.about.destroy()
 		gtk.main_quit()
 
@@ -287,7 +276,7 @@ class eva:
 			# attach_to_status_icon() function get better placement
 			# data. :(
 								# show this now!
-			self.lock_icon(self.notification_closed)
+			self.lock_icon('notification')
 
 			gobject.timeout_add(1000, self.msg, message, title, urgency, timeout, False)
 			return
@@ -341,7 +330,7 @@ class eva:
 		elif timeout is None: self.n.set_timeout(pynotify.EXPIRES_NEVER)
 		elif type(timeout) is int: self.n.set_timeout(timeout)
 
-		self.lock_icon(self.notification_closed)	# show the icon
+		self.lock_icon('notification')	# show the icon
 
 		if self.n.show():		# this fails if icon not visible
 
@@ -359,7 +348,7 @@ class eva:
 
 		else:
 			# hide the tray icon if the notification fails
-			self.unlock_icon(self.notification_closed)
+			self.unlock_icon('notification')
 			self.log.error('pynotify failed to send a message.')
 
 			# fall back to sending a console message
