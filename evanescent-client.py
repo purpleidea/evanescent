@@ -560,8 +560,10 @@ class eva:
 						message='you are being logged off due to inactivity',
 						urgency=pynotify.URGENCY_CRITICAL,
 						timeout=pynotify.EXPIRES_NEVER)
-						# do the actual logout
-						logout.logmeout()
+						# do the actual logout.
+						# the only consistent way is to
+						# force a logout
+						logout.logmeout(logout.LOGOUT_FORCE)
 						return False
 
 					else:

@@ -41,10 +41,24 @@ if os.name == 'nt':
 elif os.name == 'posix':
 
 	s = session()
-	if s == 'gnome': from _gnome import logmeout
-	elif s == 'kde': from _kde4 import logmeout
+	# TODO: can we fix the difference between _gnome and _kde4 logmeout
+	# functions so that they either both block until action or not ?
+	if s == 'gnome':
+		import _gnome
+		LOGOUT_CONFIRM = _gnome.LOGOUT_MODE_NORMAL
+		LOGOUT_FORCE = _gnome.LOGOUT_MODE_FORCE
+		logmeout = _gnome.logmeout
+
+	elif s == 'kde':
+		import _kde4
+		LOGOUT_CONFIRM = _kde4.SHUTDOWN_CONFIRM_YES
+		LOGOUT_FORCE = _kde4.SHUTDOWN_CONFIRM_NO
+		logmeout = _kde4.logmeout
+
 	else:
-		def logout():
+		LOGOUT_CONFIRM = None
+		LOGOUT_FORCE = None
+		def logout(mode=LOGOUT_CONFIRM):
 			"""logout the current user's X session."""
 			# TODO: there is probably a better / cleaner way to do this.
 			# NOTE: On GNOME, this is best done by sending a log-out message
@@ -58,6 +72,7 @@ elif os.name == 'posix':
 
 	def shutdown():
 		"""shutdown the system now."""
+		# TODO: could be replaced by dbus calls to the session manager
 		os.system('shutdown -P now shutdown by evanescent')
 
 else: raise ImportError('operating system not supported')
