@@ -144,7 +144,7 @@ class evanescent_daemon:
 		# considered idle and shuts itself down. idea for this feature
 		# from: andrewb@cs.mcgill.ca
 		uptime = misc.uptime()
-		self.logs['dialog'].debug('uptime is: %d' % uptime)
+		self.logs['dialog'].debug('uptime is: %d seconds' % uptime)
 		if config.INITSLEEP > 0 and uptime < config.INITSLEEP:
 			self.logs['dialog'].debug('machine just booted, excluding from shutdown')
 			sleep = config.INITSLEEP - uptime
