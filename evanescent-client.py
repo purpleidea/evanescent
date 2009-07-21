@@ -29,6 +29,8 @@ import math					# for math.ceil
 import gtk					# for status icon
 import pynotify					# for notifications
 import gobject					# for timeout_add, etc...
+# TODO: do a try/except on ImportError and if import fails, disable module
+import gio					# for File.monitor_file()
 import dbus					# for message passing
 import dbus.mainloop.glib
 
@@ -74,6 +76,16 @@ class eva:
 
 		# DBUS ########################################################
 		self.session_bus = None		# dbus system bus handle
+
+		# GIO #########################################################
+		self.monitor = None
+		f = gio.File(config.THECONFIG)
+		if f is not None:
+			self.monitor = f.monitor_file()
+		# attach handler to file changed event. gio uses inotify or fam
+		# if they are available, otherwise it falls back to polling but
+		# still wraps all of that inside of the changed event.
+		self.monitor.connect('changed', self.monitor_changed)
 
 		# GTK #########################################################
 		# about dialog
@@ -251,6 +263,21 @@ class eva:
 			self.win.hide()
 		else:
 			self.win.present()
+
+
+	def monitor_changed(self, filemonitor, file, other_file, event_type):
+		"""handler for the gio changed event."""
+		# if any events happen, might as well poke the loop and have it
+		# start over. this probably doesn't happen too often anyway to
+		# really cause a problem.
+		self.log.debug('config file changed event')
+		# if i test a few different text editors (vim, gedit) we end up
+		# catching at least one of the following events on each change
+		# that would affect evanescent, and thus would require a poke.
+		# ideally we'd like to only run one poke per set of events, but
+		# it seems as though the HINT doesn't work so well. BUG? FIXME?
+		if event_type in [gio.FILE_MONITOR_EVENT_CHANGES_DONE_HINT,  gio.FILE_MONITOR_EVENT_DELETED]:
+			self.poke()
 
 
 	def main_quit(self, obj=None):
@@ -621,7 +648,6 @@ class eva:
 				timeout=pynotify.EXPIRES_DEFAULT)
 				self.warned = False
 
-			#sleep = config.SLEEPTIME	# CHANGED IN FAVOUR OF:
 			sleep = max(self.timeleft(), self.get_exclusions_changed_time())
 
 		sleep = max(1, sleep)		# sleep for at least one second
@@ -638,12 +664,9 @@ class eva:
 		# TODO: make this ideally check the next time the exclusions are
 		# liable to include the user (by parsing and looking at date/time
 		# if possible. if this is too hard (which it could be) then sleep
-		# for some constant amount of time shown below. also, add a watch
-		# on the exclusions file, and if it changes, then wake up and see
-		# if the exclusions are now enough to let someone get logged off!
-		# TODO: the later part of this can maybe be done with pyinotify.
+		# for some constant amount of time shown below.
 		# TODO: i could potentially consult an algorithmist to see if it
-		# is worth it to write the former part of the above description.
+		# is worth it to write the above description.
 		return config.SLEEPTIME
 
 
