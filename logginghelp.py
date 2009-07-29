@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-    Logginghelp wrapper to simplify message logging for me.
+    Logginghelp wrapper to simplify implementation of message logging for me.
     Copyright (C) 2008  James Shubin, McGill University
     Written for McGill University by James Shubin <purpleidea@gmail.com>
 
@@ -22,10 +22,12 @@ import os
 import logging
 import logging.handlers
 
+DEFAULT_PATH = None
+
 class logginghelp:
 
-	def __init__(
-		self, name, wordymode=True, mylogpath=[], logserver=None,
+	def __init__(self,
+		name, wordymode=True, mylogpath=[DEFAULT_PATH], logserver=None,
 		logformat='%(asctime)s %(levelname)-8s %(name)-17s %(message)s',
 		hello=False):
 		"""this class is meant to ease the use of the python logging
@@ -39,6 +41,16 @@ class logginghelp:
 		self.mylogpath = mylogpath		# array of rotating logs
 		self.logserver = logserver		# for remote syslog
 		self.logformat = logformat		# the format for all
+
+		# add os specific default path to the processing
+		if os.name == 'nt': path = 'c:\WINDOWS\system32\config\%s.log'
+		elif os.name == 'posix': path = '/var/log/%s.log'
+		# if the True value is found in log path, then do a default log
+		if DEFAULT_PATH in self.mylogpath:
+			while DEFAULT_PATH in self.mylogpath:
+				self.mylogpath.remove(DEFAULT_PATH)
+			# add a log file at the default location for os
+			self.mylogpath.append(path % self.name)
 
 		# log objects
 		self.log = None			# main logger
