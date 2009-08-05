@@ -22,14 +22,31 @@ import os
 import logging
 import logging.handlers
 
-DEFAULT_PATH = None
+DEFAULT_PATH = True
+
+# from: http://svn.python.org/view/python/trunk/Lib/logging/__init__.py?r1=66211&r2=67511
+# the above code is under the license for the logging module. it is here until
+# it gets backported or this logginghelp module gets updated to a newer version.
+# Null handler
+
+class NullHandler(logging.Handler):
+	"""
+	This handler does nothing. It's intended to be used to avoid the
+	"No handlers could be found for logger XXX" one-off warning. This is
+	important for library code, which may contain code to log events. If a user
+	of the library does not configure logging, the one-off warning might be
+	produced; to avoid this, the library developer simply needs to instantiate
+	a NullHandler and add it to the top-level logger of the library module or
+	package.
+	"""
+	def emit(self, record):
+		pass
+
 
 class logginghelp:
 
-	def __init__(self,
-		name, wordymode=True, mylogpath=[DEFAULT_PATH], logserver=None,
-		logformat='%(asctime)s %(levelname)-8s %(name)-17s %(message)s',
-		hello=False):
+	def __init__(self, name, wordymode=True, stderrlog=True, mylogpath=[DEFAULT_PATH],
+		logserver=None, logformat=None, showhello=False, kerning=7):
 		"""this class is meant to ease the use of the python logging
 		class. the code assumes some sensible defaults, and if you want
 		something different, then this class can probably be easily
@@ -37,10 +54,12 @@ class logginghelp:
 
 		# some variables
 		self.name = name			# a name for this log
-		self.wordymode = bool(wordymode)	# extra speak
+		self.wordymode = wordymode		# extra speak
+		self.stderrlog = stderrlog
 		self.mylogpath = mylogpath		# array of rotating logs
 		self.logserver = logserver		# for remote syslog
 		self.logformat = logformat		# the format for all
+		self.kerning = kerning			# add extra kerning on
 
 		# add os specific default path to the processing
 		if os.name == 'nt': path = 'c:\WINDOWS\system32\config\%s.log'
@@ -52,6 +71,12 @@ class logginghelp:
 			# add a log file at the default location for os
 			self.mylogpath.append(path % self.name)
 
+		# default log format. 
+		if self.logformat is None:
+			# the `7' as a kerning default is arbitrary.
+			self.logformat = '%(asctime)s %(levelname)-8s %(name)-'\
+			+ str(self.kerning + len(self.name)) + 's %(message)s'
+
 		# log objects
 		self.log = None			# main logger
 		self.logh = {}			# log handles
@@ -61,7 +86,7 @@ class logginghelp:
 		self.__logging()
 
 		# send a hello message
-		if hello: self.log.debug('hello from: %s' % self.name)
+		if showhello: self.log.debug('hello from: %s' % self.name)
 
 
 	def __logging(self):
@@ -82,11 +107,22 @@ class logginghelp:
 		if self.wordymode: self.log.setLevel(logging.DEBUG)
 		else: self.log.setLevel(logging.WARN)
 
+		# add a nullhandler so that if no other handlers are present, we
+		# don't get the: `No handlers could be found for logger' message
+		# FIXME: the NullHandler is from the python code, and when it is
+		# backported to this python version (or if we use a later python
+		# version), then replace the NullHandler with the stock version.
+		self.logh['NullHandler'] = NullHandler(self.name)
+		self.logh['NullHandler'].setFormatter(formatter)
+		self.log.addHandler(self.logh['NullHandler'])
+		del self.logh['NullHandler']
+
 		# handler for stderr
-		self.logh['StreamHandler'] = logging.StreamHandler()
-		self.logh['StreamHandler'].setFormatter(formatter)
-		self.log.addHandler(self.logh['StreamHandler'])
-		del self.logh['StreamHandler']
+		if self.stderrlog:
+			self.logh['StreamHandler'] = logging.StreamHandler()
+			self.logh['StreamHandler'].setFormatter(formatter)
+			self.log.addHandler(self.logh['StreamHandler'])
+			del self.logh['StreamHandler']
 
 		# handler for global logging server
 		if self.logserver is not None:
@@ -158,7 +194,7 @@ class logginghelp:
 
 if __name__ == '__main__':
 	import sys
-	obj = logginghelp(__name__, hello=True)
+	obj = logginghelp(__name__, showhello=True, kerning=3)
 	log = obj.get_log()
 	log.info('argv: %s' % ', '.join(sys.argv))
 
