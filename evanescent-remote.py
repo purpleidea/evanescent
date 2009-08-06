@@ -22,7 +22,7 @@ import sys
 import optparse
 import dbus
 from evanescent.edbus import _service, _interface, _path	# pull strings
-import evanescent.config as config			# config module
+import evanescent.config as config				# config module
 import evanescent.misc as misc				# misc functions module
 
 def print_error(message):
@@ -41,6 +41,8 @@ def main():
 	'debug, test and demo the features of evanescent easily and directly.'
 	version = misc.get_version(config.SHAREDDIR)
 	parser = optparse.OptionParser(description=description, version=version)
+	parser.add_option('', '--authors', dest='authors', action='store_true', help='show the authors')
+	parser.add_option('', '--license', dest='license', action='store_true', help='show the license')
 	parser.add_option('', '--hello', dest='hello', type='string', metavar='<MSG>', help='send message to client')
 	parser.add_option('-q', '--quit', dest='quit', action='store_true', help='send quit to the client')
 	parser.add_option('-p', '--poke', dest='poke', action='store_true', default=True, help='poke the client [default]')
@@ -48,7 +50,7 @@ def main():
 	parser.add_option('-s', '--show', dest='show', type='int', metavar='<N>', help='cause the notification icon to appear for <N> seconds')
 	choices = {'true': True, 'false': False, 'reset': None}	# tristate
 	parser.add_option('', '--force-idle', dest='idle', choices=choices.keys(), metavar='<state>', help='force simulated idle state')
-	parser.add_option('', '--force-excluded', dest='excluded', choices=choices.keys(), metavar='<state>', help='force simulated excluded state')
+	parser.add_option('', '--force-excl', dest='excl', choices=choices.keys(), metavar='<state>', help='force simulated excluded state')
 
 	(options, args) = parser.parse_args()
 
@@ -88,13 +90,13 @@ def main():
 			iface.ResetForceIdleFlag()
 		else: iface.SetForceIdleFlag(choices[options.idle])
 
-	if options.excluded:
-		if choices[options.excluded] is None:
+	if options.excl:
+		if choices[options.excl] is None:
 			iface.ResetForceExcludedFlag()
-		else: iface.SetForceExcludedFlag(choices[options.excluded])
+		else: iface.SetForceExcludedFlag(choices[options.excl])
 
 	if options.poke:
-		iface.Poke()
+		iface.poke()
 
 	if options.hello:
 		iface.Hello(options.hello)
@@ -103,6 +105,13 @@ def main():
 		iface.Quit()
 		sys.exit()
 
+	if options.authors:
+		for x in misc.get_authors():
+			print x
+
+	if options.license:
+		# TODO: format this with a pager
+		print misc.get_license()
 
 if __name__ == '__main__':
 	main()

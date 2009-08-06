@@ -32,6 +32,7 @@ import gobject					# for timeout_add, etc...
 # TODO: do a try/except on ImportError and if import fails, disable module
 import gio					# for File.monitor_file()
 import dbus					# for message passing
+import dbus.service
 import dbus.mainloop.glib
 
 import evanescent.idle.idle as idle		# idle package
@@ -39,12 +40,16 @@ import evanescent.logout.logout as logout	# logout package
 import evanescent.config as config		# config module
 import evanescent.exclusions as exclusions	# exclusions module
 import evanescent.misc as misc			# misc functions module
-import evanescent.edbus as edbus		# evanescent dbus classes
 
 import logginghelp				# my wrapper for logging
 
 
-class eva:
+_service = 'ca.mcgill.cs.dazzle.evanescent.client'
+_interface = _service + '.Interface'
+_path = '/Client'
+
+
+class eva(dbus.service.Object):
 
 	# CONSTRUCTOR #########################################################
 	def __init__(self):
@@ -73,9 +78,6 @@ class eva:
 
 		# GOBJECT #####################################################
 		self.source_id = None		# loop timer id
-
-		# DBUS ########################################################
-		self.session_bus = None		# dbus system bus handle
 
 		# GIO #########################################################
 		self.monitor = None
@@ -128,7 +130,6 @@ class eva:
 		self.icon.connect('popup-menu', self.icon_popupmenu)	# right
 
 		# PYNOTIFY ####################################################
-
 		self.pynotify = True	# is pynotify active? assume yes for now
 
 		# try to turn on pynotify
@@ -168,6 +169,42 @@ class eva:
 		#self.n.add_action("help", "Help", self.notification_help)
 		#self.n.add_action("logout", "Logout", self.notification_logout)
 		#self.n.add_action("postpone", "Postpone", self.notification_postpone)
+
+		# DBUS ########################################################
+		self.session_bus = None		# dbus system bus handle
+
+		# make dbus happy
+		dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+
+		self.session_bus = dbus.SessionBus()		# make the bus
+		bus_name = dbus.service.BusName(_service, bus=self.session_bus)
+
+		# MAIN ########################################################
+		if config.DEBUGMODE: self.log.debug('debugmode: on')
+
+		# should evanescent be disabled, and exit right away?
+		if not(config.STARTMEUP):
+			self.log.debug('shouldn\'t start, now exiting.')
+			sys.exit()
+
+		# TODO: attach a signal for mouse movement to some function
+		# which updates the "your machine is idle" dialog whenever it
+		# is called. i think this is possible because of this link:
+		# http://library.gnome.org/devel/gobject/unstable/signal.html
+		# UPDATE: actually it might not be possible because it relies
+		# on the motion-notify-event of a gtkwidget object which we
+		# won't have access to. (there is just the icon and pynotify)
+
+		# run informational welcome message script.
+		gobject.idle_add(self.welcome_info)
+
+		# start off our initial event source in one second from now.
+		self.source_id = gobject.timeout_add_seconds(1, self.loop)
+
+		dbus.service.Object.__init__(self, bus_name, _path)
+
+		# GO ##########################################################
+		gtk.main()	# XXX ? here or elsewhere outside of init.
 
 
 	# HANDLERS ############################################################
@@ -280,6 +317,12 @@ class eva:
 			self.poke()
 
 
+	@dbus.service.method(_interface, in_signature='', out_signature='')
+	def Quit(self):
+		"""quit through dbus."""
+		self.main_quit()
+
+
 	def main_quit(self, obj=None):
 		"""make my own quit signal handler."""
 		self.log.debug('running quit')
@@ -290,6 +333,12 @@ class eva:
 
 
 	# MESSAGING ###########################################################
+	@dbus.service.method(_interface, in_signature='s', out_signature='')
+	def Hello(self, message):
+		"""Hello method for dbus."""
+		self.msg(str(message), title='incoming message')
+
+
 	def msg(self, message, title=None, urgency=None, timeout=None, WORKAROUND=True, WORKAROUND2=True):
 		"""more general message wrapper around `write' and pynotify."""
 
@@ -309,7 +358,7 @@ class eva:
 			return
 
 		# initial checks, plus fix pynotify name conventions and reqs.
-		assert type(message) is str		# we need at least one string
+		assert isinstance(message, str)	# we need at least one string
 
 		# if there is no title, we need at least one char in message
 		if title is None:
@@ -422,6 +471,35 @@ class eva:
 			self.log.debug('skipping welcome message')
 
 
+	@dbus.service.method(_interface, in_signature='', out_signature='')
+	def poke(self):
+		"""abort any current sleeping loop and re-run."""
+		# kill any current sleeping loop
+		# (we know it *must* be sleeping, because a gobject mainloop
+		# is single threaded and for this code to run, it has to get
+		# out of that function and thus is waiting for new timeout.)
+		self.log.info('running poke')
+		if type(self.source_id) is int:
+			gobject.source_remove(self.source_id)
+
+		# add a new timeout so this gets called again
+		self.source_id = gobject.timeout_add_seconds(1, self.loop)
+
+
+	@dbus.service.method(_interface, in_signature='i', out_signature='')
+	def ShowMenu(self, seconds):
+		"""cause the notification icon to display for <n> seconds. the
+		icon will auto hide itself in <n> seconds if the <n> value is
+		greater than 0."""
+		self.log.debug('icon made visible through dbus')
+		self.icon_visibility(True)	# show it now
+		# then, potentially hide it in a bit
+		#seconds = int(seconds)
+		if seconds > 0:
+			self.log.debug('icon will hide in %d second(s).' % seconds)
+			self.icon_visibility(seconds=seconds, visibility=False)
+
+
 	def unlock_icon(self, key=None, delay=-1):
 		"""removes a lock from the list of icon visibility locks. it
 		will then schedule an icon hide if the lock list is empty.
@@ -506,18 +584,35 @@ class eva:
 			gobject.timeout_add_seconds(seconds, self.icon_visibility, 0, visibility)
 
 
-	def poke(self):
-		"""abort any current sleeping loop and re-run."""
-		# kill any current sleeping loop
-		# (we know it *must* be sleeping, because a gobject mainloop
-		# is single threaded and for this code to run, it has to get
-		# out of that function and thus is waiting for new timeout.)
-		self.log.info('running poke')
-		if type(self.source_id) is int:
-			gobject.source_remove(self.source_id)
+	# IDLE ################################################################
+	@dbus.service.method(_interface, in_signature='b', out_signature='')
+	def SetForceIdleFlag(self, flag):
+		"""sets the boolean force_idle flag."""
+		flag = bool(flag)	# since it comes in differently
+		self.log.debug('force_idle flag received through dbus')
+		self.force_idle = flag
 
-		# add a new timeout so this gets called again
-		self.source_id = gobject.timeout_add_seconds(1, self.loop)
+
+	@dbus.service.method(_interface, in_signature='', out_signature='')
+	def ResetForceIdleFlag(self):
+		"""reset the force_idle flag."""
+		self.log.debug('resetting force_idle flag through dbus')
+		self.force_idle = None
+
+
+	@dbus.service.method(_interface, in_signature='b', out_signature='')
+	def SetForceExcludedFlag(self, flag):
+		"""sets the boolean force_excluded flag."""
+		flag = bool(flag)	# since it comes in differently
+		self.log.debug('force_excluded flag received through dbus')
+		self.force_excluded = flag
+
+
+	@dbus.service.method(_interface, in_signature='', out_signature='')
+	def ResetForceExcludedFlag(self):
+		"""reset the force_excluded flag."""
+		self.log.debug('resetting force_excluded flag through dbus')
+		self.force_excluded = None
 
 
 	def is_idle(self):
@@ -670,47 +765,8 @@ class eva:
 		return config.SLEEPTIME
 
 
-	# MAIN ################################################################
-	def main(self):
-		"""main to run for the class."""
-
-		if config.DEBUGMODE: self.log.debug('debugmode: on')
-
-		# should evanescent be disabled, and exit right away?
-		if not(config.STARTMEUP):
-			self.log.debug('shouldn\'t start, now exiting.')
-			sys.exit()
-
-		# TODO: attach a signal for mouse movement to some function
-		# which updates the "your machine is idle" dialog whenever it
-		# is called. i think this is possible because of this link:
-		# http://library.gnome.org/devel/gobject/unstable/signal.html
-		# UPDATE: actually it might not be possible because it relies
-		# on the motion-notify-event of a gtkwidget object which we
-		# won't have access to. (there is just the icon and pynotify)
-
-		# make dbus happy
-		dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
-
-		self.session_bus = dbus.SessionBus()		# make the bus
-		bus_name = dbus.service.BusName(edbus._service, bus=self.session_bus)
-
-		# we pass the self variable to the class as a ref (shown below)
-		edbus.Eva(self, bus_name, edbus._path)		# register dbus
-
-		# run informational welcome message script.
-		gobject.idle_add(self.welcome_info)
-
-		# start off our initial event source in one second from now.
-		self.source_id = gobject.timeout_add_seconds(1, self.loop)
-
-		# run the main loop
-		gtk.main()
-
-
 if __name__ == '__main__':
 	evaobj = eva()
-	evaobj.main()
 
 
 # TODO: should this go anywhere?
