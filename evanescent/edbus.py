@@ -68,8 +68,6 @@ class Eva(dbus.service.Object):
 		self.self.log.debug('icon made visible through dbus')
 		self.self.icon_visibility(True)	# show it now
 		# then, potentially hide it in a bit
-		print seconds
-		print type(seconds)
 		#seconds = int(seconds)
 		if seconds > 0:
 			self.self.log.debug('icon will hide in %d second(s).' % seconds)
