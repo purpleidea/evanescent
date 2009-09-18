@@ -21,13 +21,17 @@ import os
 import sys		# for sys.modules
 import yamlhelp
 
-
 # TODO: clean up this file and in the future add pycurl
 # TODO/FIXME: maybe we should be rewriting the whole config parser module.
 # make it depend on a better yamlhelp module. the idea should be that yaml_load
 # opens up the yaml file. you play around with the data stored somewhere. and
 # then you yaml_save and it gets stuck back into the file. no error raising or
 # any mess...
+
+# DBUS
+_service = 'ca.mcgill.cs.dazzle.evanescent.client'
+_interface = _service + '.Interface'
+_path = '/Client'
 
 #BOOTSTRAP could be a useful config file name
 #import atexit

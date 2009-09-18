@@ -21,7 +21,7 @@ import os
 import sys
 import optparse
 import dbus
-from evanescent.edbus import _service, _interface, _path	# pull strings
+from evanescent.config import _service, _interface, _path	# pull strings
 import evanescent.config as config				# config module
 import evanescent.misc as misc				# misc functions module
 

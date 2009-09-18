@@ -43,11 +43,7 @@ import evanescent.misc as misc			# misc functions module
 
 import logginghelp				# my wrapper for logging
 
-
-_service = 'ca.mcgill.cs.dazzle.evanescent.client'
-_interface = _service + '.Interface'
-_path = '/Client'
-
+from evanescent.config import _service, _interface, _path	# pull strings
 
 class eva(dbus.service.Object):
 
@@ -671,6 +667,7 @@ class eva(dbus.service.Object):
 				if self.warned:
 
 					# how long have we been warned for ?
+					# FIXME: could we replace the datetime stuff with gobject.get_current_time() ?
 					timedelta = datetime.datetime.today() - self.warned
 					self.delta = int(math.ceil(timedelta.seconds + (timedelta.days*24*60*60) + (timedelta.microseconds*(1/1000000))))
 					timeleft = config.COUNTDOWN - self.delta

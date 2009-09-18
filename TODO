@@ -72,3 +72,13 @@ do: apt-get source vino and have a look inside the capplet/ folder.
 
 16) play a sound on idle (libcanberra?)
 
+
+17) replace some of the evanescent datetime code with gobject.get_current_time() ?
+
+18) change config directories to use xdg and $HOME/.config/
+we should probably wait until python-gobject 2.18 in karmic:
+http://packages.ubuntu.com/python-gobject
+
+
+19) add i18n support, and integrate with transifex business.
+
