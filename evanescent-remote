@@ -1,0 +1,7 @@
+#!/usr/bin/python
+
+import evanescent.evanescent_remote
+if __name__ == '__main__':
+	obj = evanescent.evanescent_remote.evanescent_remote()
+	obj.main()
+

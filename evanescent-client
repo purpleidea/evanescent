@@ -1,0 +1,7 @@
+#!/usr/bin/python
+
+import evanescent.evanescent_client
+if __name__ == '__main__':
+	obj = evanescent.evanescent_client.evanescent_client()
+	obj.main()
+

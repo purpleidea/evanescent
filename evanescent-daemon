@@ -1,0 +1,8 @@
+#!/usr/bin/python
+
+import evanescent.evanescent_daemon
+if __name__ == '__main__':
+	# instantiating the object causes it to run
+	obj = evanescent.evanescent_daemon.evanescent_daemon()
+	obj.main()
+

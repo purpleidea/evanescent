@@ -46,44 +46,58 @@ clean: force
 	rm -r dist/ 2> /dev/null || true
 
 
-install:
+install: clean
 	# this runs distutils for the install
+	python setup.py build
 	sudo python setup.py install
 
 
 uninstall:
 
 	# remove what distutils installs
-	rm -r /usr/lib/python2.5/site-packages/evanescent/ 2> /dev/null || true
-	rm -r /usr/share/evanescent/ 2> /dev/null || true
-	rm /usr/bin/evanescent-daemon.py 2> /dev/null || true
-	rm /usr/bin/evanescent-remote.py 2> /dev/null || true
-	rm /usr/bin/evanescent-client.py 2> /dev/null || true
-	rm /usr/lib/python2.5/site-packages/yamlhelp.py 2> /dev/null || true
-	rm /usr/lib/python2.5/site-packages/yamlhelp.pyc 2> /dev/null || true
-	rm /usr/lib/python2.5/site-packages/logginghelp.py 2> /dev/null || true
-	rm /usr/lib/python2.5/site-packages/logginghelp.pyc 2> /dev/null || true
-	rm /etc/event.d/evanescent.upstart 2> /dev/null || true
-	rm /etc/xdg/autostart/evanescent.desktop 2> /dev/null || true
-	rm /usr/share/dbus-1/services/ca.mcgill.cs.dazzle.evanescent.client.service 2> /dev/null || true
-	rm /etc/evanescent.conf.yaml.example 2> /dev/null || true
+	sudo rm -r /usr/lib/python2.5/site-packages/evanescent/ 2> /dev/null || true
+	sudo rm -r /usr/share/evanescent/ 2> /dev/null || true
+	sudo rm /usr/bin/evanescent-daemon 2> /dev/null || true
+	sudo rm /usr/bin/evanescent-remote 2> /dev/null || true
+	sudo rm /usr/bin/evanescent-client 2> /dev/null || true
+	sudo rm /usr/lib/python2.5/site-packages/yamlhelp.py* 2> /dev/null || true
+	sudo rm /usr/lib/python2.5/site-packages/logginghelp.py* 2> /dev/null || true
+	sudo rm /etc/event.d/evanescent.upstart 2> /dev/null || true
+	sudo rm /etc/xdg/autostart/evanescent.desktop 2> /dev/null || true
+	sudo rm /usr/share/dbus-1/services/ca.mcgill.cs.dazzle.evanescent.client.service 2> /dev/null || true
+	sudo rm /etc/evanescent.conf.yaml.example 2> /dev/null || true
 	# egg files:
-	rm /usr/lib/python2.5/site-packages/evanescent-* 2> /dev/null || true
+	sudo rm /usr/lib/python2.5/site-packages/evanescent-* 2> /dev/null || true
 
 
 purge: uninstall
 	# these get created by evanescent, remove them on a purge
-	rm $(HOME)/.eva.conf.yaml 2> /dev/null || true
-	rm $(HOME)/.eva.log 2> /dev/null || true
-	rm /var/log/evanescent.log 2> /dev/null || true
-	rm /etc/evanescent.conf.yaml 2> /dev/null || true
+	# FIXME: these two should get the path from xdg
+	rm -rf $(HOME)/.config/eva/ 2> /dev/null || true	# eva.conf.yaml
+	rm -rf $(HOME)/.cache/eva/ 2> /dev/null || true		# eva.log
+	sudo rm /var/log/evanescent.log 2> /dev/null || true
+	sudo rm /etc/evanescent.conf.yaml 2> /dev/null || true
 
 
 # make a package for distribution
 tar: clean
 
-	cd .. && tar --exclude=old --exclude=play --exclude=.swp --exclude=.bzr --exclude=tar --exclude=packages --bzip2 -cf evanescent.tar.bz2 evanescent/
-	mv ../evanescent.tar.bz2 ./tar/evanescent-$(VERSION).tar.bz2
+	# split this up into multiple lines for readability
+	cd ..; \
+	tar	--exclude=old \
+		--exclude=play \
+		--exclude=.swp \
+		--exclude=.bzr \
+		--exclude=tar \
+		--bzip2 \
+		-cf evanescent.tar.bz2 evanescent/
+
+	if [ -e ./tar/evanescent-$(VERSION).tar.bz2 ]; then \
+		echo version $(VERSION) already exists; \
+		rm ../evanescent.tar.bz2; \
+	else \
+		mv ../evanescent.tar.bz2 ./tar/evanescent-$(VERSION).tar.bz2; \
+	fi
 
 
 # make a package for windows...
@@ -98,15 +112,11 @@ windows:
 force: ;
 
 
-# how do i fix this so that the pwd's are the same and you get persistence in makefiles?
-TODO:
+# NOTE: this is how you would get persistence in makefiles:
+example: force
+	pwd; \
+	cd play; \
 	pwd
-	cd windows
-	pwd
-
-
-TODO2:
-	pwd; cd windows; pwd
 
 
 # unix2dos file ending conversion

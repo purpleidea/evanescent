@@ -49,12 +49,12 @@ import os					# for posix/nt detection
 import sys					# for sys.exit()
 import gobject					# for mainloop
 import errno					# for standard errno system symbols
-import evanescent.daemon as daemon		# i wrote this one
-import evanescent.config as config		# i wrote this one
-import evanescent.logout.logout as logout	# logout in logout package
-import evanescent.logout.users as users		# users in logout package
-import evanescent.exclusions as exclusions	# exclusions module
-import evanescent.misc as misc			# miscellaneous such as uptime
+import daemon					# i wrote this one
+import config					# i wrote this one
+import logout.logout as logout			# logout in logout package
+import logout.users as users			# users in logout package
+import exclusions				# exclusions module
+import misc					# miscellaneous such as uptime
 import logginghelp				# i wrote this one
 
 
@@ -191,6 +191,6 @@ class evanescent_daemon:
 
 if __name__ == '__main__':
 
-	e = evanescent_daemon()
-	e.main()
+	obj = evanescent_daemon()
+	obj.main()
 

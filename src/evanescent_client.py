@@ -34,18 +34,19 @@ import gio					# for File.monitor_file()
 import dbus					# for message passing
 import dbus.service
 import dbus.mainloop.glib
+import xdg.BaseDirectory
 
-import evanescent.idle.idle as idle		# idle package
-import evanescent.logout.logout as logout	# logout package
-import evanescent.config as config		# config module
-import evanescent.exclusions as exclusions	# exclusions module
-import evanescent.misc as misc			# misc functions module
+import misc					# misc functions module
+import config					# config module
+import exclusions				# exclusions module
+import idle.idle as idle			# idle package
+import logout.logout as logout			# logout package
 
 import logginghelp				# my wrapper for logging
 
-from evanescent.config import _service, _interface, _path	# pull strings
+from config import _service, _interface, _path	# pull strings
 
-class eva(dbus.service.Object):
+class evanescent_client(dbus.service.Object):
 
 	# CONSTRUCTOR #########################################################
 	def __init__(self):
@@ -65,9 +66,25 @@ class eva(dbus.service.Object):
 		#self.pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(self.iconfile, width?, height?)
 		self.pixbuf = gtk.gdk.pixbuf_new_from_file(self.iconfile)
 
+		# XDG #########################################################
+		self.__conf = xdg.BaseDirectory.load_first_config(self.name) or\
+		xdg.BaseDirectory.save_config_path(self.name)
+		#self.__data = (
+		#	list(xdg.BaseDirectory.load_data_paths(self.name)) or
+		#	[xdg.BaseDirectory.save_data_path(self.name)]
+		#)[0]	# take the first element in the resultant list
+		self.__cache = os.path.join(xdg.BaseDirectory.xdg_cache_home, self.name)
+		try:
+			os.makedirs(self.__cache)
+		except OSError:
+			self.__cache = None
+
 		# LOGGING #####################################################
-		obj = logginghelp.logginghelp(name=self.name, wordymode=config.WORDYMODE,
-		mylogpath=[config.MYLOGPATH, os.path.join(misc.get_home(), '.eva.log')],
+		mylogpath=[config.MYLOGPATH]
+		if self.__cache is not None:
+			mylogpath.append(os.path.join(self.__cache, 'eva.log'))
+		obj = logginghelp.logginghelp(name=self.name,
+		wordymode=config.WORDYMODE, mylogpath=mylogpath,
 		logserver=config.LOGSERVER, logformat=config.LOGFORMAT)
 
 		self.log = obj.get_log()	# main logger
@@ -199,8 +216,11 @@ class eva(dbus.service.Object):
 
 		dbus.service.Object.__init__(self, bus_name, _path)
 
-		# GO ##########################################################
-		gtk.main()	# XXX ? here or elsewhere outside of init.
+
+	# MAIN ################################################################
+	def main(self):
+		"""main function to kick it all off."""
+		gtk.main()
 
 
 	# HANDLERS ############################################################
@@ -442,7 +462,7 @@ class eva(dbus.service.Object):
 
 		# TODO: add an option that if true, *always* welcomes the user.
 		# useful for people who like to remember that eva is running (also good for debugging)
-		filename = os.path.join(home, '.eva.conf.yaml')
+		filename = os.path.join(self.__conf, 'eva.conf.yaml')
 		defaults = {'WELCOMEME': True}
 		expected = {'WELCOMEME': bool}
 		conf = config.config(
@@ -763,7 +783,8 @@ class eva(dbus.service.Object):
 
 
 if __name__ == '__main__':
-	evaobj = eva()
+	obj = eva()
+	obj.main()
 
 
 # TODO: should this go anywhere?
