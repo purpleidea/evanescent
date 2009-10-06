@@ -137,22 +137,16 @@ def main(argv):
 	namespace = {}
 	b = os.path.basename(argv[0])
 
+	# TODO: add -x or whichever magic we should to do stuff like auto gzip...
 	if len(argv) >= 3 and argv[1] in ['-m', '-x']:
 		arg = argv.pop(1)
 		if arg == '-m':
 			# subprocess is pro magic. it's amazing that it works!
 			# if you pay attention, the docs turn out to be great!
 			# see: http://docs.python.org/library/subprocess.html
-			p1 = subprocess.Popen(
-				"./%s '%s' " % (b, "' '".join(argv[1:3])),
-				shell=True, stdout=subprocess.PIPE
-			)
-			p2 = subprocess.Popen(
-				["man --local-file -"],
-				shell=True, stdin=p1.stdout
-			)
-			# wait for man to exit before continuing...
-			sts = os.waitpid(p2.pid, 0)	# very important
+			p1 = subprocess.Popen(['python', b] + argv[1:3], stdout=subprocess.PIPE)
+			p2 = subprocess.Popen(['man', '--local-file', '-'], stdin=p1.stdout)
+			sts = os.waitpid(p2.pid, 0)	# important to wait!
 			sys.exit()
 
 	if len(argv) == 3:
