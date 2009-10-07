@@ -1,10 +1,27 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+"""
+    Manhelp wrapper to simplify creation of man pages.
+    Copyright (C) 2009  James Shubin, McGill University
+    Written for McGill University by James Shubin <purpleidea@gmail.com>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
 
 # NOTE: a useful guide to actually writing man pages can be found at:
 # http://www.schweikhardt.net/man_page_howto.html
-# NOTE: nroff man page output can be viewed by piping it to man like this:
-# ./<generate_nroff> | man -l -
+
 # TODO: manhelp could be extended to aid in actually generating nroff, e.g.:
 # http://andialbrecht.wordpress.com/2009/03/17/creating-a-man-page-with-distutils-and-optparse/
 
@@ -127,18 +144,30 @@ def acquire_namespace(namespace, verbose=False):
 
 def main(argv):
 	"""main function for running manhelp as a script utility."""
-	# run man with the output from the template
+	# NOTE: if you run this program as: `./manhelp.py -m', you get -m to
+	# stdout. this is because it assumes -m is the template. NOT a bug.
+	def usage():
+		"""print usage information."""
+		# usage and other cool tips
+		print _('usage: ./%s template [namespace] (nroff to stdout)' % b)
+		print _('extra: ./%s -m template [namespace] (nroff to man)' % b)
+		print _('extra: ./%s -z template [namespace] (write gz man)' % b)
+		#print _('extra: ./%s template [namespace] | gzip -f > gzoutput.gz' % b)
+
 	if not os.name == 'posix':
-		# TODO: maybe we could add something different for windows?
-		print >> sys.stderr, 'sorry, your os cannot display man pages.'
+		# TODO: maybe we could add something for windows?
+		print >> sys.stderr, _('sorry, your os cannot display man pages.')
 		sys.exit(1)
 
 	template = ''
 	namespace = {}
 	b = os.path.basename(argv[0])
 
-	# TODO: add -x or whichever magic we should to do stuff like auto gzip...
-	if len(argv) >= 3 and argv[1] in ['-m', '-x']:
+	# TODO: in the future, when manhelp generates nroff, we should add a gz
+	# option that takes the man section number and writes out the name.#.gz
+	# filename into the current directory. it makes sense to wait for nroff
+	# generation so that we can get the name and section number dynamically
+	if len(argv) >= 3 and argv[1] in ['-m', '-z']:
 		arg = argv.pop(1)
 		if arg == '-m':
 			# subprocess is pro magic. it's amazing that it works!
@@ -147,7 +176,10 @@ def main(argv):
 			p1 = subprocess.Popen(['python', b] + argv[1:3], stdout=subprocess.PIPE)
 			p2 = subprocess.Popen(['man', '--local-file', '-'], stdin=p1.stdout)
 			sts = os.waitpid(p2.pid, 0)	# important to wait!
-			sys.exit()
+		elif arg == '-z':
+			raise NotImplementedError('auto generating gzip man pages is yet to come!')
+
+		sys.exit()
 
 	if len(argv) == 3:
 		namespace = acquire_namespace(argv[2], verbose=True)
@@ -156,12 +188,8 @@ def main(argv):
 		template = argv[1]
 		obj = manhelp(template, namespace)
 		obj.tostdout()
-
 	else:
-		# usage and other cool tips
-		print 'usage: ./%s template [namespace]' % b
-		print 'extra: ./%s template [namespace] | man -l -' % b
-		print 'extra: ./%s template [namespace] | gzip -f > gzoutput.gz' % b
+		usage()
 
 
 if __name__ == '__main__':
