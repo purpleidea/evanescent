@@ -30,6 +30,7 @@ import sys
 import gzip
 import subprocess
 import Cheetah.Template
+import Cheetah.NameMapper
 _ = lambda x: x			# add fake gettext function until i fix up i18n
 
 __all__ = ['manhelp', 'acquire_namespace']
@@ -42,7 +43,15 @@ class manhelp:
 		self.namespace = namespace
 
 		# process template
-		self.groff = Cheetah.Template.Template(template, searchList=[namespace])
+		if os.path.isfile(self.template):
+			self.groff = Cheetah.Template.Template(file=template, searchList=[namespace])
+		else:
+			self.groff = Cheetah.Template.Template(template, searchList=[namespace])
+		try:
+			self.groff = str(self.groff)	# runs the NameMapper
+		except Cheetah.NameMapper.NotFound, e:
+			print >> sys.stderr, _('namespace error: %s' % e)
+			self.groff = ''
 
 
 	def tostdout(self):
