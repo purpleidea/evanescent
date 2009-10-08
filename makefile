@@ -125,6 +125,7 @@ tar: clean
 		rm ../evanescent.tar.bz2; \
 	else \
 		mv ../evanescent.tar.bz2 ./tar/evanescent-$(VERSION).tar.bz2; \
+		echo 'tar created successfully in tar/'; \
 	fi
 
 
