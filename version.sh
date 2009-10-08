@@ -14,7 +14,7 @@ function usage() {
 # check usage
 if [ $# -eq 0 ]; then
 	# prompt for a version
-	read -p 'version series: ' NEWVERSION
+	read -p 'Please enter the version series for this commit: ' NEWVERSION
 elif ([ ! $# -eq 1 ] && [ ! $# -eq 2 ]) ||
 [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
 	usage

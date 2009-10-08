@@ -60,7 +60,10 @@ clean: force
 # it takes care of running version.sh, etc...
 commit: clean force
 	./version.sh
-	echo "now run: `bzr commit -m '[comment]'`, `make tar` and `make www`"
+	echo "you now probably want to run:"
+	echo "$ bzr commit -m '<comment>'"
+	echo "$ make tar"
+	echo "$ make www"
 
 
 # this runs distutils for the install
