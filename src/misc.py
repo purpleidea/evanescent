@@ -82,20 +82,33 @@ def uptime():
 	return sec
 
 
-def get_authors(wd=None):
-	"""little function that pulls the authors from a text file."""
+def get_authors(wd=None, split=None):
+	"""little function that pulls the authors from a text file. if split is
+	True, then it returns the valid authors before the first line break and
+	if split is False, then it returns the valid authors after the break."""
 	if wd is None: wd = os.getcwd()
 	try:
 		f = open(os.path.join(wd, 'AUTHORS'), 'r')
 		authors = f.readlines()
-		# assume it's an author if there is an email
-		return [ x.strip() for x in authors if '@' in x ]
 	except IOError:
 		return []
 	finally:
 		try: f.close()
 		except: pass
 		f = None
+
+	try:
+		# find middle break
+		middle = authors.index(os.linesep) - 1
+	except ValueError:
+		middle = None
+
+	# clean up the authors (assume it's an author if there is an email)
+	authors = [x.strip() for x in authors if '@' in x]
+
+	if middle is None or split is None: return authors
+	elif split: return authors[0:middle]
+	else: return authors[middle:]
 
 
 def get_license(wd=None):
