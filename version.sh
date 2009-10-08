@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # AGPLv.3
-# james shubin <purpleidea@gmail.com>
+# James Shubin <purpleidea@gmail.com>
 # simple script to make the VERSION file intelligently
 
 function usage() {
@@ -12,13 +12,21 @@ function usage() {
 }
 
 # check usage
-if ([ ! $# -eq 1 ] && [ ! $# -eq 2 ]) ||
+if [ $# -eq 0 ]; then
+	# prompt for a version
+	read -p 'version series: ' NEWVERSION
+elif ([ ! $# -eq 1 ] && [ ! $# -eq 2 ]) ||
 [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
 	usage
 fi
 
 # default filename
 FILENAME="VERSION"
+
+# default version
+if [ "$1" != "" ]; then
+	NEWVERSION=$1
+fi
 
 # override the default
 if [ "$2" != "" ]; then
@@ -32,7 +40,7 @@ REVNO=`bzr revno`
 PLUS1=`echo $REVNO+1 | bc`
 
 # build string
-VERSION="$1-$PLUS1"
+VERSION="$NEWVERSION-$PLUS1"
 
 # write string to file
 echo $VERSION > $FILENAME

@@ -33,7 +33,7 @@ import Cheetah.Template
 import Cheetah.NameMapper
 _ = lambda x: x			# add fake gettext function until i fix up i18n
 
-__all__ = ['manhelp', 'acquire_namespace']
+__all__ = ['manhelp', 'install', 'formatting', 'acquire_namespace']
 
 class manhelp:
 
@@ -85,6 +85,78 @@ class manhelp:
 			return True
 		except IOError, e:
 			return False
+
+
+def formatting():
+	"""returns a dict of special functions for use in groff formatting."""
+	def header(name, section, date, version, title=''):
+		"""writes out a .TH header properly."""
+		# example groff for this command:
+		#.TH EVANESCENT 1 "2009-06-01" "$version" "???"
+		#.TH FOO 1 "MARCH 1995" Linux "User Manuals"
+
+		# the following chunk of code is pretty special. dir() works!
+		#inspect.getargspec(formatting)[0] prints the same as dir()
+		args = dir()	# get this out of comprehension scope
+		# TODO: can we replace eval() with a getattr style thing ?
+		args = dict([ (arg, eval(arg)) for arg in args])
+		# NOTE: section is a number; maybe we can avoid string sections
+		return '.TH %(name)s %(section)d "%(date)s" "%(version)s" "%(title)s"' % args
+
+	def option(long=None, short=None, description=None, meta=None):
+		"""writes out an entry in the options section"""
+		# example groff for this command:
+		# .TP
+		# \fB\-r\fR, \fB\-\-roption\fR
+		# use the r option for magic roaring
+		# .TP
+		# \fB\-m\fR, \fB\-\-magic\fR=\fIMETA\fR
+		# use META option as the magic operator
+
+		if long is None and short is None: return ''
+		result = '.TP\n'	# option definition start
+		if type(short) is str:	result += '\\fB\-%s\\fR' % short
+		if type(short) is str and type(long) is str: result += ', '
+		if type(long) is str: result += '\\fB\-\-%s\\fR' % long
+		if type(meta) is str: result += '=\\fI%s\\fR' % meta
+		if type(description) is str: result += '\n%s' % description
+		return result
+
+	def seealso(entries):
+		"""format a list of (name, section) tuples as see also entries."""
+		if type(entries) is not list: return ''
+		return ',\n'.join([ '.BR %s (%d)' % x for x in entries
+		if len(x) == 2 and type(x[0]) is str and type(x[1]) is int])
+
+	def code(text):
+		"""return a chunk of code that will be formatted as such."""
+		return '.nf\n%s\n.fi' % text
+
+	return {
+		# adds the main header/footer
+		'header': header,
+		# adds name - description line to manual
+		'name_description': lambda x, y: '%s \- %s' % (x, y),
+		# adds a section header
+		'section': lambda x: '.SH %s' % x,
+		# formats an option for options list
+		'option': option,
+		# adds a line break
+		'break': lambda: '.br',
+		# makes text bold
+		'bold': lambda x: '.B %s' % x,
+		# makes text underlined
+		'underline': lambda x: '.I %s' % x,
+		# adds a see also entry with section number
+		'seealso': seealso,
+		# adds a block of code
+		'code': code
+	}
+
+
+def install(namespace, index=os.path.splitext(os.path.basename(__file__))[0]):
+	"""adds the manhelp groff template helpers into index of namespace."""
+	namespace[index] = formatting()
 
 
 def acquire_namespace(namespace, verbose=False):

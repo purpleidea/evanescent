@@ -47,7 +47,7 @@ class evanescent_remote:
 		parser.add_option('', '--license', dest='license', action='store_true', help='show the license')
 		parser.add_option('', '--hello', dest='hello', type='string', metavar='<MSG>', help='send message to client')
 		parser.add_option('-q', '--quit', dest='quit', action='store_true', help='send quit to the client')
-		parser.add_option('-p', '--poke', dest='poke', action='store_true', default=True, help='poke the client [default]')
+		parser.add_option('-p', '--poke', dest='poke', action='store_true', default=True, help='poke the client [on by default]')
 		parser.add_option('-P', '--dont-poke', dest='poke', action='store_false', help='don\'t poke the client')
 		parser.add_option('-s', '--show', dest='show', type='int', metavar='<N>', help='cause the notification icon to appear for <N> seconds')
 		choices = {'true': True, 'false': False, 'reset': None}	# tristate

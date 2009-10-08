@@ -271,6 +271,8 @@ class config:
 
 default_config = {
 
+	'PREFIXDIR': '/usr/local/',			# default prefix
+	'THECONFIG': '/etc/evanescent.conf.yaml',	# the config file
 	'DEBUGMODE': False,				# debug mode
 	'WORDYMODE': True,				# talk a lot (implied if debugmode is on)
 	'STARTMEUP': True,
@@ -278,7 +280,6 @@ default_config = {
 	'IDLELIMIT': 60*60,				# 1 hour before you're idle
 	'FASTSLEEP': 5,					# how often do we poll after the user has been warned
 	'COUNTDOWN': 5*60,				# five minute countdown before shutdown
-	'THECONFIG': '/etc/evanescent.conf.yaml',	# the config file
 	'LOGSERVER': ['logmaster', 514],		# syslog server
 	'LOGFORMAT': '%(asctime)s %(levelname)-8s %(name)-17s %(message)s',
 	'MYLOGPATH': '/var/log/evanescent.log',		# path for local log file
@@ -304,6 +305,8 @@ if os.name == 'nt':
 
 
 expected_types = {
+	'PREFIXDIR': str,
+	'THECONFIG': str,
 	'DEBUGMODE': bool,
 	'WORDYMODE': bool,
 	'STARTMEUP': bool,
@@ -311,7 +314,6 @@ expected_types = {
 	'IDLELIMIT': int,
 	'FASTSLEEP': int,
 	'COUNTDOWN': int,
-	'THECONFIG': str,
 	'LOGSERVER': [str, int],
 	'LOGFORMAT': str,
 	'MYLOGPATH': str,

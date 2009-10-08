@@ -3,6 +3,7 @@
 import distutils.core		#from distutils.core import setup, Extension
 import os
 import src.misc as misc		# for get_version
+import build_manpages		# custom distutils command for building manpages
 
 # VARIABLES ###################################################################
 NAME = 'evanescent'
@@ -26,23 +27,22 @@ data_files.append(('share/%s' % NAME, ['VERSION']))
 if os.name == 'posix':
 	data_files.append(('/etc/xdg/autostart/', ['files/evanescent.desktop']))
 	data_files.append(('/etc/event.d/', ['files/evanescent.upstart']))
-	data_files.append(('/usr/share/dbus-1/services/', ['files/ca.mcgill.cs.dazzle.evanescent.client.service']))
-
-if os.name == 'posix':
-	#data_files.append( ('/etc/', ['files/evanescent.conf.yaml']) )
-	data_files.append( ('/etc/', ['files/evanescent.conf.yaml.example']) )
-
+	data_files.append(('share/dbus-1/services/', ['files/ca.mcgill.cs.dazzle.evanescent.client.service']))
+	data_files.append(('share/doc/%s/' % NAME, ['files/evanescent.conf.yaml.example']))
+	data_files.append(('share/man/man1/', ['man/evanescent.1.gz']))
 
 # SETUP #######################################################################
 distutils.core.setup(
-	name=NAME,
-	version=misc.get_version(),
-	packages=['evanescent', 'evanescent.idle', 'evanescent.logout'],
-	package_dir={'evanescent':'src'},
-	ext_modules=ext_modules,
+	name = NAME,
+	version = misc.get_version(),
+	packages = ['evanescent', 'evanescent.idle', 'evanescent.logout'],
+	package_dir = {'evanescent':'src'},
+	ext_modules = ext_modules,
 	# list of miscellaneous extra modules to include
-	py_modules=['yamlhelp', 'logginghelp'],
-	data_files=data_files,
-	scripts=['evanescent-client', 'evanescent-daemon', 'evanescent-remote']
+	py_modules = ['yamlhelp', 'logginghelp', 'manhelp'],
+	data_files = data_files,
+	scripts = ['evanescent-client', 'evanescent-daemon', 'evanescent-remote'],
+	# add build_manpages command
+	cmdclass = {'build_manpages': build_manpages.build_manpages}
 )
 
