@@ -33,6 +33,7 @@ all:
 	echo -e '- commit:\truns some pre-commit housekeeping scripts.'
 	echo -e '- tar:\t\tmake a tar.bz2 archive for distribution.'
 	echo -e '- www:\t\tput an archive on the local webserver.'
+	echo -e '- man:\t\tbuild the man pages and then view them.'
 
 
 # clean up any mess that can be generated
@@ -59,6 +60,7 @@ clean: force
 # it takes care of running version.sh, etc...
 commit: clean force
 	./version.sh
+	echo "now run: `bzr commit -m '[comment]'`, `make tar` and `make www`"
 
 
 # this runs distutils for the install
@@ -93,6 +95,13 @@ purge: uninstall
 	rm -rf $(HOME)/.cache/eva/ 2> /dev/null || true		# eva.log
 	sudo rm /var/log/evanescent.log 2> /dev/null || true
 	sudo rm /etc/evanescent.conf.yaml 2> /dev/null || true
+
+
+# build the man pages, and then view them
+man: force
+	python setup.py build_manpages
+	cd man/ ;\
+	./viewthis.sh
 
 
 # make a package for distribution
