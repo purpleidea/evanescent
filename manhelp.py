@@ -22,10 +22,11 @@
 # NOTE: a useful guide to actually writing man pages can be found at:
 # http://www.schweikhardt.net/man_page_howto.html
 
-# TODO: manhelp could be extended to aid in actually generating nroff, e.g.:
+# TODO: manhelp could be extended to aid in actually generating groff, e.g.:
 # http://andialbrecht.wordpress.com/2009/03/17/creating-a-man-page-with-distutils-and-optparse/
 
 import os
+import re
 import sys
 import gzip
 import subprocess
@@ -41,12 +42,29 @@ class manhelp:
 
 		self.template = template
 		self.namespace = namespace
+		self.guessed = True	# did we guess the name and section# ?
+		self.name = None
+		self.section = None
+		self.dirname = None
 
 		# process template
 		if os.path.isfile(self.template):
 			self.groff = Cheetah.Template.Template(file=template, searchList=[namespace])
+			# pattern: <name>.<section#>.template
+			r = r'(?P<name>\w+).(?P<section>[1-9]).template'
+			m = re.match(r, os.path.basename(self.template))
+			if m is None: self.guessed = False
+			else:
+				self.name = m.group('name')
+				self.section = int(m.group('section'))
+				self.dirname = os.path.dirname(self.template)
 		else:
 			self.groff = Cheetah.Template.Template(template, searchList=[namespace])
+			# TODO: in this case, we could add a simple parser or re
+			# that goes through the template to find the guess data.
+			self.guessed = False	# until then, it has to be false
+
+		# make the groff...
 		try:
 			self.groff = str(self.groff)	# runs the NameMapper
 		except Cheetah.NameMapper.NotFound, e:
@@ -58,29 +76,67 @@ class manhelp:
 		"""write groff output to stdout."""
 		try:
 			f = sys.stdout
-			f.write(str(self.groff))
+			f.write(self.groff)
 			f.close()
 			return True
 		except IOError, e:
 			return False
 
 
-	def tofile(self, filename):
+	def tofile(self, filename=None, dirname=None):
 		"""write groff man page output to a file."""
+		if filename is None:
+			if self.guessed:
+				if dirname is None: dirname = self.dirname
+				filename = os.path.join(dirname, '%s.%d' % (self.name, self.section))
+			else:
+				return False
+
 		try:
-			f = open(filename, 'w')
-			f.write(str(self.groff))
+			f = open(filename, 'w+')
+			f.write(self.groff)
 			f.close()
 			return True
 		except IOError, e:
 			return False
 
 
-	def togzipfile(self, filename):
+	def topsfile(self, dirname=None):
+		"""write groff man page output to a postscript (.ps) file."""
+		# NOTE: this function requires the *guess* capability. i enforce
+		# this so that the tofile() function can have a standard spot to
+		# put it's output. this way we don't have to think about finding
+		# a temporary filename for the initial manpage that gets created
+
+		if self.guessed:
+			if dirname is None: dirname = self.dirname
+			filename = os.path.join(dirname, '%s.%d' % (self.name, self.section))
+		else:
+			return False
+
+		self.tofile(dirname=dirname)	# make normal man page
+		if not os.path.isfile(filename): return False
+		try:
+			f = open('%s.ps' % filename, 'w+')
+			# groff -t -e -mandoc -Tps manpage.1 > manpage.1.ps
+			cmd = ['groff', '-t', '-e', '-mandoc', '-Tps', filename]
+			p = subprocess.Popen(cmd, stdout=f)
+			f.close()
+			return True
+		except IOError, e:
+			return False
+
+
+	def togzipfile(self, filename=None):
 		"""write groff man page output to a gzip (.gz) file."""
+		if filename is None:
+			if self.guessed:
+				filename = os.path.join(self.dirname, '%s.%d.gz' % (self.name, self.section))
+			else:
+				return False
 		try:
 			f = gzip.open(filename, 'wb')
-			f.write(str(self.groff))
+			f.write(self.groff)
 			f.close()
 			return True
 		except IOError, e:
@@ -230,9 +286,10 @@ def main(argv):
 	def usage():
 		"""print usage information."""
 		# usage and other cool tips
-		print _('usage: ./%s template [namespace] (nroff to stdout)' % b)
-		print _('extra: ./%s -m template [namespace] (nroff to man)' % b)
+		print _('usage: ./%s template [namespace] (groff to stdout)' % b)
+		print _('extra: ./%s -m template [namespace] (groff to man)' % b)
 		print _('extra: ./%s -z template [namespace] (write gz man)' % b)
+		print _('extra: ./%s -p template [namespace] (write ps man)' % b)
 		#print _('extra: ./%s template [namespace] | gzip -f > gzoutput.gz' % b)
 
 	if not os.name == 'posix':
@@ -243,12 +300,12 @@ def main(argv):
 	template = ''
 	namespace = {}
 	b = os.path.basename(argv[0])
-
-	# TODO: in the future, when manhelp generates nroff, we should add a gz
+	ps = False
+	# TODO: in the future, when manhelp generates groff, we should add a gz
 	# option that takes the man section number and writes out the name.#.gz
-	# filename into the current directory. it makes sense to wait for nroff
+	# filename into the current directory. it makes sense to wait for groff
 	# generation so that we can get the name and section number dynamically
-	if len(argv) >= 3 and argv[1] in ['-m', '-z']:
+	if len(argv) >= 3 and argv[1] in ['-m', '-z', '-p']:
 		arg = argv.pop(1)
 		if arg == '-m':
 			# subprocess is pro magic. it's amazing that it works!
@@ -257,10 +314,12 @@ def main(argv):
 			p1 = subprocess.Popen(['python', b] + argv[1:3], stdout=subprocess.PIPE)
 			p2 = subprocess.Popen(['man', '--local-file', '-'], stdin=p1.stdout)
 			sts = os.waitpid(p2.pid, 0)	# important to wait!
+			sys.exit()
 		elif arg == '-z':
 			raise NotImplementedError('auto generating gzip man pages is yet to come!')
-
-		sys.exit()
+			sys.exit()
+		elif arg == '-p':
+			ps = True
 
 	if len(argv) == 3:
 		namespace = acquire_namespace(argv[2], verbose=True)
@@ -268,7 +327,8 @@ def main(argv):
 	if len(argv) in [2, 3]:
 		template = argv[1]
 		obj = manhelp(template, namespace)
-		obj.tostdout()
+		if ps: obj.topsfile()
+		else: obj.tostdout()
 	else:
 		usage()
 

@@ -18,18 +18,22 @@ _ = lambda x: x			# add fake gettext function until i fix up i18n
 
 class build_manpages(distutils.core.Command):
 	# FIXME: use the dry-run option...
-	description = "generates nroff man pages from templates"
+	description = 'generates groff man pages from templates'
 	user_options = [
-		('gzoutput=', 'o', "specifies the gzip output file location"),
-		('template=', 't', "specifies which man page template file"),
-		('namespace=', 'n', "specifies the manhelp namespace function"),
+		('psoutput=', 'p', 'specifies the ps output file location'),
+		('gzoutput=', 'o', 'specifies the gzip output file location'),
+		('template=', 't', 'specifies which man page template file'),
+		('namespace=', 'n', 'specifies the manhelp namespace function'),
+		('diroutput=', 'd', 'specifies the base directory for output'),
 	]
 
 
 	def initialize_options(self):
+		self.psoutput = None
 		self.gzoutput = None
 		self.template = None
 		self.namespace = {}
+		self.diroutput = None
 
 
 	def finalize_options(self):
@@ -51,12 +55,18 @@ class build_manpages(distutils.core.Command):
 
 
 	def run(self):
+		if self.verbose: print 'diroutput is: %s' % self.diroutput
 		if self.verbose: print 'namespace is: %s' % self.namespace
 		if self.verbose: print 'template file is: %s' % self.template
 		if self.verbose: print 'gzoutput file is: %s' % self.gzoutput
+		if self.verbose and type(self.psoutput) is str:
+			print 'psoutput file is: %s' % self.psoutput
 
 		obj = manhelp.manhelp(self.template, self.namespace)
 		obj.togzipfile(self.gzoutput)
+
+		if type(self.psoutput) is str:
+			obj.topsfile(self.diroutput)
 
 
 # add this command as a dependency to the build command

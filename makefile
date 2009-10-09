@@ -55,6 +55,9 @@ clean: force
 	rm -r build/ 2> /dev/null || true
 	rm -r dist/ 2> /dev/null || true
 
+	# remove generated man mess
+	rm -r man/evanescent.* 2> /dev/null || true
+
 
 # this should be run before an important commit
 # it takes care of running version.sh, etc...
