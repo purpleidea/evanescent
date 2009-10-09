@@ -30,6 +30,10 @@ if os.name == 'posix':
 	data_files.append(('share/dbus-1/services/', ['files/ca.mcgill.cs.dazzle.evanescent.client.service']))
 	data_files.append(('share/doc/%s/' % NAME, ['files/evanescent.conf.yaml.example']))
 	data_files.append(('share/man/man1/', ['man/evanescent.1.gz']))
+	data_files.append(('share/man/man1/', ['files/evanescent-daemon.1.gz']))
+	data_files.append(('share/man/man1/', ['files/evanescent-client.1.gz']))
+	data_files.append(('share/man/man1/', ['files/evanescent-remote.1.gz']))
+	data_files.append(('share/man/man1/', ['files/evanescent-config.1.gz']))
 
 # SETUP #######################################################################
 distutils.core.setup(

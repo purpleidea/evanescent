@@ -73,6 +73,7 @@ commit: clean force
 install: clean
 	python setup.py build
 	sudo python setup.py install
+	sudo mandb	# update the man index for `apropos' and `whatis'
 
 
 # remove all the mess that distutils installed
@@ -87,7 +88,7 @@ uninstall:
 	sudo rm /etc/event.d/evanescent.upstart 2> /dev/null || true
 	sudo rm /etc/xdg/autostart/evanescent.desktop 2> /dev/null || true
 	sudo rm /usr/share/dbus-1/services/ca.mcgill.cs.dazzle.evanescent.client.service 2> /dev/null || true
-	sudo rm /usr/share/man/man1/evanescent.1.gz 2> /dev/null || true
+	sudo rm /usr/share/man/man1/evanescent* 2> /dev/null || true
 	sudo rm -r /usr/share/doc/evanescent/ 2> /dev/null || true
 	# egg files:
 	sudo rm /usr/lib/python2.5/site-packages/evanescent-* 2> /dev/null || true

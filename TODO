@@ -82,3 +82,5 @@ http://packages.ubuntu.com/python-gobject
 
 19) add i18n support, and integrate with transifex business.
 
+
+20) man pages: evanescent manpage is done (at least preliminarily) link it up with evanescent-client, evanescent-daemon and evanescent-remote. also make mandb and apropos and whatis all work.
