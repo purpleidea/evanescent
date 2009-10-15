@@ -43,13 +43,12 @@ all:
 
 # clean up any mess that can be generated
 clean: force
-
 	# let distutils try to clean up first
 	python setup.py clean
 	# remove any python mess
-	rm -f *.pyc
+	rm -f *.pyc 2> /dev/null || true
 	# remove the python windowless mess too
-	rm -f *.pyw
+	rm -f *.pyw 2> /dev/null || true
 	# remove the tar archive
 	rm evanescent.tar.bz2 2> /dev/null || true
 	# remove distutils mess
