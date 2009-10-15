@@ -107,7 +107,7 @@ class evanescent_daemon:
 
 		except KeyboardInterrupt, e:
 			if os.name == 'posix':
-				d.start_stop([sys.argv[0], 'stop'])
+				d.start_stop([os.path.basename(sys.argv[0]), 'stop'])
 			elif os.name == 'nt':
 				self.mainloop.run()
 

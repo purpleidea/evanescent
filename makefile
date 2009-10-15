@@ -19,8 +19,13 @@
 
 # version and revision of the program
 VERSION := $(shell cat VERSION)
-# TODO: don't hardcode what we don't need to. eg: the '/usr' prefix, etc...
-# maybe we can get prefix from my ./configure shell script ?
+
+# directories
+# TODO: it seems many use: '/usr' (less logical) and not '/usr/' (more logical)
+PREFIX = /usr/			# TODO: how should we get prefix into here ?
+VARWWW = /var/www/
+WWWPROJECT = $(VARWWW)code/evanescent/
+
 
 # if someone runs make without a target, print some useful messages
 all:
@@ -41,20 +46,15 @@ clean: force
 
 	# let distutils try to clean up first
 	python setup.py clean
-
 	# remove any python mess
 	rm -f *.pyc
-
 	# remove the python windowless mess too
 	rm -f *.pyw
-
 	# remove the tar archive
 	rm evanescent.tar.bz2 2> /dev/null || true
-
 	# remove distutils mess
 	rm -r build/ 2> /dev/null || true
 	rm -r dist/ 2> /dev/null || true
-
 	# remove generated man mess
 	rm -r man/evanescent.* 2> /dev/null || true
 
@@ -87,6 +87,7 @@ uninstall:
 	sudo rm /usr/lib/python2.5/site-packages/logginghelp.py* 2> /dev/null || true
 	sudo rm /etc/event.d/evanescent.upstart 2> /dev/null || true
 	sudo rm /etc/xdg/autostart/evanescent.desktop 2> /dev/null || true
+	# TODO: i bet that dbus doesn't look in /usr/local/share/dbus-1/ ... should it ?
 	sudo rm /usr/share/dbus-1/services/ca.mcgill.cs.dazzle.evanescent.client.service 2> /dev/null || true
 	sudo rm /usr/share/man/man1/evanescent* 2> /dev/null || true
 	sudo rm -r /usr/share/doc/evanescent/ 2> /dev/null || true
@@ -100,8 +101,10 @@ purge: uninstall
 	# FIXME: these two should get the path from xdg
 	rm -rf $(HOME)/.config/eva/ 2> /dev/null || true	# eva.conf.yaml
 	rm -rf $(HOME)/.cache/eva/ 2> /dev/null || true		# eva.log
-	sudo rm /var/log/evanescent.log 2> /dev/null || true
+	sudo rm /var/log/evanescent.log* 2> /dev/null || true
 	sudo rm /etc/evanescent.conf.yaml 2> /dev/null || true
+	# empty man index even though this should eventually get updated by cron
+	sudo mandb
 
 
 # build the man pages, and then view them
@@ -136,12 +139,12 @@ tar: clean
 # move current version to www folder
 www: .SILENT
 
-	if [ -e /var/www/code/evanescent-$(VERSION).tar.bz2 ]; then \
+	if [ -e /var/www/code/evanescent/evanescent-$(VERSION).tar.bz2 ]; then \
 		echo version $(VERSION) already exists in /var/www/; \
 	else \
 		if [ -e ./tar/evanescent-$(VERSION).tar.bz2 ]; then \
-			cp -a ./tar/evanescent-$(VERSION).tar.bz2 /var/www/code/; \
-			echo EVANESCENT $(VERSION) evanescent-$(VERSION).tar.bz2 >> /var/www/code/evanescent; \
+			cp -a ./tar/evanescent-$(VERSION).tar.bz2 /var/www/code/evanescent/; \
+			echo EVANESCENT $(VERSION) evanescent-$(VERSION).tar.bz2 >> /var/www/code/evanescent/evanescent; \
 			echo version $(VERSION) successfully pushed to local webserver; \
 			echo you might want to sync public webserver with local; \
 		else \

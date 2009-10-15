@@ -53,6 +53,18 @@ def load(uri):
 	#return a filepath to where it is ?
 
 """
+def prefix(join=None):
+	"""returns the prefix that the code was installed into. add on join."""
+	# TODO: needs to be updated for other versions of python...
+	heuristic = 'lib/python2.5/site-packages/evanescent'
+	# path: /usr/lib/python2.5/site-packages/evanescent
+	path = os.path.dirname(__file__)
+	# path[len(path)-len(heuristic):] == heuristic
+	assert path.endswith(heuristic), 'prefix heuristic failed'
+	out = path[0:len(path)-len(heuristic)]	# usually: /usr/ or /usr/local/
+	if join is None: return out
+	else: return os.path.join(out, join)	# add on join if it exists!
+
 
 class config:
 	"""this class does setting, manipulating, and putting to self.config
@@ -271,7 +283,7 @@ class config:
 
 default_config = {
 
-	'PREFIXDIR': '/usr/local/',			# default prefix
+	'PREFIXDIR': prefix(),				# default prefix
 	'THECONFIG': '/etc/evanescent.conf.yaml',	# the config file
 	'DEBUGMODE': False,				# debug mode
 	'WORDYMODE': True,				# talk a lot (implied if debugmode is on)
@@ -285,7 +297,7 @@ default_config = {
 	'MYLOGPATH': '/var/log/evanescent.log',		# path for local log file
 	'MYERRPATH': '/var/log/evanescent.FAIL',	# path for FAIL log file
 	'UPDATEMSG': True,				# update the impending logoff msg every fastsleep or not
-	'SHAREDDIR': '/usr/share/evanescent/',		# path to /usr/share/evanescent/
+	'SHAREDDIR': prefix('share/evanescent/'),	# path to /usr/share/evanescent/
 	'DAEMONPID': '/var/run/evanescent.pid',		# pid file for daemon
 	'INITSLEEP': 900,				# initial sleep (15 min)
 	'HIDEDELAY': 15,				# number of seconds after last unlock/event till icon hides
@@ -353,7 +365,7 @@ obj.run(make=True)
 
 
 """
-ICONIMAGE = 'files/evanescent.svg'	# filename for `systray' icon
+ICONIMAGE = prefix('files/evanescent.svg')	# filename for `systray' icon
 
 conf = yamlhelp.yamlhelp(filename=THECONFIG)
 try:
