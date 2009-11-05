@@ -1,4 +1,0 @@
-README for EvaGui.py
-
-This is the gui for creating the config files for eva.
-as of now it generates a file called tmp in the directory it is called from, this just has to be renamed and moved by hand as I don't know where it belongs. EvaGui.py should work on any operating system running both a current version of python and a current version of PyQt4

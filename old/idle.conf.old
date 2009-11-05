@@ -1,9 +1,0 @@
-# idle.conf
-# this is a config file for idle.conf
-
-h: somehostname && u: james
-t: 120623,153200 && h: lab6-2
-i: 192.168.2.*
-t: 1202,1503 && h: lab5-*
-
-
