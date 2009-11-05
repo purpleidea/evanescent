@@ -22,9 +22,10 @@ VERSION := $(shell cat VERSION)
 
 # directories
 # TODO: it seems many use: '/usr' (less logical) and not '/usr/' (more logical)
-PREFIX = /usr/			# TODO: how should we get prefix into here ?
+PREFIX := $(shell ./findeva.py)
 VARWWW = /var/www/
 WWWPROJECT = $(VARWWW)code/evanescent/
+RMTOOL = rm -i
 
 
 # if someone runs make without a target, print some useful messages
@@ -46,16 +47,16 @@ clean: force
 	# let distutils try to clean up first
 	python setup.py clean
 	# remove any python mess
-	rm -f *.pyc 2> /dev/null || true
+	$(RMTOOL) *.pyc 2> /dev/null || true
 	# remove the python windowless mess too
-	rm -f *.pyw 2> /dev/null || true
+	$(RMTOOL) *.pyw 2> /dev/null || true
 	# remove the tar archive
-	rm evanescent.tar.bz2 2> /dev/null || true
+	$(RMTOOL) evanescent.tar.bz2 2> /dev/null || true
 	# remove distutils mess
-	rm -r build/ 2> /dev/null || true
-	rm -r dist/ 2> /dev/null || true
+	$(RMTOOL) -r build/ 2> /dev/null || true
+	$(RMTOOL) -r dist/ 2> /dev/null || true
 	# remove generated man mess
-	rm -r man/evanescent.* 2> /dev/null || true
+	$(RMTOOL) -r man/evanescent.* 2> /dev/null || true
 
 
 # this should be run before an important commit
@@ -76,32 +77,36 @@ install: clean
 
 
 # remove all the mess that distutils installed
+abc:
+	sudo $(RMTOOL) $(PREFIX)bin/dude
+
 uninstall:
-	sudo rm -r /usr/lib/python2.5/site-packages/evanescent/ 2> /dev/null || true
-	sudo rm -r /usr/share/evanescent/ 2> /dev/null || true
-	sudo rm /usr/bin/evanescent-daemon 2> /dev/null || true
-	sudo rm /usr/bin/evanescent-remote 2> /dev/null || true
-	sudo rm /usr/bin/evanescent-client 2> /dev/null || true
-	sudo rm /usr/lib/python2.5/site-packages/yamlhelp.py* 2> /dev/null || true
-	sudo rm /usr/lib/python2.5/site-packages/logginghelp.py* 2> /dev/null || true
-	sudo rm /etc/event.d/evanescent.upstart 2> /dev/null || true
-	sudo rm /etc/xdg/autostart/evanescent.desktop 2> /dev/null || true
+	# FIXME: remove all the {site|dist}-packages of the right python version
+	sudo $(RMTOOL) -r $(PREFIX)lib/python2.5/site-packages/evanescent/ 2> /dev/null || true
+	sudo $(RMTOOL) -r $(PREFIX)share/evanescent/ 2> /dev/null || true
+	sudo $(RMTOOL) $(PREFIX)bin/evanescent-daemon 2> /dev/null || true
+	sudo $(RMTOOL) $(PREFIX)bin/evanescent-remote 2> /dev/null || true
+	sudo $(RMTOOL) $(PREFIX)bin/evanescent-client 2> /dev/null || true
+	sudo $(RMTOOL) $(PREFIX)lib/python2.5/site-packages/yamlhelp.py* 2> /dev/null || true
+	sudo $(RMTOOL) $(PREFIX)lib/python2.5/site-packages/logginghelp.py* 2> /dev/null || true
+	sudo $(RMTOOL) /etc/event.d/evanescent.upstart 2> /dev/null || true
+	sudo $(RMTOOL) /etc/xdg/autostart/evanescent.desktop 2> /dev/null || true
 	# TODO: i bet that dbus doesn't look in /usr/local/share/dbus-1/ ... should it ?
-	sudo rm /usr/share/dbus-1/services/ca.mcgill.cs.dazzle.evanescent.client.service 2> /dev/null || true
-	sudo rm /usr/share/man/man1/evanescent* 2> /dev/null || true
-	sudo rm -r /usr/share/doc/evanescent/ 2> /dev/null || true
+	sudo $(RMTOOL) /usr/share/dbus-1/services/ca.mcgill.cs.dazzle.evanescent.client.service 2> /dev/null || true
+	sudo $(RMTOOL) $(PREFIX)share/man/man1/evanescent* 2> /dev/null || true
+	sudo $(RMTOOL) -r $(PREFIX)share/doc/evanescent/ 2> /dev/null || true
 	# egg files:
-	sudo rm /usr/lib/python2.5/site-packages/evanescent-* 2> /dev/null || true
+	sudo $(RMTOOL) $(PREFIX)lib/python2.5/site-packages/evanescent-* 2> /dev/null || true
 
 
 # purge all extra unwanted files
 purge: uninstall
 	# these get created by evanescent, remove them on a purge
 	# FIXME: these two should get the path from xdg
-	rm -rf $(HOME)/.config/eva/ 2> /dev/null || true	# eva.conf.yaml
-	rm -rf $(HOME)/.cache/eva/ 2> /dev/null || true		# eva.log
-	sudo rm /var/log/evanescent.log* 2> /dev/null || true
-	sudo rm /etc/evanescent.conf.yaml 2> /dev/null || true
+	$(RMTOOL) -r $(HOME)/.config/eva/ 2> /dev/null || true	# eva.conf.yaml
+	$(RMTOOL) -r $(HOME)/.cache/eva/ 2> /dev/null || true	# eva.log
+	sudo $(RMTOOL) /var/log/evanescent.log* 2> /dev/null || true
+	sudo $(RMTOOL) /etc/evanescent.conf.yaml 2> /dev/null || true
 	# empty man index even though this should eventually get updated by cron
 	sudo mandb
 

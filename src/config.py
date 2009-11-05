@@ -56,12 +56,18 @@ def load(uri):
 def prefix(join=None):
 	"""returns the prefix that the code was installed into. add on join."""
 	# TODO: needs to be updated for other versions of python...
-	heuristic = 'lib/python2.5/site-packages/evanescent'
-	# path: /usr/lib/python2.5/site-packages/evanescent
+	heuristics = [
+		# TODO: what's the deal; site-packages or dist-packages for 2.6?
+		'lib/python2.5/site-packages/evanescent',
+		'lib/python2.6/site-packages/evanescent',
+		'lib/python2.6/dist-packages/evanescent'
+	]
+	# eg: /usr/lib/python2.5/site-packages/evanescent
 	path = os.path.dirname(__file__)
-	# path[len(path)-len(heuristic):] == heuristic
-	assert path.endswith(heuristic), 'prefix heuristic failed'
-	out = path[0:len(path)-len(heuristic)]	# usually: /usr/ or /usr/local/
+	which = [path.endswith(x) for x in heuristics]	# which ones match ?
+	assert True in which, 'prefix heuristic failed'
+	# out is usually: /usr/ or /usr/local/
+	out = path[0:len(path)-len(heuristics[which.index(True)])]
 	if join is None: return out
 	else: return os.path.join(out, join)	# add on join if it exists!
 
