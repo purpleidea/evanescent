@@ -90,3 +90,6 @@ http://packages.ubuntu.com/python-gobject
 http://blogs.gnome.org/hughsie/2009/01/28/inhibits-and-the-new-world-order/
 the code in play/inhibit/ is old.
 
+there is an API to show a message on the locked screen; maybe use this:
+http://git.gnome.org/cgit/gnome-screensaver/commit/?id=370ae655619c8e0fbd8a092d7dc8dc6ad4ab1445
+
