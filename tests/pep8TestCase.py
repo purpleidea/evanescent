@@ -1,8 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""tests.datetimeTestcase
+"""tests.pep8TestCase
 
-tests some assumptions i made and expect to persist in the datetime class.
+Model test case for adding tests into the automatic suite.
+To add a test case:
+	3) modify methods in the class, building your test case
+	4) edit this docstring to show the correct name and short description
+	5) test by running this file. will automatically run with main suite
 """
 
 # Copyright (C) 2009  James Shubin, McGill University
@@ -25,6 +29,11 @@ import os
 import sys
 import unittest
 
+VERBOSE = False			# print status messages
+SHOW_SOURCE = False		# show source code for each error
+REPEAT = False			# show all occurrences of the same error
+SHOW_PEP8 = False		# show text of PEP 8 for each error
+
 # do some path magic so this can run anyhow from anywhere, and some magic names
 if __name__ == '__main__':
 	TESTNAME = os.path.splitext(__file__)[0]
@@ -32,23 +41,34 @@ if __name__ == '__main__':
 		TESTNAME = TESTNAME.partition('./')[2]
 	PATH = '../'	# two dots for parent
 else:
-	TESTNAME = __name__[__name__.rfind('.')+1:]
+	TESTNAME = __name__[__name__.rfind('.') + 1:]
 	PATH = './'	# one dot for here
 
 sys.path.append(os.path.join(PATH, 'src/'))
 __all__ = [TESTNAME]
 
 
-class datetimeTestCase(unittest.TestCase):
+class pep8TestCase(unittest.TestCase):
 	"""test the dt class."""
 
 	def setUp(self):
 		"""setup code that has to occur for each test*()"""
-		import datetime
-		self.datetime = datetime
+		import pep8
+		self.pep8 = pep8	# store reference for below
+		# pick options!
+		options = []
+		if VERBOSE: options.append('--verbose')
+		if SHOW_SOURCE: options.append('--show-source')
+		if REPEAT: options.append('--repeat')
+		if SHOW_PEP8: options.append('--show-pep8')
+		options.append('--ignore=W191,E701')
+		options.append('--exclude=.git,play/')
+		options.append('.')		# the '.' simulates input!
+		self.pep8.process_options(options)
 
-	def testBool1(self):
-		self.failUnless(bool(self.datetime.datetime.today()), 'datetime.datetime.today() should evaluate to True.')
+	def testPEP8(self):
+		self.pep8.input_dir(PATH)
+		self.failUnless(self.pep8.get_count() == 0, 'pep8 failed')
 
 
 # group all tests into a suite

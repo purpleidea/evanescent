@@ -33,16 +33,15 @@ import unittest
 
 # do some path magic so this can run anyhow from anywhere, and some magic names
 if __name__ == '__main__':
-	TESTNAME = os.path.splitext(__file__)[0]
-	if TESTNAME.startswith('./'):
-		TESTNAME = TESTNAME.partition('./')[2]
-	PATH = '../'	# two dots for parent
+	__testname = os.path.splitext(__file__)[0]
+	if __testname.startswith('./'):
+		__testname = __testname.partition('./')[2]
+	sys.path.append('../src/')
 else:
-	TESTNAME = __name__[__name__.rfind('.')+1:]
-	PATH = './'	# one dot for here
+	__testname = __name__[__name__.rfind('.')+1:]
+	sys.path.append('src/')
 
-sys.path.append(os.path.join(PATH, 'src/'))
-__all__ = [TESTNAME]
+__all__ = [__testname]
 
 class modelTestCase(unittest.TestCase):
 	"""test the dt class."""
@@ -67,7 +66,7 @@ class modelTestCase(unittest.TestCase):
 		self.failUnless(self.obj.is_time('[15:14:15 , 15:15:16]'), 'time doesn\'t match range 3')
 
 # group all tests into a suite
-suite = unittest.TestLoader().loadTestsFromTestCase(globals()[TESTNAME])
+suite = unittest.TestLoader().loadTestsFromTestCase(globals()[__testname])
 
 # if this file is run individually, then run these test cases
 if __name__ == '__main__':
