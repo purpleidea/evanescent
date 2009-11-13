@@ -25,17 +25,10 @@ import os
 import sys
 import unittest
 
-# do some path magic so this can run anyhow from anywhere, and some magic names
-if __name__ == '__main__':
-	TESTNAME = os.path.splitext(__file__)[0]
-	if TESTNAME.startswith('./'):
-		TESTNAME = TESTNAME.partition('./')[2]
-	PATH = '../'	# two dots for parent
-else:
-	TESTNAME = __name__[__name__.rfind('.')+1:]
-	PATH = './'	# one dot for here
-
-sys.path.append(os.path.join(PATH, 'src/'))
+# do some path magic so this can run anyhow from anywhere
+TESTNAME = os.path.splitext(os.path.basename(os.path.normpath(__file__)))[0]
+BASEPATH = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../'))
+sys.path.append(os.path.join(BASEPATH, 'src/'))
 __all__ = [TESTNAME]
 
 

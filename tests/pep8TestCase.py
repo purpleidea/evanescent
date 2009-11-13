@@ -2,11 +2,8 @@
 # -*- coding: utf-8 -*-
 """tests.pep8TestCase
 
-Model test case for adding tests into the automatic suite.
-To add a test case:
-	3) modify methods in the class, building your test case
-	4) edit this docstring to show the correct name and short description
-	5) test by running this file. will automatically run with main suite
+This test case glues in the pep8.py PEP8 testing infrastructure so that our
+whole suite can benefit from the external pep8 testing code.
 """
 
 # Copyright (C) 2009  James Shubin, McGill University
@@ -34,17 +31,10 @@ SHOW_SOURCE = False		# show source code for each error
 REPEAT = False			# show all occurrences of the same error
 SHOW_PEP8 = False		# show text of PEP 8 for each error
 
-# do some path magic so this can run anyhow from anywhere, and some magic names
-if __name__ == '__main__':
-	TESTNAME = os.path.splitext(__file__)[0]
-	if TESTNAME.startswith('./'):
-		TESTNAME = TESTNAME.partition('./')[2]
-	PATH = '../'	# two dots for parent
-else:
-	TESTNAME = __name__[__name__.rfind('.') + 1:]
-	PATH = './'	# one dot for here
-
-sys.path.append(os.path.join(PATH, 'src/'))
+# do some path magic so this can run anyhow from anywhere
+TESTNAME = os.path.splitext(os.path.basename(os.path.normpath(__file__)))[0]
+BASEPATH = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../'))
+sys.path.append(os.path.join(BASEPATH, 'src/'))
 __all__ = [TESTNAME]
 
 
@@ -67,7 +57,7 @@ class pep8TestCase(unittest.TestCase):
 		self.pep8.process_options(options)
 
 	def testPEP8(self):
-		self.pep8.input_dir(PATH)
+		self.pep8.input_dir(BASEPATH)
 		self.failUnless(self.pep8.get_count() == 0, 'pep8 failed')
 
 
