@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """tests.dtTestCase
 
+Tests some aspects of the dt parser that I wrote.
 """
 
 # Copyright (C) 2009  James Shubin, McGill University
