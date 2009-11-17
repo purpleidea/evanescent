@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """tests.datetimeTestcase
 
-tests some assumptions i made and expect to persist in the datetime class.
+Tests some assumptions i made and expect to persist in the datetime class.
 """
 
 # Copyright (C) 2009  James Shubin, McGill University
