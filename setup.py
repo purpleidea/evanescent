@@ -3,6 +3,7 @@
 import distutils.core		#from distutils.core import setup, Extension
 import os
 import src.misc as misc		# for get_version
+import uninstall
 import build_manpages		# custom distutils command for building manpages
 
 # VARIABLES ###################################################################
@@ -47,6 +48,9 @@ distutils.core.setup(
 	data_files = data_files,
 	scripts = ['evanescent-client', 'evanescent-daemon', 'evanescent-remote'],
 	# add build_manpages command
-	cmdclass = {'build_manpages': build_manpages.build_manpages}
+	cmdclass = {
+		'uninstall': uninstall.uninstall,
+		'build_manpages': build_manpages.build_manpages
+	}
 )
 
