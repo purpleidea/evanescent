@@ -1,23 +1,28 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 """
-    Manhelp wrapper to simplify creation of man pages.
-    Copyright (C) 2009  James Shubin, McGill University
-    Written for McGill University by James Shubin <purpleidea@gmail.com>
+Manhelp wrapper to simplify creation of man pages.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+If you don't want to use a higher level documentation system, manhelp is a
+simple, direct way (based on magic templates) to write *roff manuals, without
+remembering nearly as much *roff as someone much more hardcore would expect you
+to.
 """
+# Copyright (C) 2009  James Shubin, McGill University
+# Written for McGill University by James Shubin <purpleidea@gmail.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # NOTE: a useful guide to actually writing man pages can be found at:
 # http://www.schweikhardt.net/man_page_howto.html

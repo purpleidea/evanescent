@@ -1,22 +1,27 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 """
-    Yamlhelp wrapper to simplify yaml reading and writing for me.
-    Copyright (C) 2008  James Shubin, McGill University
-    Written for McGill University by James Shubin <purpleidea@gmail.com>
+Yamlhelp wrapper to simplify yaml reading and writing for me.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+This class was created to abstract away many of the yaml calls which I didn't
+want to think about and see. It needs some love if it wants to be a more useful
+library.
 """
+# Copyright (C) 2009  James Shubin, McGill University
+# Written for McGill University by James Shubin <purpleidea@gmail.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import yaml
 import os	# for os.linesep

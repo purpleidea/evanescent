@@ -1,22 +1,26 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 """
-    Evanescent machine idle detection and shutdown tool daemon.
-    Copyright (C) 2008  James Shubin, McGill University
-    Written for McGill University by James Shubin <purpleidea@gmail.com>
+Evanescent machine idle detection and shutdown tool daemon.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+This is the daemon that runs on each machine. Read the man pages for more info.
 """
+# Copyright (C) 2008-2009  James Shubin, McGill University
+# Written for McGill University by James Shubin <purpleidea@gmail.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 
 # NOTES ########################################################################
 # * this script should be run on each machine at boot
@@ -32,7 +36,6 @@
 # TODO: have script fail on startup if all the necessary modules aren't installed (ex: python-utmp, yaml)
 # TODO: add a big try/except around the main script if possible to catch and log hidden script errors
 # TODO: pull in configuration file values from a remote file using wget or curl or similar (idea from rgws@cs.mcgill.ca)
-# TODO: check that the license one liner program description is correct at the top of each file.
 # TODO: make an evanescent error class, and create specific errors for all the random evanescent things.
 # TODO: instead of always logging to dialog, log things into better categories. daemon stuff always goes there, etc...
 # TODO: clean up all message strings and add %s data within them, and rewrite them to be clear and clean.
