@@ -34,12 +34,19 @@ EXCLUDED = ['.git', 'play', 'old', 'wotd', 'tar']	# dirs to exclude
 MAXSIZE = 1*1024*1024	# 1 MiB (don't let read() eat up all my memory!)
 
 # order in which the elements should be verified.
-ORDERING = ['SHEBANG', 'CODING', 'LICENSE', 'COPYRIGHT']
+ORDERING = ['SHEBANG', 'CODING', 'COPYRIGHT', 'LICENSE']
 
 # set of elements that we want to match
 ELEMENTS = {
 	'SHEBANG': '#!/usr/bin/python',
 	'CODING': '# -*- coding: utf-8 -*-',
+	# TODO: how do we intelligently match and check the year/year range?
+	# TODO: should we use fnmatch or regex or a custom match ?
+	'COPYRIGHT': '''
+	# Copyright (C) 2009  James Shubin, McGill University
+	# Written for McGill University by James Shubin <purpleidea@gmail.com>
+	#
+	'''.replace('\t', ''),
 	'LICENSE': '''
 	# This program is free software: you can redistribute it and/or modify
 	# it under the terms of the GNU Affero General Public License as published by
@@ -55,20 +62,14 @@ ELEMENTS = {
 	# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	'''.replace('\t', ''),	# replace tabs used to align this text with code
 
-	# TODO: how do we intelligently match and check the year/year range?
-	# TODO: should we use fnmatch or regex or a custom match ?
-	'COPYRIGHT': '''
-	# Copyright (C) 2009  James Shubin, McGill University
-	# Written for McGill University by James Shubin <purpleidea@gmail.com>
-	#
-	'''.replace('\t', ''),
 }
 
 # NOTE: line numbers for constraints are 1-based (like my text editor)
 CONSTRAINTS = {
 	'SHEBANG': lambda l: l['SHEBANG'] == 1,
 	'CODING': lambda l: l['CODING'] == l['SHEBANG']+1,
-	'LICENSE': lambda l: l['LICENSE'] > l['CODING']
+	'LICENSE': lambda l: l['LICENSE'] > l['CODING'],
+	'COPYRIGHT': lambda l: l['COPYRIGHT'] == l['LICENSE']+1,
 }
 
 # simple check and setup on ELEMENTS and LOCATION.
@@ -145,13 +146,17 @@ class fileformatTestCase(unittest.TestCase):
 		for key in ORDERING: location.setdefault(i, -1)
 
 		for key in ORDERING:
+			# TODO: add the ability to match here by regexp too.
 			try:
 				# find the particular element inside of data
 				location[key] = data.index(ELEMENTS[key])
 			except ValueError, e:
 				print _('%s was not found in: %s') % (key, filename)
-				# XXX: would be nice to inspect constraint and
-				# see what should be in it's place.
+				# XXX: would be nice to inspect line and (then)
+				# see what should be in it's place. the problem
+				# is that since we don't know what the expected
+				# line number should be (since this all depends
+				# on the constraints) this whole ordeal is hard
 				return False
 
 			# dictionary comprehension (build dictionary of lines)
