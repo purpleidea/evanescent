@@ -25,28 +25,45 @@ discrepancies that keep the code from otherwise being uniform and polished.
 
 import os
 import sys
+import re
 import unittest
 
 _ = lambda x: x			# add fake gettext function until i fix up i18n
 
 VERBOSE = False
+# TODO: have the excluded list along with all the ELEMENTS information in a
+# separate file. it makes much more sense to keep the config info separate!
 EXCLUDED = ['.git', 'play', 'old', 'wotd', 'tar']	# dirs to exclude
 MAXSIZE = 1*1024*1024	# 1 MiB (don't let read() eat up all my memory!)
 
 # order in which the elements should be verified.
 ORDERING = ['SHEBANG', 'CODING', 'COPYRIGHT', 'LICENSE']
 
+FINDTYPE_FIND = 0
+FINDTYPE_INDEX = 1
+FINDTYPE_RE = 2
+# TODO: create a simple expression vocabulary ( * ? and | ) similar to fnmatch.
+# use simple patterns and avoid complex regular expressions and escaping chars. 
+# Some people, when confronted with a problem, think “I know, I'll use regular
+# expressions.” Now they have two problems. --Jamie Zawinski
+#FINDTYPE_FNMATCH = 3
+FINDTYPE = {
+	'SHEBANG': FINDTYPE_INDEX,
+	'CODING': FINDTYPE_INDEX,
+	'COPYRIGHT': FINDTYPE_RE,
+	'LICENSE': FINDTYPE_INDEX
+}
+
 # set of elements that we want to match
 ELEMENTS = {
 	'SHEBANG': '#!/usr/bin/python',
 	'CODING': '# -*- coding: utf-8 -*-',
-	# TODO: how do we intelligently match and check the year/year range?
-	# TODO: should we use fnmatch or regex or a custom match ?
+	# this is a regular expression...
 	'COPYRIGHT': '''
-	# Copyright (C) 2009  James Shubin, McGill University
+	# Copyright \(C\) (2008\-2009|2009)  James Shubin, McGill University
 	# Written for McGill University by James Shubin <purpleidea@gmail.com>
 	#
-	'''.replace('\t', ''),
+	'''.replace('\t', '').strip(),	# replace tabs and nl used for alignment
 	'LICENSE': '''
 	# This program is free software: you can redistribute it and/or modify
 	# it under the terms of the GNU Affero General Public License as published by
@@ -60,16 +77,17 @@ ELEMENTS = {
 	#
 	# You should have received a copy of the GNU Affero General Public License
 	# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-	'''.replace('\t', ''),	# replace tabs used to align this text with code
-
+	'''.replace('\t', '').strip(),
 }
 
 # NOTE: line numbers for constraints are 1-based (like my text editor)
+# NOTE: input convention is (l, i) aka (line numbers, index numbers) -- each of
+# which is a dictionary of tuples (start, end) indexed at the name of the rule.
 CONSTRAINTS = {
-	'SHEBANG': lambda l: l['SHEBANG'] == 1,
-	'CODING': lambda l: l['CODING'] == l['SHEBANG']+1,
-	'LICENSE': lambda l: l['LICENSE'] > l['CODING'],
-	'COPYRIGHT': lambda l: l['COPYRIGHT'] == l['LICENSE']+1,
+	'SHEBANG': lambda l, i: l['SHEBANG'] == (1,1),
+	'CODING': lambda l, i: l['CODING'][0] == l['SHEBANG'][1]+1,
+	'COPYRIGHT': lambda l, i: l['COPYRIGHT'][0] >= l['CODING'][1]+1,
+	'LICENSE': lambda l, i: l['LICENSE'][0] == l['COPYRIGHT'][1]+1,
 }
 
 # simple check and setup on ELEMENTS and LOCATION.
@@ -84,8 +102,6 @@ sys.path.append(os.path.join(BASEPATH, 'src/'))
 __all__ = [TESTNAME]
 
 
-# TODO: this test case should check the format for all .py files... DO THIS.
-# TODO: maybe replace the licenseTestCase.py file with this.
 class fileformatTestCase(unittest.TestCase):
 	"""test the dt class."""
 
@@ -98,10 +114,8 @@ class fileformatTestCase(unittest.TestCase):
 		#	return
 
 		for (root, dirs, files) in os.walk(BASEPATH):
-
 			remove = []
 			for x in dirs:
-				#XXX print 'is?: %s' % x
 				if self.__isexcluded(x):
 					# keep track of ones we want to exclude
 					remove.append(x)
@@ -121,10 +135,51 @@ class fileformatTestCase(unittest.TestCase):
 		# TODO: use: fnmatch.fnmatchcase ?
 		for i in EXCLUDED:
 			if dirname == i or dirname.endswith(i):
-				#XXX print 'X %s' % dirname
 				return True
-		#XXX print 'Y %s' % dirname
 		return False
+
+
+
+	def doFind(self, key, data):
+		"""Match the data associated with key using its respective find
+		function, to the data given as input to this function. raise an
+		error if data is not found. note that if key uses FINDTYPE_FIND
+		then an error will never be raised. the result will be: -1 when
+		the data doesn't match. If a match succeeds return start index.
+		"""
+		result = None
+		# how should we match in data for key
+		findtype = FINDTYPE.get(key, FINDTYPE_FIND)
+		pattern = ELEMENTS[key]
+
+		# match by string find function
+		if findtype == FINDTYPE_FIND:
+			# this returns -1 if it doesn't find string
+			where = data.find(pattern)
+			result = (where, where+len(pattern))
+
+		# match by string index function
+		elif findtype == FINDTYPE_INDEX:
+			try:
+				# this throws error if it doesn't find string
+				where = data.index(pattern)
+				result = (where, where+len(pattern))
+			except ValueError, e:
+				result = None
+
+		# match by regular expression
+		elif findtype == FINDTYPE_RE:
+			p = re.compile(pattern)
+			match = p.search(data)
+			if (match is not None):
+				result = match.span()
+
+		#elif findtype == FINDTYPE_FNMATCH:
+		#	pass
+
+		if result is None:
+			raise ValueError(_('Key: %s not found.') % key)
+		else: return result
 
 
 	def checkFile(self, filename):
@@ -133,23 +188,23 @@ class fileformatTestCase(unittest.TestCase):
 		with open(filename, 'r') as f:
 			data = f.read(MAXSIZE)
 
+		# this takes the data variable (just above) as default !
 		def i2l(index, data=data):
 			"""given a string; usually the output from file.read()
 			and a character index, returns which the index was on.
 			this function returns a 1-based number like my vim."""
-			index = abs(index)
+			if index < 0: return -1		# give what you get :P
 			if index >= len(data): return -1
 			return len(data[0:index].split('\n'))
 
 		location = {}
 		# initialize dictionary
-		for key in ORDERING: location.setdefault(i, -1)
+		for key in ORDERING: location.setdefault(i, (-1, -1))
 
 		for key in ORDERING:
-			# TODO: add the ability to match here by regexp too.
 			try:
 				# find the particular element inside of data
-				location[key] = data.index(ELEMENTS[key])
+				location[key] = self.doFind(key, data)
 			except ValueError, e:
 				print _('%s was not found in: %s') % (key, filename)
 				# XXX: would be nice to inspect line and (then)
@@ -160,10 +215,10 @@ class fileformatTestCase(unittest.TestCase):
 				return False
 
 			# dictionary comprehension (build dictionary of lines)
-			lines = dict([(k,i2l(v)) for k,v in location.items()])
+			lines = dict([(k, (i2l(v1),i2l(v2))) for k,(v1,v2) in location.items()])
 			# check constraint
-			if not CONSTRAINTS.get(key, lambda _: True)(lines):
-			#if key in CONSTRAINTS and not(CONSTRAINTS[key](i2l(lines))):
+			if not CONSTRAINTS.get(key, lambda _: True)(lines, location):
+			#if key in CONSTRAINTS and not(CONSTRAINTS[key](lines, location)):
 				print _('%s failed constraint in: %s') % (key, filename)
 				# XXX: would be nice to display constraint here
 				print _('location table is: %s') % location
@@ -195,16 +250,17 @@ class fileformatTestCase(unittest.TestCase):
 		)
 
 
-	def XXXtestSheBang(self):
-		failed = 0
-		for i in self.filelist:
-			with open(i, 'r') as f:
-				line = f.readlines(1)[0][:-1]
-				if line != ELEMENTS['SHEBANG']:
-					failed = failed + 1
-					print 'shebang fails at: %s' % i
-					print 'shebang shown is: %s' % line
-					print 'shebang model is: %s' % ELEMENTS['SHEBANG']
+	# XXX: left as an example of what we *don't* want to do.
+	#def XXXtestSheBang(self):
+	#	failed = 0
+	#	for i in self.filelist:
+	#		with open(i, 'r') as f:
+	#			line = f.readlines(1)[0][:-1]
+	#			if line != ELEMENTS['SHEBANG']:
+	#				failed = failed + 1
+	#				print 'shebang fails at: %s' % i
+	#				print 'shebang shown is: %s' % line
+	#				print 'shebang model is: %s' % ELEMENTS['SHEBANG']
 
 		if VERBOSE: print ''
 		self.failUnless(failed == 0, 'one or more files failed shebang')
