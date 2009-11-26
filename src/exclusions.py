@@ -85,7 +85,7 @@ class exclusions:
 				# allow empty files
 				if data is None: data = {}
 				elif type(data) is not dict:
-					raise eerror.YamlSyntaxError, self.E_NOTADICT
+					raise eerror.YamlSyntaxError(self.E_NOTADICT)
 
 				# look for exclusions key
 				if not EXCLUSIONS in data:
@@ -96,16 +96,16 @@ class exclusions:
 				# we should have a list, but allow no exclusions
 				if data is None: data = []
 				elif type(data) is not list:
-					raise eerror.YamlSyntaxError, self.E_NOTALIST
+					raise eerror.YamlSyntaxError(self.E_NOTALIST)
 
 			except yaml.scanner.ScannerError, e:
 				raise eerror.YamlSyntaxError, self.E_YAMLSCAN % e
 
 		except IOError, e:
 			if e.errno == errno.ENOENT:
-				raise IOError, self.E_FILEMISSING % self.yamlconf
+				raise IOError(self.E_FILEMISSING % self.yamlconf)
 			else:
-				raise IOError, e
+				raise IOError(e)
 
 		finally:
 			try: f.close()
@@ -160,7 +160,7 @@ class exclusions:
 					# uses: dt module that i wrote
 					# TODO: does this need to be enclosed in a try/catch (because it can raise)
 					temp = dt.dt(time_shift=self.time_shift)
-					if not( temp.is_time(i[j]) ):
+					if not(temp.is_time(i[j])):
 						row = False
 						break
 					else: row = True
@@ -174,7 +174,7 @@ class exclusions:
 					pass
 
 				else:
-					raise eerror.YamlSyntaxError, 'identifier: `%s\' not supported' % j
+					raise eerror.YamlSyntaxError('identifier: `%s\' not supported' % j)
 
 			# if we have a valid row, then the exclusion should happen since the rows are OR-ed together
 			if row:

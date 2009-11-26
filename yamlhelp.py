@@ -49,10 +49,10 @@ class yamlhelp:
 
 			except yaml.scanner.ScannerError, e:
 				#return None
-				raise SyntaxError, "yaml error: `%s', with: `%s'" % (str(e), self.filename)
+				raise SyntaxError("yaml error: `%s', with: `%s'" % (str(e), self.filename))
 
 		except IOError, e:
-			raise IOError, e
+			raise IOError(e)
 			#pass
 
 
@@ -75,7 +75,7 @@ class yamlhelp:
 
 			except yaml.scanner.ScannerError, e:
 				#return None
-				raise SyntaxError, "yaml error: `%s', with: `%s'" % (str(e), self.filename)
+				raise SyntaxError("yaml error: `%s', with: `%s'" % (str(e), self.filename))
 
 			#text = self.spaces2tabs(text)
 
@@ -83,7 +83,7 @@ class yamlhelp:
 			f.writelines(text)
 
 		except IOError, e:
-			raise IOError, e
+			raise IOError(e)
 			#pass
 
 		finally:

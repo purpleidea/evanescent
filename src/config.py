@@ -103,9 +103,9 @@ class config:
 		if type(data) is not dict:
 			data = {}
 
-		data = dict([ (k.upper(),value) for k,value in data.items() if value is not None ])
+		data = dict([(k.upper(), value) for k, value in data.items() if value is not None])
 
-		data = {key:data}
+		data = {key: data}
 
 		conf = yamlhelp.yamlhelp(filename=self.filename)
 		# TODO: replace the yamlhelp lib with a more clever yamlhelp lib
@@ -137,7 +137,7 @@ class config:
 			data = {}
 
 		# convert all keys to uppercase and remove null values
-		data = dict([ (key.upper(),value) for key,value in data.items() if value is not None ])
+		data = dict([(key.upper(),value) for key,value in data.items() if value is not None])
 
 		self.config = data
 		return result
@@ -240,7 +240,7 @@ class config:
 
 
 	def process(self, debug=None):
-		"""change certain values. eg: used for special debug flag."""		
+		"""change certain values. eg: used for special debug flag."""
 		d = (debug is None and self.debug) or debug
 		if 'DEBUGMODE' in self.config and self.config['DEBUGMODE']:
 			self.config['WORDYMODE'] = True
@@ -365,45 +365,34 @@ if __name__ == '__main__':
 
 obj.run(make=True)
 
-
-
-
-
-
-
-
-
-
-
-"""
-ICONIMAGE = prefix('files/evanescent.svg')	# filename for `systray' icon
-
-conf = yamlhelp.yamlhelp(filename=THECONFIG)
-try:
-	data = conf.get_yaml()
-except IOError:
-	# filename probably didn't exist
-	data = None
-
-if not(type(data) == type([])):
-	# TODO: add a warning explaining that the config file format is bad.
-	# (do this whenever we fail silently like we're doing now.)
-	data = []
-
-# remove unwanted keys and extract conf dictionary
-data = [x for x in data if type(x) == type({}) and len(x) == 1 and x.has_key('conf')]
-
-# ensure we have at least some data
-if len(data) > 0 and type(data[0]) == type({}): data = data[0]['conf']
-else: data = {}
-
-# convert all keys to uppercase and remove null values
-data = dict([ (key.upper(),value) for key,value in data.items() if not(value is None) ])
-
-# so that... hmmm TODO: i forget, haha.
-assert not((FASTSLEEP != 0) and (COUNTDOWN != 0) and FASTSLEEP >= COUNTDOWN), 'FASTSLEEP value should be smaller than COUNTDOWN'
-
-# so that messages don't go stale before they get a chance to be read
-assert READSLEEP+FASTSLEEP < STALETIME, 'READSLEEP+FASTSLEEP should be smaller than STALETIME'
-"""
-
+# TODO: legacy code, to delete or use...
+#ICONIMAGE = prefix('files/evanescent.svg')	# filename for `systray' icon
+#
+#conf = yamlhelp.yamlhelp(filename=THECONFIG)
+#try:
+#	data = conf.get_yaml()
+#except IOError:
+#	# filename probably didn't exist
+#	data = None
+#
+#if not(type(data) == type([])):
+#	# TODO: add a warning explaining that the config file format is bad.
+#	# (do this whenever we fail silently like we're doing now.)
+#	data = []
+#
+## remove unwanted keys and extract conf dictionary
+#data = [x for x in data if type(x) == type({}) and len(x) == 1 and x.has_key('conf')]
+#
+## ensure we have at least some data
+#if len(data) > 0 and type(data[0]) == type({}): data = data[0]['conf']
+#else: data = {}
+#
+## convert all keys to uppercase and remove null values
+#data = dict([ (key.upper(),value) for key,value in data.items() if not(value is None) ])
+#
+## so that... hmmm TODO: i forget, haha.
+#assert not((FASTSLEEP != 0) and (COUNTDOWN != 0) and FASTSLEEP >= COUNTDOWN), 'FASTSLEEP value should be smaller than COUNTDOWN'
+#
+## so that messages don't go stale before they get a chance to be read
+#assert READSLEEP+FASTSLEEP < STALETIME, 'READSLEEP+FASTSLEEP should be smaller than STALETIME'
+#

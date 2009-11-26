@@ -43,7 +43,7 @@ FINDTYPE_FIND = 0
 FINDTYPE_INDEX = 1
 FINDTYPE_RE = 2
 # TODO: create a simple expression vocabulary ( * ? and | ) similar to fnmatch.
-# use simple patterns and avoid complex regular expressions and escaping chars. 
+# use simple patterns and avoid complex regular expressions and escaping chars.
 # Some people, when confronted with a problem, think “I know, I'll use regular
 # expressions.” Now they have two problems. --Jamie Zawinski
 #FINDTYPE_FNMATCH = 3
@@ -241,9 +241,11 @@ class fileformatTestCase(unittest.TestCase):
 		return result
 
 
-	def testFiles(self):
-		"""test suite hook, that calls checkFiles(). this function
-		depends on the setUp() function."""
+	def testFileFormats(self):
+		"""testFileFormats
+
+		this is the test suite hook, that calls checkFiles(). this
+		function depends on the setUp() function."""
 		self.failUnless(
 			self.checkFiles(self.filelist),
 			_('Files don\'t pass format checks and constraints.')

@@ -332,7 +332,7 @@ class evanescent_client(dbus.service.Object):
 		# that would affect evanescent, and thus would require a poke.
 		# ideally we'd like to only run one poke per set of events, but
 		# it seems as though the HINT doesn't work so well. BUG? FIXME?
-		if event_type in [gio.FILE_MONITOR_EVENT_CHANGES_DONE_HINT,  gio.FILE_MONITOR_EVENT_DELETED]:
+		if event_type in [gio.FILE_MONITOR_EVENT_CHANGES_DONE_HINT, gio.FILE_MONITOR_EVENT_DELETED]:
 			self.poke()
 
 

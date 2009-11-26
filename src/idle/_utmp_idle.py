@@ -58,7 +58,7 @@ def _idle(update_ttys=False):
 	# possible values from utmp, and formatting data:
 	# '%-10s %-5s %10s %-10s %-25s %-15s %-10s %-10s %-10s %-10s %-10s'
 	# (USER, TTY, PID, HOST, LOGIN, IDLE, TYPE, SESSION, ID, EXIT, IPV6')
-	# (x.ut_user, x.ut_line, x.ut_pid, x.ut_host, time.ctime(x.ut_tv[0]), 
+	# (x.ut_user, x.ut_line, x.ut_pid, x.ut_host, time.ctime(x.ut_tv[0]),
 	# z, x.ut_type, x.ut_session, x.ut_id, x.ut_exit, x.ut_addr_v6)
 
 	u.endutent()					# close the utmp file!

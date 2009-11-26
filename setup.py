@@ -36,7 +36,7 @@ data_files = []
 # EXTENSIONS ##################################################################
 if os.name == 'posix':
 	ext_modules.append(
-		distutils.core.Extension('evanescent.idle._x11_idle', ['src/idle/_x11_idle.c'], libraries = ['Xss'])
+		distutils.core.Extension('evanescent.idle._x11_idle', ['src/idle/_x11_idle.c'], libraries=['Xss'])
 	)
 
 # DATA FILES ##################################################################
@@ -60,17 +60,17 @@ if os.name == 'posix':
 
 # SETUP #######################################################################
 distutils.core.setup(
-	name = NAME,
-	version = misc.get_version(),
-	packages = ['evanescent', 'evanescent.idle', 'evanescent.logout'],
-	package_dir = {'evanescent':'src'},
-	ext_modules = ext_modules,
+	name=NAME,
+	version=misc.get_version(),
+	packages=['evanescent', 'evanescent.idle', 'evanescent.logout'],
+	package_dir={'evanescent': 'src'},
+	ext_modules=ext_modules,
 	# list of miscellaneous extra modules to include
-	py_modules = ['yamlhelp', 'logginghelp', 'manhelp'],
-	data_files = data_files,
-	scripts = ['evanescent-client', 'evanescent-daemon', 'evanescent-remote'],
+	py_modules=['yamlhelp', 'logginghelp', 'manhelp'],
+	data_files=data_files,
+	scripts=['evanescent-client', 'evanescent-daemon', 'evanescent-remote'],
 	# add build_manpages command
-	cmdclass = {
+	cmdclass={
 		'uninstall': uninstall.uninstall,
 		'build_manpages': build_manpages.build_manpages
 	}

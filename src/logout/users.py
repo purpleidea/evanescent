@@ -31,7 +31,7 @@ if os.name == 'nt':
 		"""return the list of users on the machine."""
 		# TODO: should we filter by session?
 		# FIXME: should we exclude blank usernames? what do they mean?
-		return [ x.username for x in __lsusers() if x.username != '']
+		return [x.username for x in __lsusers() if x.username != '']
 
 elif os.name == 'posix':
 	import utmp
@@ -41,7 +41,7 @@ elif os.name == 'posix':
 		"""return the list of users on the machine."""
 		f = UTMPCONST.USER_PROCESS	# filter for
 		u = utmp.UtmpRecord()		# iterator
-		users = [ x.ut_user for x in u if x.ut_type == f ]
+		users = [x.ut_user for x in u if x.ut_type == f]
 		u.endutent()			# close the utmp file!
 		return users
 

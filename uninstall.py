@@ -56,7 +56,7 @@ class install(distutils.command.install.install):
 					# note: use '\n' for *all* platforms, not just linux.
 					# see: http://docs.python.org/library/os.html#os.linesep
 					f.write(_('# installed files log. needed for uninstall. do NOT delete.\n'))
-					f.writelines([ '%s\n' % x for x in self.get_outputs() ])
+					f.writelines(['%s\n' % x for x in self.get_outputs()])
 			except IOError, e:
 				print _('unable to write install log to: %s') % INSTALL_LOG
 				print e
@@ -110,7 +110,7 @@ class uninstall(distutils.core.Command):
 			try:
 				with open(filename, 'r') as f:
 					# take out the comments
-					filelist = [ x.strip() for x in f.readlines() if x[0] != '#' ]
+					filelist = [x.strip() for x in f.readlines() if x[0] != '#']
 				success = True	# this worked
 			except IOError, e:
 				if self.force_log:
@@ -129,7 +129,7 @@ class uninstall(distutils.core.Command):
 				try:
 					with open(self.generate_log) as f:
 						f.write(_('# installed files guess log.\n'))
-						f.writelines([ '%s\n' % x for x in output ])
+						f.writelines(['%s\n' % x for x in output])
 				except IOError, e:
 					print _('unable to write install guess log to: %s') % self.generate_log
 					print e

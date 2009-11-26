@@ -160,7 +160,7 @@ def formatting():
 		#inspect.getargspec(formatting)[0] prints the same as dir()
 		args = dir()	# get this out of comprehension scope
 		# TODO: can we replace eval() with a getattr style thing ?
-		args = dict([ (arg, eval(arg)) for arg in args])
+		args = dict([(arg, eval(arg)) for arg in args])
 		# NOTE: section is a number; maybe we can avoid string sections
 		return '.TH %(name)s %(section)d "%(date)s" "%(version)s" "%(title)s"' % args
 
@@ -176,7 +176,7 @@ def formatting():
 
 		if long is None and short is None: return ''
 		result = '.TP\n'	# option definition start
-		if type(short) is str:	result += '\\fB\-%s\\fR' % short
+		if type(short) is str: result += '\\fB\-%s\\fR' % short
 		if type(short) is str and type(long) is str: result += ', '
 		if type(long) is str: result += '\\fB\-\-%s\\fR' % long
 		if type(meta) is str: result += '=\\fI%s\\fR' % meta
@@ -186,7 +186,7 @@ def formatting():
 	def seealso(entries):
 		"""format a list of (name, section) tuples as see also entries."""
 		if type(entries) is not list: return ''
-		return ',\n'.join([ '.BR %s (%d)' % x for x in entries
+		return ',\n'.join(['.BR %s (%d)' % x for x in entries
 		if len(x) == 2 and type(x[0]) is str and type(x[1]) is int])
 
 	def code(text):

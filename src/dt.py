@@ -93,7 +93,7 @@ class dt:
 				time_str = time_str[:-1]
 
 			if self.force_brackets and (not(lhs_bracket) or not(rhs_bracket)):
-				raise SyntaxError, 'missing left and right square brackets'
+				raise SyntaxError('missing left and right square brackets')
 
 			# now split it up
 			split = time_str.split(COMMA)
@@ -106,7 +106,7 @@ class dt:
 			second = 0
 
 			# need between one and 3 chunks of time values to parse; eg: (x:y:z) or (x:y) or (x)
-			if len(lhs) < 1 or len(lhs) > 3: raise SyntaxError, "bad lhs time syntax: `%s'" % split[0].strip()
+			if len(lhs) < 1 or len(lhs) > 3: raise SyntaxError("bad lhs time syntax: `%s'" % split[0].strip())
 
 			# in case parsing int fails
 			try:
@@ -114,7 +114,7 @@ class dt:
 				if len(lhs) > 1: minute = int(lhs[1])
 				if len(lhs) > 2: second = int(lhs[2])
 			except ValueError:
-				raise SyntaxError, "bad lhs time value: `%s'" % split[0].strip()
+				raise SyntaxError("bad lhs time value: `%s'" % split[0].strip())
 
 			lhs_datetime = datetime.datetime(year=now.year, month=now.month, day=now.day, hour=hour, minute=minute, second=second)
 
@@ -134,7 +134,7 @@ class dt:
 			second = 0
 
 			# need between one and 3 chunks of time values to parse; eg: (x:y:z) or (x:y) or (x)
-			if len(rhs) < 1 or len(rhs) > 3: raise SyntaxError, "bad rhs time syntax: `%s'" % split[1].strip()
+			if len(rhs) < 1 or len(rhs) > 3: raise SyntaxError("bad rhs time syntax: `%s'" % split[1].strip())
 
 			# in case parsing int fails
 			try:
@@ -142,7 +142,7 @@ class dt:
 				if len(rhs) > 1: minute = int(rhs[1])
 				if len(rhs) > 2: second = int(rhs[2])
 			except ValueError:
-				raise SyntaxError, "bad rhs time value: `%s'" % split[1].strip()
+				raise SyntaxError("bad rhs time value: `%s'" % split[1].strip())
 
 			rhs_datetime = datetime.datetime(year=now.year, month=now.month, day=now.day, hour=hour, minute=minute, second=second)
 
@@ -161,7 +161,7 @@ class dt:
 			raise NotImplementedError
 
 		else:
-			raise SyntaxError, "bad time syntax: `%s'" % time_str
+			raise SyntaxError("bad time syntax: `%s'" % time_str)
 
 
 	def is_date(self, date_str):

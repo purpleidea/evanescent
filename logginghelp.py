@@ -81,7 +81,7 @@ class logginghelp:
 			# add a log file at the default location for os
 			self.mylogpath.append(path % self.name)
 
-		# default log format. 
+		# default log format.
 		if self.logformat is None:
 			# the `7' as a kerning default is arbitrary.
 			self.logformat = '%(asctime)s %(levelname)-8s %(name)-'\

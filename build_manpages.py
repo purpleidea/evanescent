@@ -31,6 +31,7 @@ import distutils.errors		# from distutils.errors import DistutilsOptionError
 import manhelp			# to generate man pages
 _ = lambda x: x			# add fake gettext function until i fix up i18n
 
+
 class build_manpages(distutils.core.Command):
 	# FIXME: use the dry-run option...
 	description = 'generates groff man pages from templates'
@@ -95,4 +96,3 @@ class build_manpages(distutils.core.Command):
 # applicable if we have any C header files to install.) If predicate is None,
 # that command is always applicable.
 distutils.command.build.build.sub_commands.append(('build_manpages', None))
-
