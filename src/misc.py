@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""
-Misc helper functions for evanescent machine idle detection and shutdown tool.
+"""Misc helper functions.
 
 This is an assortment of small functions that don't belong anywhere important.
 """
