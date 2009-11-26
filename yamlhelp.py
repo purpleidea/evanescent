@@ -1,13 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""
-Yamlhelp wrapper to simplify yaml reading and writing for me.
+"""Yamlhelp wrapper to simplify yaml reading and writing for me.
 
 This class was created to abstract away many of the yaml calls which I didn't
 want to think about and see. It needs some love if it wants to be a more useful
 library.
 """
-# Copyright (C) 2009  James Shubin, McGill University
+# Copyright (C) 2008-2009  James Shubin, McGill University
 # Written for McGill University by James Shubin <purpleidea@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
