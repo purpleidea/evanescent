@@ -31,13 +31,17 @@ fine grained control of logging behaviour.
 import os
 import logging
 import logging.handlers
+import xdg.BaseDirectory
+import errno
 
+_ = lambda x: x			# add fake gettext function until i fix up i18n
 DEFAULT_PATH = True
 
 # from: http://svn.python.org/view/python/trunk/Lib/logging/__init__.py?r1=66211&r2=67511
 # the above code is under the license for the logging module. it is here until
 # it gets backported or this logginghelp module gets updated to a newer version.
 # Null handler
+
 
 class NullHandler(logging.Handler):
 	"""
@@ -54,9 +58,9 @@ class NullHandler(logging.Handler):
 
 
 class logginghelp:
-
-	def __init__(self, name, wordymode=True, stderrlog=True, mylogpath=[DEFAULT_PATH],
-		logserver=None, logformat=None, showhello=False, kerning=7):
+	def __init__(self, name, wordymode=True, stderrlog=True,
+		mylogpath=[DEFAULT_PATH], addxdglog=True, defxdgstr='messages',
+		logserver=None, logformat=None, showhello=False, mykerning=7):
 		"""this class is meant to ease the use of the python logging
 		class. the code assumes some sensible defaults, and if you want
 		something different, then this class can probably be easily
@@ -66,10 +70,27 @@ class logginghelp:
 		self.name = name			# a name for this log
 		self.wordymode = wordymode		# extra speak
 		self.stderrlog = stderrlog
-		self.mylogpath = mylogpath		# array of rotating logs
+		self.mylogpath = mylogpath		# list of rotating logs
+		self.addxdglog = addxdglog		# add on xdg log path
+		self.defxdgstr = defxdgstr		# default xdg string
 		self.logserver = logserver		# for remote syslog
 		self.logformat = logformat		# the format for all
-		self.kerning = kerning			# add extra kerning on
+		self.mykerning = mykerning		# add extra kerning on
+
+		# add a log file in an xdg compliant path
+		if self.addxdglog:
+			temp = xdg.BaseDirectory.xdg_cache_home
+			self.__cache = os.path.join(temp, self.name)
+			try:
+				os.makedirs(self.__cache)
+			except OSError, e:
+				if e.errno != errno.EEXIST:
+					self.__cache = None
+
+			if self.__cache is not None:
+				temp = '%s.log' % self.defxdgstr
+				temp = os.path.join(self.__cache, temp)
+				self.mylogpath.append(temp)
 
 		# add os specific default path to the processing
 		if os.name == 'nt': path = 'c:\WINDOWS\system32\config\%s.log'
@@ -85,7 +106,7 @@ class logginghelp:
 		if self.logformat is None:
 			# the `7' as a kerning default is arbitrary.
 			self.logformat = '%(asctime)s %(levelname)-8s %(name)-'\
-			+ str(self.kerning + len(self.name)) + 's %(message)s'
+			+ str(self.mykerning + len(self.name)) + 's %(message)s'
 
 		# log objects
 		self.log = None			# main logger
@@ -96,7 +117,7 @@ class logginghelp:
 		self.__logging()
 
 		# send a hello message
-		if showhello: self.log.debug('hello from: %s' % self.name)
+		if showhello: self.log.debug(_('hello from: %s') % self.name)
 
 
 	def __logging(self):
@@ -171,11 +192,14 @@ class logginghelp:
 				)
 				self.logh['RotatingFileHandler'].setFormatter(formatter)
 				self.log.addHandler(self.logh['RotatingFileHandler'])
+				msg = _('using `%s\' for logging messages.')
+				self.log.info(msg % x)
 
 			except IOError:
 				# you probably don't have the file permissions
 				# to open the file. you probably need root.
-				self.log.warn('unable to open `%s\' for use as a log file.' % x)
+				msg = _('unable to open `%s\' for logging messages.')
+				self.log.warn(msg % x)
 
 			finally:
 				if 'RotatingFileHandler' in self.logh:
@@ -204,7 +228,8 @@ class logginghelp:
 
 if __name__ == '__main__':
 	import sys
-	obj = logginghelp(__name__, showhello=True, kerning=3)
+	name = os.path.splitext(os.path.basename(__file__))[0]
+	obj = logginghelp(name, showhello=True, mykerning=3, defxdgstr=name)
 	log = obj.get_log()
 	log.info('argv: %s' % ', '.join(sys.argv))
 
