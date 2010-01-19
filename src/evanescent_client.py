@@ -76,20 +76,14 @@ class evanescent_client(dbus.service.Object):
 		#	list(xdg.BaseDirectory.load_data_paths(self.name)) or
 		#	[xdg.BaseDirectory.save_data_path(self.name)]
 		#)[0]	# take the first element in the resultant list
-		self.__cache = os.path.join(xdg.BaseDirectory.xdg_cache_home, self.name)
-		try:
-			os.makedirs(self.__cache)
-		except OSError:
-			self.__cache = None
+		#self.__cache = os.path.join(xdg.BaseDirectory.xdg_cache_home, self.name)
 
 		# LOGGING #####################################################
 		mylogpath=[config.MYLOGPATH]
-		if self.__cache is not None:
-			mylogpath.append(os.path.join(self.__cache, 'eva.log'))
 		obj = logginghelp.logginghelp(name=self.name,
-		wordymode=config.WORDYMODE, mylogpath=mylogpath,
-		logserver=config.LOGSERVER, logformat=config.LOGFORMAT)
-
+		wordymode=config.WORDYMODE, mylogpath=mylogpath, 
+		logserver=config.LOGSERVER, logformat=config.LOGFORMAT,
+		defxdgstr=self.name)
 		self.log = obj.get_log()	# main logger
 
 		# GOBJECT #####################################################
