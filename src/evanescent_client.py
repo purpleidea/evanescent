@@ -45,7 +45,7 @@ import exclusions				# exclusions module
 import idle.idle as idle			# idle package
 import logout.logout as logout			# logout package
 
-import logginghelp				# my wrapper for logging
+from jhelp import logginghelp			# my wrapper for logging
 
 from config import _service, _interface, _path	# pull strings
 

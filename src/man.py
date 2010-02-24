@@ -24,7 +24,7 @@ This file provides useful namespace info to be used with the cheetah template.
 import os
 import datetime
 import misc
-import manhelp
+from jhelp import manhelp
 
 __all__ = ['namespace']
 

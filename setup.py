@@ -25,8 +25,9 @@ Supported commands include a customized `install' target, and a magic
 import distutils.core		#from distutils.core import setup, Extension
 import os
 import src.misc as misc		# for get_version
-import uninstall
-import build_manpages		# custom distutils command for building manpages
+from jhelp import uninstall
+				# custom distutils command for building manpages
+from jhelp import build_manpages
 
 # VARIABLES ###################################################################
 NAME = 'evanescent'

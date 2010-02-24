@@ -24,7 +24,7 @@ working. It definitely needs some love from a clear thinker.
 
 import os
 import sys		# for sys.modules
-import yamlhelp
+from jhelp import yamlhelp
 
 # TODO: clean up this file and in the future add pycurl
 # TODO/FIXME: maybe we should be rewriting the whole config parser module.

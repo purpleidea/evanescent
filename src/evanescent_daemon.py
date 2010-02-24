@@ -58,7 +58,7 @@ import logout.logout as logout			# logout in logout package
 import logout.users as users			# users in logout package
 import exclusions				# exclusions module
 import misc					# miscellaneous such as uptime
-import logginghelp				# i wrote this one
+from jhelp import logginghelp			# i wrote this one
 
 
 class evanescent_daemon:
