@@ -80,6 +80,7 @@ install: clean
 abc:
 	sudo $(RMTOOL) $(PREFIX)bin/dude
 
+# XXX: replace all of this with the distutils setup.py uninstall command i made
 uninstall:
 	# FIXME: remove all the {site|dist}-packages of the right python version
 	sudo $(RMTOOL) -r $(PREFIX)lib/python2.5/site-packages/evanescent/ 2> /dev/null || true
