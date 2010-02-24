@@ -66,8 +66,6 @@ distutils.core.setup(
 	packages=['evanescent', 'evanescent.idle', 'evanescent.logout'],
 	package_dir={'evanescent': 'src'},
 	ext_modules=ext_modules,
-	# list of miscellaneous extra modules to include
-	py_modules=['yamlhelp', 'logginghelp', 'manhelp'],
 	data_files=data_files,
 	scripts=['evanescent-client', 'evanescent-daemon', 'evanescent-remote'],
 	# add build_manpages command
