@@ -1,43 +1,50 @@
 #
-#    Makefile for evanescent machine idle detection and shutdown tool.
-#    Copyright (C) 2008  James Shubin, McGill University
-#    Written for McGill University by James Shubin <purpleidea@gmail.com>
+# Makefile for evanescent machine idle detection and shutdown tool.
+# Copyright (C) 2008-2010  James Shubin, McGill University
+# Written for McGill University by James Shubin <purpleidea@gmail.com>
 #
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
 #
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# version and revision of the program
+
+# name of this project
+NAME := $(shell basename `pwd`)
+
+# version of the program
 VERSION := $(shell cat VERSION)
 
-# directories
-# TODO: it seems many use: '/usr' (less logical) and not '/usr/' (more logical)
-PREFIX := $(shell ./findeva.py)
-VARWWW = /var/www/
-WWWPROJECT = $(VARWWW)code/evanescent/
+# where am i ?
+PWD := $(shell pwd)
+
+# executables
 RMTOOL = rm -i
 
+# www source and metadata paths
+WWW = $(PWD)/../www/code/$(NAME)/
+METADATA = $(WWW)/$(NAME)
+
+# TODO: it seems many use: '/usr' (less logical) and not '/usr/' (more logical)
+PREFIX := $(shell ./findeva.py)
 
 # if someone runs make without a target, print some useful messages
 all:
 	# list the available targets and what they do
 	echo -e 'available targets:'
-	echo -e '- clean:\tcleans up any mess or files that can be generated again.'
-	echo -e '- install:\tinstalls evanescent on the machine.'
-	echo -e '- uninstall:\tuninstalls evanescent from the machine.'
-	echo -e '- purge:\tremoves all traces of evanescent from a machine.'
-	echo -e '- commit:\truns some pre-commit housekeeping scripts.'
-	echo -e '- tar:\t\tmake a tar.bz2 archive for distribution.'
+	echo -e '- clean:\tcleans up any files that can be generated again.'
+	echo -e '- install:\tinstalls this package on the machine.'
+	echo -e '- uninstall:\tuninstalls this package from the machine.'
+	echo -e '- purge:\tdelete all traces of the install from the machine.'
+	echo -e '- source:\tmake a source archive for distribution.'
 	echo -e '- www:\t\tput an archive on the local webserver.'
 	echo -e '- man:\t\tbuild the man pages and then view them.'
 
@@ -46,41 +53,23 @@ all:
 clean: force
 	# let distutils try to clean up first
 	python setup.py clean
-	# remove any python mess
-	$(RMTOOL) *.pyc 2> /dev/null || true
-	# remove the python windowless mess too
-	$(RMTOOL) *.pyw 2> /dev/null || true
-	# remove the tar archive
-	$(RMTOOL) evanescent.tar.bz2 2> /dev/null || true
-	# remove distutils mess
-	$(RMTOOL) -r build/ 2> /dev/null || true
-	$(RMTOOL) -r dist/ 2> /dev/null || true
+	# remove distutils mess with -f because they're write protected
+	if [ -e build/ ]; then $(RMTOOL) -rf build/; fi
 	# remove generated man mess
 	$(RMTOOL) -r man/evanescent.* 2> /dev/null || true
+	# remove any python mess (let above scripts rm the bulk first)
+	find . -name '*.pyc' -type f -print0 | xargs -0 rm -f
 
 
-# this should be run before an important commit
-# it takes care of running version.sh, etc...
-commit: clean force
-	./version.sh
-	echo "you now probably want to run:"
-	echo "$ bzr commit -m '<comment>'"
-	echo "$ make tar"
-	echo "$ make www"
-
-
-# this runs distutils for the install
+# this installs code to your machine
 install: clean
 	python setup.py build
 	sudo python setup.py install
 	sudo mandb	# update the man index for `apropos' and `whatis'
 
 
-# remove all the mess that distutils installed
-abc:
-	sudo $(RMTOOL) $(PREFIX)bin/dude
-
 # XXX: replace all of this with the distutils setup.py uninstall command i made
+# uninstalls the package
 uninstall:
 	# FIXME: remove all the {site|dist}-packages of the right python version
 	sudo $(RMTOOL) -r $(PREFIX)lib/python2.5/site-packages/evanescent/ 2> /dev/null || true
@@ -100,7 +89,7 @@ uninstall:
 	sudo $(RMTOOL) $(PREFIX)lib/python2.5/site-packages/evanescent-* 2> /dev/null || true
 
 
-# purge all extra unwanted files
+# purge any unwanted files
 purge: uninstall
 	# these get created by evanescent, remove them on a purge
 	# FIXME: these two should get the path from xdg
@@ -119,64 +108,42 @@ man: force
 	./viewthis.sh
 
 
-# make a package for distribution
-tar: clean
-
+# make a source package for distribution
+source: clean
 	# split this up into multiple lines for readability
 	cd ..; \
 	tar	--exclude=old \
 		--exclude=play \
 		--exclude=.swp \
-		--exclude=.bzr \
-		--exclude=tar \
+		--exclude=.git \
+		--exclude=.gitignore \
+		--exclude=dist \
 		--bzip2 \
-		-cf evanescent.tar.bz2 evanescent/
+		-cf $(NAME).tar.bz2 $(NAME)/
 
-	if [ -e ./tar/evanescent-$(VERSION).tar.bz2 ]; then \
+	if [ -e ./dist/$(NAME)-$(VERSION).tar.bz2 ]; then \
 		echo version $(VERSION) already exists; \
-		rm ../evanescent.tar.bz2; \
+		rm ../$(NAME).tar.bz2; \
 	else \
-		mv ../evanescent.tar.bz2 ./tar/evanescent-$(VERSION).tar.bz2; \
-		echo 'tar created successfully in tar/'; \
+		mv ../$(NAME).tar.bz2 ./dist/$(NAME)-$(VERSION).tar.bz2 && \
+		echo 'source tarball created successfully in dist/'; \
 	fi
 
 
-# move current version to www folder
-www: .SILENT
-
-	if [ -e /var/www/code/evanescent/evanescent-$(VERSION).tar.bz2 ]; then \
-		echo version $(VERSION) already exists in /var/www/; \
-	else \
-		if [ -e ./tar/evanescent-$(VERSION).tar.bz2 ]; then \
-			cp -a ./tar/evanescent-$(VERSION).tar.bz2 /var/www/code/evanescent/; \
-			echo EVANESCENT $(VERSION) evanescent-$(VERSION).tar.bz2 >> /var/www/code/evanescent/evanescent; \
-			echo version $(VERSION) successfully pushed to local webserver; \
-			echo you might want to sync public webserver with local; \
-		else \
-			echo version $(VERSION) doesn\'t exist as a tarball; \
-		fi \
-	fi
+www: force
+	rsync -av dist/ $(WWW)
+	# empty the file
+	echo -n '' > $(METADATA)
+	cd $(WWW); \
+	for i in `ls *.bz2`; do \
+		echo $(NAME) $(VERSION) $$i >> $(METADATA); \
+	done
 
 
-# make a package for windows...
-windows:
-	# the client needs a windowless version
-	#cp eva.py eva.pyw
-	echo 'figure out py2exe and do it...'
-
-
-# this target does nothing, and can be used as a dependency when we always want
-# to run the commands, irregardless of whatever make thinks needs to run.
+# depend on this fake target to cause a target to always run
 force: ;
 
 
 # this target silences echoing of any target which has it as a dependency.
 .SILENT:
-
-
-# NOTE: this is how you would get instance persistence in makefile lines:
-example: force
-	pwd; \
-	cd play; \
-	pwd
 
