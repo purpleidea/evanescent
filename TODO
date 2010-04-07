@@ -95,3 +95,6 @@ http://git.gnome.org/cgit/gnome-screensaver/commit/?id=370ae655619c8e0fbd8a092d7
 
 22) fix up the version.sh script since i am not using git.
 
+
+23) use the prefix.py lib, copied from jhelp instead of the findeva.py script.
+
