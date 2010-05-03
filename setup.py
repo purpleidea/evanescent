@@ -70,7 +70,7 @@ distutils.core.setup(
 	scripts=['evanescent-client', 'evanescent-daemon', 'evanescent-remote'],
 	# add build_manpages command
 	cmdclass={
-		'install': uninstall.install, 'uninstall': uninstall.uninstall
+		'install': uninstall.install, 'uninstall': uninstall.uninstall,
 		'build_manpages': build_manpages.build_manpages
 	}
 )
