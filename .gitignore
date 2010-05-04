@@ -1,5 +1,7 @@
+*.pyc
+build/
+dist/
+MANIFEST
 old/
 play/
 install.log
-*.pyc
-
