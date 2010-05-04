@@ -6,7 +6,7 @@ Evanescent machine idle detection and shutdown tool client.
 This is the client that runs in the users session. Read the man pages for more
 info.
 """
-# Copyright (C) 2008-2009  James Shubin, McGill University
+# Copyright (C) 2008-2010  James Shubin, McGill University
 # Written for McGill University by James Shubin <purpleidea@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify

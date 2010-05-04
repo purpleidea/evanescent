@@ -5,7 +5,7 @@ Idle time detection for Posix.
 
 Returns idle time on Posix. Meant to be called by a higher level wrapper.
 """
-# Copyright (C) 2008-2009  James Shubin, McGill University
+# Copyright (C) 2008-2010  James Shubin, McGill University
 # Written for McGill University by James Shubin <purpleidea@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify

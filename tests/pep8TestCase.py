@@ -6,7 +6,7 @@ This test case glues in the pep8.py PEP8 testing infrastructure so that our
 whole suite can benefit from the external pep8 testing code.
 """
 
-# Copyright (C) 2009  James Shubin, McGill University
+# Copyright (C) 2009-2010  James Shubin, McGill University
 # Written for McGill University by James Shubin <purpleidea@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify

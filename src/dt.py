@@ -6,7 +6,7 @@ Dt parser for evanescent machine idle detection and shutdown tool.
 Parser for the magic date & time specifications seen in the evanescent config.
 This class definitely needs some love.
 """
-# Copyright (C) 2008-2009  James Shubin, McGill University
+# Copyright (C) 2008-2010  James Shubin, McGill University
 # Written for McGill University by James Shubin <purpleidea@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify

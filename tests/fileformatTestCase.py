@@ -7,7 +7,7 @@ and constraints. This generally tests the physical layout of the code. While
 this may seem annoying, it provides an automatic lookout for small errors and
 discrepancies that keep the code from otherwise being uniform and polished.
 """
-# Copyright (C) 2009  James Shubin, McGill University
+# Copyright (C) 2009-2010  James Shubin, McGill University
 # Written for McGill University by James Shubin <purpleidea@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify

@@ -6,7 +6,7 @@ Daemon library for daemonizing scripts.
 This is a library to help with daemonizing a process. This should be obsolete
 with version 3.2 of python. see: http://www.python.org/dev/peps/pep-3143/
 """
-# Copyright (C) 2008-2009  James Shubin, McGill University
+# Copyright (C) 2008-2010  James Shubin, McGill University
 # Written for McGill University by James Shubin <purpleidea@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify

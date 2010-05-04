@@ -6,7 +6,7 @@ Config module for evanescent machine idle detection and shutdown tool.
 This module does all the work of getting the evanescent configuration setup and
 working. It definitely needs some love from a clear thinker.
 """
-# Copyright (C) 2008-2009  James Shubin, McGill University
+# Copyright (C) 2008-2010  James Shubin, McGill University
 # Written for McGill University by James Shubin <purpleidea@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
