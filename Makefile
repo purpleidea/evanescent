@@ -58,7 +58,7 @@ clean: force
 	# remove distutils mess with -f because they're write protected
 	if [ -e build/ ]; then $(RMTOOL) -rf build/; fi
 	# remove generated man mess
-	$(RMTOOL) -r man/evanescent.* 2> /dev/null || true
+	find man/ -name 'evanescent.*' -type f -print0 | xargs -0 rm -f
 	# remove any python mess (let above scripts rm the bulk first)
 	find . -name '*.pyc' -type f -print0 | xargs -0 rm -f
 
