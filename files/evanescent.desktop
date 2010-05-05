@@ -10,7 +10,7 @@ GenericName[fr]=Détecteur D'activité
 Comment=Detect idle activity
 Comment[fr]=Détecteur de manque d'activité
 Type=Application
-Exec=evanescent-client.py
+Exec=evanescent-client
 Terminal=false
 Icon=/usr/share/evanescent/evanescent.svg
 # http://standards.freedesktop.org/menu-spec/latest/apa.html
