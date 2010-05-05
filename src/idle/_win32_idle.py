@@ -27,7 +27,6 @@ import os
 if os.name != 'nt':
 	raise ImportError("This modules requires Windows 2000 or newer.")
 import ctypes
-import time
 
 __all__ = ['_idle']
 
