@@ -213,6 +213,8 @@ class exclusions:
 			pass
 		except IOError, e:
 			pass
+		except Exception, e:
+			print _('BUG: %s') % str(e)
 		finally:
 			if not skip:
 				if result is None:
