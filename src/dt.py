@@ -29,6 +29,8 @@ COMMA = ','
 LBRACKET = '['
 RBRACKET = ']'
 
+_ = lambda x: x			# add fake gettext function until i fix up i18n
+
 class dt:
 	"""class to do simple parsing of date/time strings and to tell whether they represent a valid range of now()"""
 	def __init__(self, time_shift=0, datetime=None, force_brackets=False):

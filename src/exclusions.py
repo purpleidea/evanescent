@@ -52,6 +52,8 @@ NOTE = 'note'		# for adding comments
 # other
 EXCLUSIONS = 'exclusions'	# exclusions key
 
+_ = lambda x: x			# add fake gettext function until i fix up i18n
+
 class exclusions:
 
 	# TODO: translate these
