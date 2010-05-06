@@ -1,67 +1,81 @@
-# Evanescent machine idle detection and shutdown tool.
-# Copyright (C) 2008  James Shubin, McGill University
-# Written for McGill University by James Shubin <purpleidea@gmail.com>
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU Affero General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# Evanescent machine idle detection and shutdown tool example config file.
 
-# TODO: i should probably make this into a better example file
-
-#########
-# NOTES #
-#########
-# it would _not_ be wise to allow all admin users to be excluded from shutdown
-# because if an absent minded admin leaves his/her root session open, then that
-# session would actually get logged out given enough inactive time, hopefully
+# NOTES #######################################################################
+# * It would NOT be wise to allow all admin users to be excluded from shutdown,
+# because if an absent-minded admin leaves his/her root session open, then that
+# session would actually get logged out given enough inactive time, & hopefully
 # before a malicious user comes along and does something bad.
+#
+# * If you don't install a config file (or if you install a blank/empty one),
+# then evanescent will use all the defaults. Because of this feature, you can
+# keep this file unmodified (as reference), and add in the below options when
+# you need to change them from the defaults.
+#
+# * Exclusions match when all the fields in a list element chunk are true. This
+# should hopefully be clear in the example below. If you need confirmation that
+# you understand the format, then you can test any config file by running tests
+# with the exclusions.py script which is installed with distutils and hidden in
+# some directory such as: {prefix}/lib/pythonX.Y/site-packages/evanescent
+#
+# * This file is written in an XML-like format called YAML. Unfortunately this
+# format does not like tabs, and as such don't use them in your configuration.
 
-##########
-# CONFIG #
-##########
+# CONFIG ######################################################################
 config:
-    debugmode: False                                            # debug mode
-    wordymode: True                                             # talk a lot (implied if debugmode is on)
-    idlelimit: 3600                                             # 1 hour before you're idle
-    countdown: 300                                              # five minute countdown before shutdown
-    theconfig: '/etc/evanescent.conf.yaml'                      # the config file
-    logserver: [logmaster, 514]                                 # syslog server
-    updatemsg: True                                             # update the impending logoff msg every fastsleep or not
-    logformat: '%(asctime)s %(levelname)-8s %(name)-17s %(message)s'
-    #TODO: this option might get removed and replaced by smart polling; see: get_exclusions_changed_time
-    sleeptime: 600                                              # poll/check computer every 10 minutes
+    # debug mode
+    debugmode: False
 
-##############
-# EXCLUSIONS #
-##############
+    # talk a lot (implied if debugmode is on)
+    wordymode: True
+
+    # 1 hour before you're idle
+    idlelimit: 3600
+
+    # five minute countdown before shutdown
+    countdown: 300
+
+    # the config file path (usually this doesn't change)
+    theconfig: '/etc/evanescent.conf.yaml'
+
+    # syslog server (if you have one running that you'd like to use)
+    logserver: [logmaster, 514]
+
+    # update the impending logoff msg every $(fastsleep) or not
+    updatemsg: True
+
+    # format for logs
+    logformat: '%(asctime)s %(levelname)-8s %(name)-17s %(message)s'
+
+    # poll/check computer every 10 minutes
+    # TODO: this option might get removed and replaced by smart polling; see: get_exclusions_changed_time
+    sleeptime: 600
+
+# EXCLUSIONS ##################################################################
 exclusions:
-  - host: dude
-    user: someone else
-    date: 19-04-1984
-    time: '[13:45:26, 15:45:06['
+  - time: '[9, 17]'
+    days: [m,t,w,h,f]
+    note: Keep machines awake during normal business hours on weekdays.
+
+  - user: alice
+    note: >
+        This is a very long note,
+        That runs for multiple lines;
+        Reminding you to leave,
+        Alice logged in at all times.
+
+  - time: '[23:30, 3:00]'
+    user: bob
+    note: Bob likes to code at night, so stay out of his way.
+
+  - host: goon
+    user: charlie
 
   - host: dazzle
     user: james
     fqdn: dazzle.CS.McGill.CA
-    note: this a comment
-
-  - user: dude
-    time: '[09:00, 17]'
-    host: somehost
+    time: ']12:34:56, 12:34:56]'
     note: >
-        this is a very long note,
-        that can run for multiple lines
-        if you have a lot to say.
-
-  - time: '[11, 14:00:00]'
-    user: bob
+        All sorts of other options are possible too.
+        It's up to you to decide if they make any sense.
+        Using "note" tags are suggested, but not required.
 
