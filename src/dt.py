@@ -171,6 +171,39 @@ class dt:
 		raise NotImplementedError
 
 
+def is_day(days, time_shift=0):
+	"""Return a boolean indicating whether or not today (with time-shift)
+	is present in the passed set of days. Each day in the set is
+	represented by a one character letter. Days may be specified in any
+	order. If you specify a string that contains an invalid letter day
+	code, then a ValueError is thrown."""
+	table = {
+		'Sun': 'u',
+		'Mon': 'm',
+		'Tue': 't',
+		'Wed': 'w',
+		'Thu': 'h',
+		'Fri': 'f',
+		'Sat': 's'}
+	for i in range(len(days)):	# lowercase string or list robustly
+		days[i] = days[i].lower()
+	# check for valid day codes in input parameter
+	for i in days:
+		if not i in table.values():
+			raise ValueError(_('"%s" is an invalid day code.')) % i
+	# add/sub the time_shift
+	now = datetime.datetime.today()	# now
+	delta = datetime.timedelta(seconds=abs(time_shift))
+	if time_shift < 0:
+		now = now - delta
+	else:
+		now = now + delta
+
+	key = now.strftime('%a')
+	if key in table and table[key] in days: return True
+	return False
+
+
 if __name__ == '__main__':
 	print 'TODO: run some test cases or do something useful here.'
 

@@ -39,6 +39,7 @@ TIME = 'time'
 USER = 'user'
 EUID = 'euid'
 EGID = 'egid'
+DAYS = 'days'
 
 # TODO: (not yet implemented)
 DATE = 'date'
@@ -170,6 +171,15 @@ class exclusions:
 				elif j == DATE:
 					# TODO...
 					pass
+
+				# days of the week
+				elif j == DAYS:
+					# TODO: does this need to be enclosed in a try/catch (because it can raise)
+					if not(dt.is_day(i[j], time_shift=self.time_shift)):
+						row = False
+						break
+					else: row = True
+
 
 				elif j == NOTE:
 					# the exclusions function should ignore any comments.
