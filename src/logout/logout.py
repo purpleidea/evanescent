@@ -81,7 +81,7 @@ elif os.name == 'posix':
 		# TODO: could be replaced by dbus calls to the session manager
 		os.system('shutdown -P now shutdown by evanescent')
 
-else: raise ImportError('operating system not supported')
+else: raise ImportError(_('Operating system not supported.'))
 
 
 if __name__ == '__main__':

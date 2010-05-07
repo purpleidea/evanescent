@@ -47,7 +47,7 @@ elif os.name == 'posix':
 		u.endutent()			# close the utmp file!
 		return users
 
-else: raise ImportError("operating system not supported")
+else: raise ImportError(_('Operating system not supported.'))
 
 
 def exist():

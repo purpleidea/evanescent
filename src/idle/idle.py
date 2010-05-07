@@ -32,7 +32,7 @@ elif os.name == 'posix':
 	from _x11_idle import _idle as __idle1
 	from _utmp_idle import _idle as __idle2
 	_idle = lambda: min(__idle1(), __idle2())	# combine
-else: raise ImportError("operating system not supported")
+else: raise ImportError(_('Operating system not supported.'))
 
 
 def idle():

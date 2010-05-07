@@ -28,7 +28,7 @@ _ = lambda x: x			# add fake gettext function until i fix up i18n
 
 import os
 if os.name != 'nt':
-	raise ImportError('This modules requires Windows 2000 or newer.')
+	raise ImportError(_('This modules requires Windows 2000 or newer.'))
 import win32ts
 import socket
 import operator

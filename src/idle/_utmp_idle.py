@@ -25,7 +25,7 @@ _ = lambda x: x			# add fake gettext function until i fix up i18n
 
 import os		# for stat (to get idle times)
 if os.name != 'posix':
-	raise ImportError("This modules requires a posix compatible system.")
+	raise ImportError(_('This modules requires a posix compatible system.'))
 import time		# for the idle time math
 import getpass		# for getuser()
 import stat		# for stat constants
