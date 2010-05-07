@@ -80,13 +80,13 @@ class evanescent_remote:
 				t = '%s%s' % (_service, '.service')	# the filename
 				t = os.path.join('/usr/share/dbus-1/', 'services/', t)
 				if os.path.isfile(t):
-					print_error('please verify that the client is running.')
+					self.print_error('please verify that the client is running.')
 				else:
-					print_error('service file not found at: %s' % t)
+					self.print_error('service file not found at: %s' % t)
 
 			elif e._dbus_error_name == 'org.freedesktop.DBus.Error.Spawn.ChildExited':
-				print_error('client startup mode is probably false.')
-			else: print_error(e)
+				self.print_error('client startup mode is probably false.')
+			else: self.print_error(e)
 
 		# run any actions
 		if options.show:
