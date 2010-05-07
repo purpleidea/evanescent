@@ -60,6 +60,7 @@ import exclusions				# exclusions module
 import misc					# miscellaneous such as uptime
 from jhelp import logginghelp			# i wrote this one
 
+_ = lambda x: x			# add fake gettext function until i fix up i18n
 
 class evanescent_daemon:
 

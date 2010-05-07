@@ -97,6 +97,7 @@ import signal	# for signal.SIGTERM
 import logging	# for syslog support
 import atexit	# for deleting pid file on exit
 
+_ = lambda x: x			# add fake gettext function until i fix up i18n
 
 class DaemonError(Exception):
 	"""custom exception class for daemon related errors."""

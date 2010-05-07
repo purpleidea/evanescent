@@ -24,6 +24,8 @@ the Windows Terminal Service API.
 
 # Based 99% on code and help from Alexandre Vassalotti <alexandre@peadrop.com>
 
+_ = lambda x: x			# add fake gettext function until i fix up i18n
+
 import os
 if os.name != 'nt':
 	raise ImportError('This modules requires Windows 2000 or newer.')

@@ -21,6 +21,8 @@ Returns idle time on Posix. Meant to be called by a higher level wrapper.
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+_ = lambda x: x			# add fake gettext function until i fix up i18n
+
 import os		# for stat (to get idle times)
 if os.name != 'posix':
 	raise ImportError("This modules requires a posix compatible system.")

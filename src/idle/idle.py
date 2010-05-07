@@ -23,6 +23,8 @@ Returns idle time in a cross platform compatible way.
 
 import os
 
+_ = lambda x: x			# add fake gettext function until i fix up i18n
+
 __all__ = ['idle', 'is_idle', 'timeleft']
 
 if os.name == 'nt': from _win32_idle import _idle

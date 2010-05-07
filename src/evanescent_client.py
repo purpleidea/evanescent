@@ -22,8 +22,6 @@ info.
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# TODO: add _() for gettext
-
 import os					# for path manipulations
 import sys					# for sys.exit
 import datetime					# for time delta calculations
@@ -48,6 +46,8 @@ import logout.logout as logout			# logout package
 from jhelp import logginghelp			# my wrapper for logging
 
 from config import _service, _interface, _path	# pull strings
+
+_ = lambda x: x			# add fake gettext function until i fix up i18n
 
 class evanescent_client(dbus.service.Object):
 

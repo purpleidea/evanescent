@@ -23,6 +23,8 @@ Logout functions to be called from within a users session on any platform.
 
 import os
 
+_ = lambda x: x			# add fake gettext function until i fix up i18n
+
 __all__ = ['logmeout', 'shutdown', 'session']
 
 def session():

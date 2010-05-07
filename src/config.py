@@ -26,6 +26,8 @@ import os
 import sys		# for sys.modules
 from jhelp import yamlhelp
 
+_ = lambda x: x			# add fake gettext function until i fix up i18n
+
 # TODO: clean up this file and in the future add pycurl
 # TODO/FIXME: maybe we should be rewriting the whole config parser module.
 # make it depend on a better yamlhelp module. the idea should be that yaml_load

@@ -23,6 +23,8 @@ Lists the current users on a particular machine.
 
 import os
 
+_ = lambda x: x			# add fake gettext function until i fix up i18n
+
 __all__ = ['ls', 'exist']
 
 if os.name == 'nt':
