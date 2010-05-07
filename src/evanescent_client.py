@@ -231,7 +231,13 @@ class evanescent_client(dbus.service.Object):
 		self.log.debug('running notification_closed handler')
 		if n is None: n = self.n	# defaults, so anyone can call
 		self.icon.set_blinking(False)	# stop the blinking if any.
-		self.n.close()
+		import glib
+		try:
+			self.n.close()
+		except glib.GError, e:
+			# workaround for failing pynotify.
+			# glib.GError: 0 is not a valid notification ID
+			self.log.error(_('Glib error: %s') % str(e))
 		self.unlock_icon('notification')
 
 
@@ -401,7 +407,13 @@ class evanescent_client(dbus.service.Object):
 		# one that is mostly empy, taking up lots of space. if we close
 		# the old one just before we re-open it, then the size gets
 		# adjusted and we don't see the visual glitch! :P
-		if WORKAROUND2: self.n.close()
+		import glib
+		try:
+			if WORKAROUND2: self.n.close()
+		except glib.GError, e:
+			# TODO: this workaround seems to need this workaround!
+			# glib.GError: 0 is not a valid notification ID
+			self.log.error(_('Glib error: %s') % str(e))
 
 		# remove the icon get hidden timeout
 		# don't have to anymore since we have locking on the display
