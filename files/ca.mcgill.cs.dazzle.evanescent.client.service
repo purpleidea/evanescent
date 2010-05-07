@@ -1,4 +1,4 @@
 [D-BUS Service]
 Name=ca.mcgill.cs.dazzle.evanescent.client
-Exec=/usr/bin/evanescent-client
+Exec=/usr/local/bin/evanescent-client
 

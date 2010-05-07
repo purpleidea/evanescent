@@ -15,5 +15,5 @@ stop on runlevel 4
 stop on runlevel 5
 stop on runlevel 6
 
-exec /usr/bin/evanescent-daemon start
+exec /usr/local/bin/evanescent-daemon start
 
