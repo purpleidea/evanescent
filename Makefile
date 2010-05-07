@@ -34,8 +34,7 @@ WWW = $(PWD)/../www/code/$(NAME)/
 METADATA = $(WWW)/$(NAME)
 EXT = .tar.bz2
 
-# TODO: it seems many use: '/usr' (less logical) and not '/usr/' (more logical)
-PREFIX := $(shell ./findeva.py)
+PREFIX = /usr/
 
 
 # if someone runs make without a target, print some useful messages
@@ -55,6 +54,8 @@ all:
 clean: force
 	# let distutils try to clean up first
 	python setup.py clean
+	# remove the generated manifest file
+	if [ -e MANIFEST ]; then $(RMTOOL) MANIFEST; fi
 	# remove distutils mess with -f because they're write protected
 	if [ -e build/ ]; then $(RMTOOL) -rf build/; fi
 	# remove generated man mess
@@ -64,41 +65,27 @@ clean: force
 
 
 # this installs code to your machine
+# XXX: i bet that dbus doesn't look in /usr/local/share/dbus-1/ ... should it ?
 install: clean
 	python setup.py build
 	sudo python setup.py install
 	sudo mandb	# update the man index for `apropos' and `whatis'
 
 
-# XXX: replace all of this with the distutils setup.py uninstall command i made
 # uninstalls the package
 uninstall:
-	# FIXME: remove all the {site|dist}-packages of the right python version
-	sudo $(RMTOOL) -r $(PREFIX)lib/python2.5/site-packages/evanescent/ 2> /dev/null || true
-	sudo $(RMTOOL) -r $(PREFIX)share/evanescent/ 2> /dev/null || true
-	sudo $(RMTOOL) $(PREFIX)bin/evanescent-daemon 2> /dev/null || true
-	sudo $(RMTOOL) $(PREFIX)bin/evanescent-remote 2> /dev/null || true
-	sudo $(RMTOOL) $(PREFIX)bin/evanescent-client 2> /dev/null || true
-	sudo $(RMTOOL) $(PREFIX)lib/python2.5/site-packages/yamlhelp.py* 2> /dev/null || true
-	sudo $(RMTOOL) $(PREFIX)lib/python2.5/site-packages/logginghelp.py* 2> /dev/null || true
-	sudo $(RMTOOL) /etc/event.d/evanescent.upstart 2> /dev/null || true
-	sudo $(RMTOOL) /etc/xdg/autostart/evanescent.desktop 2> /dev/null || true
-	# TODO: i bet that dbus doesn't look in /usr/local/share/dbus-1/ ... should it ?
-	sudo $(RMTOOL) /usr/share/dbus-1/services/ca.mcgill.cs.dazzle.evanescent.client.service 2> /dev/null || true
-	sudo $(RMTOOL) $(PREFIX)share/man/man1/evanescent* 2> /dev/null || true
-	sudo $(RMTOOL) -r $(PREFIX)share/doc/evanescent/ 2> /dev/null || true
-	# egg files:
-	sudo $(RMTOOL) $(PREFIX)lib/python2.5/site-packages/evanescent-* 2> /dev/null || true
+	sudo python setup.py uninstall
 
 
 # purge any unwanted files
+# XXX: currently this needs work and can be considered broken; don't use it.
 purge: uninstall
 	# these get created by evanescent, remove them on a purge
 	# FIXME: these two should get the path from xdg
-	$(RMTOOL) -r $(HOME)/.config/eva/ 2> /dev/null || true	# eva.conf.yaml
-	$(RMTOOL) -r $(HOME)/.cache/eva/ 2> /dev/null || true	# eva.log
-	sudo $(RMTOOL) /var/log/evanescent.log* 2> /dev/null || true
-	sudo $(RMTOOL) /etc/evanescent.conf.yaml 2> /dev/null || true
+#	$(RMTOOL) -r $(HOME)/.config/eva/ 2> /dev/null || true	# eva.conf.yaml
+#	$(RMTOOL) -r $(HOME)/.cache/eva/ 2> /dev/null || true	# eva.log
+#	sudo $(RMTOOL) /var/log/evanescent.log* 2> /dev/null || true
+#	sudo $(RMTOOL) /etc/evanescent.conf.yaml 2> /dev/null || true
 	# empty man index even though this should eventually get updated by cron
 	sudo mandb
 
@@ -112,26 +99,10 @@ man: force
 
 # make a source package for distribution
 source: clean
-	# split this up into multiple lines for readability
-	cd ..; \
-	tar	--exclude=old \
-		--exclude=play \
-		--exclude=.swp \
-		--exclude=.git \
-		--exclude=.gitignore \
-		--exclude=dist \
-		--bzip2 \
-		-cf $(NAME)$(EXT) $(NAME)/
-	\
-	if [ -e ./dist/$(NAME)-$(VERSION)$(EXT) ]; then \
-		echo version $(VERSION) already exists; \
-		rm ../$(NAME)$(EXT); \
-	else \
-		mv ../$(NAME)$(EXT) ./dist/$(NAME)-$(VERSION)$(EXT) && \
-		echo 'source tarball created successfully in dist/'; \
-	fi
+	python setup.py sdist --formats=bztar
 
 
+# move current version to www folder
 www: force
 	# rsync directories so they are equivalent in terms of files with: $EXT
 	rsync -avz --include=*$(EXT) --exclude='*' --delete dist/ $(WWW)
