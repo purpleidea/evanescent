@@ -2,6 +2,7 @@
 build/
 dist/
 MANIFEST
+man/evanescent.*
 old/
 play/
 install.log
