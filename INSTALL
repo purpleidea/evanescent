@@ -1,8 +1,20 @@
-installing evanescent:
+INSTALL
 
-- on linux:
-$ make install
-(this will run the distutils install target with sudo)
-note: this *could* overwrite any exisiting /etc/evanescent.yaml.conf file that
-you have, so backup your old one beforehand please.
+* Linux:
+	$ make install (This will run the distutils install target with sudo.)
+	note: This *could* overwrite any exisiting /etc/evanescent.yaml.conf
+	file that you have, so backup your old one beforehand please.
+
+* Other Operating Systems:
+	Currently not supported. Most code is cross platform. Patches accepted.
+
+
+DEPENDENCIES
+
+* python-utmp - for working with utmp
+* python-yaml - for config file parsing
+* python-notify - for libnotify notifications
+* python-cheetah - for man page generation from templates
+* jhelp - for various helper libraries
+* libxss-dev - for building x idle detection code
 
