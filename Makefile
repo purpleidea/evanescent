@@ -34,7 +34,7 @@ WWW = $(PWD)/../www/code/$(NAME)/
 METADATA = $(WWW)/$(NAME)
 EXT = .tar.bz2
 
-PREFIX = /usr/
+PREFIX = /usr/local/
 
 
 # if someone runs make without a target, print some useful messages
@@ -65,15 +65,15 @@ clean: force
 
 
 # this installs code to your machine
-# XXX: i bet that dbus doesn't look in /usr/local/share/dbus-1/ ... should it ?
 install: clean
 	python setup.py build
-	sudo python setup.py install
+	sudo python setup.py install --prefix=$(PREFIX)
 	sudo mandb	# update the man index for `apropos' and `whatis'
 
 
 # uninstalls the package
 uninstall:
+	# XXX: add --prefix=$(PREFIX)
 	sudo python setup.py uninstall
 
 
