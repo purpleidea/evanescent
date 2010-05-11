@@ -1,6 +1,6 @@
 TODO:
-- these are sorted in terms of increasing likelihood to get done first
-- eg: the last item on the list is more likely to get finished, and removed
+* these are sorted in terms of increasing likelihood to get done first
+* eg: the last item on the list is more likely to get finished, and removed
 
 
 1) fix all the FIXME's/TODO's
@@ -13,9 +13,7 @@ perhaps in particular for the users config and not the daemon's)
 3) add test cases! including check for license text, source formatting, etc...
 
 
-4) dependency checking:
-package: libxss-dev
-package: yaml, pynotify
+4) dependency checking, use sfood program. see INSTALL file for dependencies.
 
 
 5) option to have eva running, and to disable the shutdown backend or viceversa
@@ -25,7 +23,7 @@ hack solution since if we change the user the daemon runs as, then this setting
 gets scrapped. we want something more portable.
 
 
-6) evanescent-daemon should maybe run as user `daemon' or eva or some other user account to give it less priviledges.
+6) evanescent-daemon should maybe run as user `daemon' or eva or some other user account to give it less privileges.
 
 
 7) add _() for gettext, get the gettext infrastructure scripts going, cleanup messages
@@ -37,19 +35,15 @@ gets scrapped. we want something more portable.
 9) setup.py needs some love
 
 
-10) setup.py script has hardcoded directories.
+10) logout.py needs a bit more love (just got some dbus up in there)
 
 
-11) logout.py needs a bit more love (just got some dbus up in there)
-
-
-12) countdown could update at more automatic times. eg: logarithmic? so when
+11) countdown could update at more automatic times. eg: logarithmic? so when
 you're at 5 minutes, update the time every 30 seconds. when you're at one minute
 update every 15? and when you're at 15 update every 5, and when you're at 5, 
 update every 1
 
 1 *5 -> 5 *6 -> 30 *5 -> 2m30s *6 -> 15m
-
 
 | time calculation | time | interval |
 +------------------+------+----------+
@@ -58,43 +52,44 @@ update every 1
 |_*5=150(2m30)     | <2m30| 
                    | >15m |
 
-13) fix the icon size business.
+
+12) fix the icon size business.
 
 
-14) support for additional actions instead of logout?
+13) support for additional actions instead of logout?
 this should be stored in the .eva.conf.yaml file, and should be parsed by the
 evanescent-preferences program, similar in visual design to vino-preferences.
 do: apt-get source vino and have a look inside the capplet/ folder.
 
 
-15) add some love to the config.py and associated managing of configurations.
+14) add some love to the config.py and associated managing of configurations.
 
 
-16) play a sound on idle (libcanberra?)
+15) play a sound on idle (libcanberra?)
 
 
-17) replace some of the evanescent datetime code with gobject.get_current_time() ?
+16) replace some of the evanescent datetime code with gobject.get_current_time() ?
 
-18) change config directories to use xdg and $HOME/.config/
+
+17) change config directories to use xdg and $HOME/.config/
 we should probably wait until python-gobject 2.18 in karmic:
 http://packages.ubuntu.com/python-gobject
-- done with pyxdk for now...
-
-19) add i18n support, and integrate with transifex business.
+- done with pyxdg for now...
 
 
-20) man pages: maybe add more information ?
+18) add i18n support, and integrate with transifex business.
 
 
-21) what should we do about gnome-screensaver ? should we inhibit it ?
+19) man pages: maybe add more information ?
+
+
+20) what should we do about gnome-screensaver ? should we inhibit it ?
 http://blogs.gnome.org/hughsie/2009/01/28/inhibits-and-the-new-world-order/
 the code in play/inhibit/ is old.
 
 there is an API to show a message on the locked screen; maybe use this:
 http://git.gnome.org/cgit/gnome-screensaver/commit/?id=370ae655619c8e0fbd8a092d7dc8dc6ad4ab1445
 
-22) fix up the version.sh script since i am not using git.
 
-
-23) use the prefix.py lib, copied from jhelp instead of the findeva.py script.
+21) add .PHONY information to Makefile
 
