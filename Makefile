@@ -118,6 +118,15 @@ www: force
 	sort -V -k 2 -o $(METADATA) $(METADATA)		# sort by version key
 
 
+# fix permissions of files to be installed so that they work properly
+# TODO: this should be implemented as a distutils addon to affect the installed
+perms: force
+	find . -type d -perm u=rwx -exec chmod go+rx {} \;
+	find . -type f -perm u=rw -exec chmod go+r {} \;
+	find . -type f -perm u=rwx -exec chmod go+rx {} \;
+	find files/ -type f -perm u=rw -exec chmod go+r {} \;
+
+
 # depend on this fake target to cause a target to always run
 force: ;
 
