@@ -71,7 +71,7 @@ distutils.core.setup(
 	# add build_manpages command
 	cmdclass={
 		'install': uninstall.install, 'uninstall': uninstall.uninstall,
-		'build_manpages': build_manpages.build_manpages
+		'build_manpages': build_manpages.build_manpages,
 	}
 )
 
