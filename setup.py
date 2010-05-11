@@ -21,12 +21,14 @@ Supported commands include a customized `install' target, and a magic
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import sys			# for sys.modules
+import pydoc
 import distutils.core		#from distutils.core import setup, Extension
-import os
-import src.misc as misc		# for get_version
-from jhelp import uninstall
+from jhelp import misc		# for get_version, get_capitalized_files
+from jhelp import uninstall	# custom distutils uninstall & install commands
 				# custom distutils command for building manpages
 from jhelp import build_manpages
+from src import prefix		# used to find the name of this project
 
 # VARIABLES ###################################################################
 NAME = 'evanescent'
