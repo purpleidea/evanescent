@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""
-Setup file for evanescent.
+"""Setup file for evanescent.
 
 Supported commands include a customized `install' target, and a magic
 `uninstall' target.
