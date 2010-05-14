@@ -36,6 +36,9 @@ EXT = .tar.bz2
 
 PREFIX = /usr/local/
 
+.PHONY: all clean install uninstall purge man source www perms
+.SILENT:
+
 
 # if someone runs make without a target, print some useful messages
 all:
@@ -51,7 +54,7 @@ all:
 
 
 # clean up any mess that can be generated
-clean: force
+clean:
 	# let distutils try to clean up first
 	python setup.py clean
 	# remove the generated manifest file
@@ -91,7 +94,7 @@ purge: uninstall
 
 
 # build the man pages, and then view them
-man: force
+man:
 	python setup.py build_manpages
 	cd man/ ;\
 	./viewthis.sh
@@ -103,7 +106,7 @@ source: clean
 
 
 # move current version to www folder
-www: force
+www:
 	# rsync directories so they are equivalent in terms of files with: $EXT
 	rsync -avz --include=*$(EXT) --exclude='*' --delete dist/ $(WWW)
 	# empty the file
@@ -120,17 +123,9 @@ www: force
 
 # fix permissions of files to be installed so that they work properly
 # TODO: this should be implemented as a distutils addon to affect the installed
-perms: force
+perms:
 	find . -type d -perm u=rwx -exec chmod go+rx {} \;
 	find . -type f -perm u=rw -exec chmod go+r {} \;
 	find . -type f -perm u=rwx -exec chmod go+rx {} \;
 	find files/ -type f -perm u=rw -exec chmod go+r {} \;
-
-
-# depend on this fake target to cause a target to always run
-force: ;
-
-
-# this target silences echoing of any target which has it as a dependency.
-.SILENT:
 
