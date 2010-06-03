@@ -11,10 +11,10 @@ INSTALL
 
 DEPENDENCIES
 
-* python-utmp - for working with utmp
-* python-yaml - for config file parsing
-* python-notify - for libnotify notifications
-* python-cheetah - for man page generation from templates
 * jhelp - for various helper libraries
 * libxss-dev - for building x idle detection code
+* python-cheetah - for man page generation from templates
+* python-notify - for libnotify notifications
+* python-utmp - for working with utmp
+* python-yaml - for config file parsing
 
