@@ -28,6 +28,7 @@ from jhelp import misc		# for get_version, get_capitalized_files
 from jhelp import uninstall	# custom distutils uninstall & install commands
 				# custom distutils command for building manpages
 from jhelp import build_manpages
+#from jhelp import dependencies	# TODO
 from src import prefix		# used to find the name of this project
 
 # VARIABLES ###################################################################
@@ -37,6 +38,9 @@ DESCRIPTION, LDESCRIPTION = pydoc.splitdoc(pydoc.getdoc(sys.modules[__name__]))
 
 # see: http://standards.freedesktop.org/autostart-spec/autostart-spec-latest.html
 # and: http://standards.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html
+
+# DEPENDENCIES ################################################################
+#dependencies.check()		# TODO
 
 # SETUP #######################################################################
 distutils.core.setup(
