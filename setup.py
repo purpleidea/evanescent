@@ -32,7 +32,7 @@ from jhelp import build_manpages
 from src import prefix		# used to find the name of this project
 
 # VARIABLES ###################################################################
-NAME = prefix.name('src')		# should be the name of this dir
+NAME = prefix.name('src', suffix=('-' + misc.get_version()))	# strip version
 # this pulls the one-line description and long description from the docstring
 DESCRIPTION, LDESCRIPTION = pydoc.splitdoc(pydoc.getdoc(sys.modules[__name__]))
 
