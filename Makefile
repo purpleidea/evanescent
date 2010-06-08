@@ -89,7 +89,7 @@ purge: uninstall
 #	$(RMTOOL) -r $(HOME)/.cache/eva/ 2> /dev/null || true	# eva.log
 #	sudo $(RMTOOL) /var/log/evanescent.log* 2> /dev/null || true
 #	sudo $(RMTOOL) /etc/evanescent.conf.yaml 2> /dev/null || true
-	# empty man index even though this should eventually get updated by cron
+	# empty man index even though it should eventually get updated by cron
 	sudo mandb
 
 
